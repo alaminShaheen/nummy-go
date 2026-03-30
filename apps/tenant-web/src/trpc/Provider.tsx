@@ -1,14 +1,10 @@
 /**
- * apps/customer-web/src/trpc/Provider.tsx
+ * apps/tenant-web/src/trpc/Provider.tsx
  *
- * Wraps the app with the tRPC + React Query providers.
+ * tRPC + React Query provider for the tenant dashboard.
+ * Points to the same api-worker as customer-web.
  *
- * The tRPC client is pointed at the api-worker:
- *  - Dev:  http://localhost:8787/trpc  (wrangler dev default port)
- *  - Prod: NEXT_PUBLIC_API_WORKER_URL/trpc  (set in .env.local)
- *
- * To set up for production, add to apps/customer-web/.env.local:
- *   NEXT_PUBLIC_API_WORKER_URL=https://nummygo-api.your-subdomain.workers.dev
+ * Configure NEXT_PUBLIC_API_WORKER_URL in apps/tenant-web/.env.local.
  */
 
 'use client';
@@ -18,24 +14,20 @@ import { httpBatchLink } from '@trpc/client';
 import { useState } from 'react';
 import { trpc } from './client';
 
-/** Resolve the api-worker base URL. Falls back to localhost for dev. */
 function getApiUrl() {
-  // NEXT_PUBLIC_ prefix makes the var available in the browser bundle
   const base =
     process.env.NEXT_PUBLIC_API_WORKER_URL ?? 'http://localhost:8787';
   return `${base}/trpc`;
 }
 
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
-  // Create clients once per component mount (not on every render).
   const [queryClient] = useState(
     () =>
       new QueryClient({
         defaultOptions: {
           queries: {
-            // Refetch in the background when the window regains focus
             refetchOnWindowFocus: true,
-            staleTime: 30_000, // 30 seconds
+            staleTime: 10_000, // Shorter stale time for dashboard freshness
           },
         },
       })
@@ -44,10 +36,7 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
-        httpBatchLink({
-          // Batch multiple queries into a single HTTP request
-          url: getApiUrl(),
-        }),
+        httpBatchLink({ url: getApiUrl() }),
       ],
     })
   );

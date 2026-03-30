@@ -1,0 +1,7 @@
+# pnpm-workspace.yaml
+# Defines all packages in the NummyGo monorepo.
+# pnpm will hoist shared deps and link workspace packages automatically.
+packages:
+  - 'apps/*'       # Next.js frontends (customer-web, tenant-web)
+  - 'api-worker'   # Cloudflare Worker backend
+  - 'packages/*'   # Shared libraries (@nummygo/shared)

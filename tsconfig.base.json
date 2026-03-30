@@ -1,0 +1,32 @@
+{
+  // Base TypeScript config inherited by all packages in the monorepo.
+  // Each package extends this and adds its own overrides.
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    // ── Language & Environment ───────────────────────────────────────
+    "target": "ES2022",
+    "lib": ["ES2022"],
+
+    // ── Module system ────────────────────────────────────────────────
+    // "bundler" resolution lets tools like esbuild/wrangler resolve
+    // package.json "exports" and path aliases without needing file extensions.
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+
+    // ── Type Checking ────────────────────────────────────────────────
+    "strict": true,           // Enable all strict type-checks
+    "noUncheckedIndexedAccess": true, // Catch undefined array/object access
+    "noImplicitOverride": true,
+
+    // ── Output ───────────────────────────────────────────────────────
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    // ── Misc ─────────────────────────────────────────────────────────
+    "skipLibCheck": true,     // Skip type-checking of .d.ts in node_modules
+    "isolatedModules": true   // Required for esbuild/SWC compatibility
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "nummygo-tenant-web",
+  "compatibility_date": "2024-01-01",
+  "main": ".vercel/output/static/_worker.js",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Environment variables (set secrets with `wrangler secret put`)
+  // "vars": {
+  //   "ENVIRONMENT": "production"
+  // }
+}

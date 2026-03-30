@@ -1,23 +1,19 @@
 /**
- * apps/customer-web/src/app/layout.tsx
- *
- * Root layout for the customer-web Next.js app.
- * Wraps every page with the tRPC + React Query providers.
+ * apps/tenant-web/src/app/layout.tsx
+ * Root layout for the tenant dashboard.
  */
-
 import { TRPCProvider } from '@/trpc/Provider';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title:       'NummyGo – Order Food',
-  description: 'Place food orders and track them in real-time.',
+  title:       'NummyGo – Tenant Dashboard',
+  description: 'Manage incoming orders in real-time.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body style={{ margin: 0, fontFamily: 'system-ui, sans-serif' }}>
-        {/* TRPCProvider makes trpc.* hooks available to all client components */}
         <TRPCProvider>{children}</TRPCProvider>
       </body>
     </html>

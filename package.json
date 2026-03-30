@@ -1,20 +1,14 @@
 {
-  "name": "nummy-go",
+  "name": "nummygo",
   "version": "1.0.0",
-  "description": "",
+  "private": true,
+  "description": "NummyGo – food-ordering monorepo (Next.js + Cloudflare Worker + Durable Objects)",
   "scripts": {
-    "build-package": "npm run build -w @repo/shared",
-    "dev-customer-web": "npm run dev -w customer-web",
-    "dev-tenant-web": "npm run dev -w tenant-web"
+    "build:shared": "pnpm --filter @nummygo/shared build",
+    "dev:api": "pnpm --filter api-worker dev",
+    "dev:customer": "pnpm --filter customer-web dev:next",
+    "dev:tenant": "pnpm --filter tenant-web dev:next"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "workspaces": [
-    "apps/customer-web",
-    "apps/tenant-web",
-    "packages/shared"
-  ],
   "devDependencies": {
     "@types/node": "^22.15.19",
     "typescript": "^5.9.2"
