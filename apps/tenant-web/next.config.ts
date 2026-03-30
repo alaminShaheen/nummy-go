@@ -1,13 +1,9 @@
-/**
- * apps/tenant-web/next.config.ts
- * Standard Next.js config for the tenant dashboard.
- */
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
+  output: 'export',  // generates ./out for wrangler static assets
   images: {
-    unoptimized: true, // Required for Cloudflare Pages deployment
+    unoptimized: true, // required for static export
   },
 };
 

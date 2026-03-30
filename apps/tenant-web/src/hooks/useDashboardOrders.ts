@@ -13,7 +13,7 @@
 'use client';
 
 import { trpc } from '@/trpc/client';
-import type { OrderStatus } from '@nummygo/shared';
+import type { OrderStatus } from '@nummygo/shared/models/enums';
 
 interface UseDashboardOrdersOptions {
   /** Filter by a specific status (omit to get all). */

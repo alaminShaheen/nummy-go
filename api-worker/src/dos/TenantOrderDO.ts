@@ -30,7 +30,7 @@
  * 5. On disconnect, DO removes the socket from the group
  */
 
-import type { WsMessage } from '@nummygo/shared/types';
+import type { WsMessage } from '@nummygo/shared/models/types';
 
 export class TenantOrderDO implements DurableObject {
   /**

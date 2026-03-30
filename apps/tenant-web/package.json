@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm next-on-pages --watch & wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat",
-    "dev:next": "next dev --port 3001",
-    "build": "pnpm next-on-pages",
+    "dev": "next dev --port 3001",
+    "build": "next build",
     "lint": "next lint",
     "cf-typegen": "wrangler types --env-interface Env",
-    "deploy": "pnpm build && wrangler deploy"
+    "deploy": "next build && wrangler deploy"
   },
   "dependencies": {
     "@nummygo/shared": "workspace:*",
@@ -24,7 +23,6 @@
   },
   "devDependencies": {
     "api-worker": "workspace:*",
-    "@cloudflare/next-on-pages": "^1.13.6",
     "@cloudflare/workers-types": "^4.20240925.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",

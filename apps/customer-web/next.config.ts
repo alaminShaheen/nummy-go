@@ -1,10 +1,9 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
-  // Cloudflare Pages configuration
+  output: 'export',  // generates ./out for wrangler static assets
   images: {
-    unoptimized: true,
+    unoptimized: true, // required for static export
   },
 };
 

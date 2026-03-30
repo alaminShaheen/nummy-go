@@ -20,8 +20,10 @@
       ]
     },
     "noEmit": true,
+    "declaration": false,
     "allowJs": true,
-    "incremental": true
+    "incremental": true,
+    "types": ["@cloudflare/workers-types"]
   },
   "include": [
     "next-env.d.ts",

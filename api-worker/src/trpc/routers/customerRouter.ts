@@ -1,39 +1,16 @@
-/**
- * api-worker/src/trpc/routers/customerRouter.ts
- *
- * tRPC procedures callable by the customer-web frontend.
- *
- * Procedures:
- *  - placeOrder  – Create a new order and broadcast to the tenant's DO group.
- *  - getOrders   – Fetch all orders placed by a given customer.
- *
- * Design principle:
- *  Routers are thin. They validate input (via Zod input schemas),
- *  delegate all business logic to the orderService, and return results.
- */
-
 import { router, publicProcedure, TRPCError } from '../init';
-import { createOrderSchema, getOrdersSchema } from '@nummygo/shared/schemas';
-import { placeOrder, fetchCustomerOrders } from '../../services/orderService';
+import { createOrderSchema, getOrdersByUserSchema } from '@nummygo/shared/models/dtos';
+import { placeOrder, fetchUserOrders } from '../../services/orderService';
 
 export const customerRouter = router({
 
-  // ── placeOrder ───────────────────────────────────────────────────────────
-  /**
-   * Place a new order.
-   *
-   * Flow:
-   *  1. Validate input via createOrderSchema.
-   *  2. Persist order to D1 via orderService.
-   *  3. Broadcast ORDER_CREATED event to the tenant's Durable Object group.
-   *  4. Return the created order.
-   */
   placeOrder: publicProcedure
     .input(createOrderSchema)
     .mutation(async ({ input, ctx }) => {
+      // TODO: replace hardcoded userId with ctx.session.user.id once auth is wired up
+      const userId = 'REPLACE_WITH_SESSION_USER_ID';
       try {
-        const order = await placeOrder(ctx.env, input);
-        return order;
+        return await placeOrder(ctx.env, userId, input);
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -42,16 +19,11 @@ export const customerRouter = router({
       }
     }),
 
-  // ── getOrders ────────────────────────────────────────────────────────────
-  /**
-   * Get all orders for a customer.
-   * Returns an array of Order objects, sorted newest first.
-   */
   getOrders: publicProcedure
-    .input(getOrdersSchema)
+    .input(getOrdersByUserSchema)
     .query(async ({ input, ctx }) => {
       try {
-        return fetchCustomerOrders(ctx.env, input.customerId);
+        return await fetchUserOrders(ctx.env, input.userId);
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
