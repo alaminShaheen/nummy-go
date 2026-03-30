@@ -1,0 +1,35 @@
+{
+  "name": "nummygo-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // ── D1 Database ─────────────────────────────────────────────────────────────
+  // Create with: wrangler d1 create nummygo-db
+  // Then paste the database_id below.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "nummygo-db",
+      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID",
+      "migrations_dir": "drizzle/migrations"
+    }
+  ],
+
+  // ── Durable Objects ──────────────────────────────────────────────────────────
+  "durable_objects": {
+    "bindings": [
+      { "name": "TENANT_ORDER_DO", "class_name": "TenantOrderDO" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_classes": ["TenantOrderDO"] }
+  ],
+
+  // ── Vars ─────────────────────────────────────────────────────────────────────
+  // Add secrets with: wrangler secret put SECRET_NAME
+  "vars": {
+    "ENVIRONMENT": "development",
+    "CORS_ORIGIN": "http://localhost:3000,http://localhost:3001"
+  }
+}

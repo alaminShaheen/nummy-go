@@ -2,7 +2,7 @@
   "name": "@nummygo/shared",
   "version": "1.0.0",
   "private": true,
-  "description": "Shared types, Zod schemas, shadcn/ui components, and Drizzle DB queries for NummyGo",
+  "description": "Shared models, Zod schemas, shadcn/ui components, and Drizzle DB layer for NummyGo",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -10,25 +10,37 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./types": {
-      "types": "./dist/types/index.d.ts",
-      "default": "./dist/types/index.js"
+    "./models": {
+      "types": "./dist/models/index.d.ts",
+      "default": "./dist/models/index.js"
     },
-    "./schemas": {
-      "types": "./dist/schemas/index.d.ts",
-      "default": "./dist/schemas/index.js"
+    "./models/enums": {
+      "types": "./dist/models/enums.d.ts",
+      "default": "./dist/models/enums.js"
+    },
+    "./models/types": {
+      "types": "./dist/models/types/index.d.ts",
+      "default": "./dist/models/types/index.js"
+    },
+    "./models/dtos": {
+      "types": "./dist/models/dtos/index.d.ts",
+      "default": "./dist/models/dtos/index.js"
     },
     "./ui": {
       "types": "./dist/ui/index.d.ts",
       "default": "./dist/ui/index.js"
     },
-    "./db-queries": {
-      "types": "./dist/db-queries/index.d.ts",
-      "default": "./dist/db-queries/index.js"
+    "./db": {
+      "types": "./dist/db/index.d.ts",
+      "default": "./dist/db/index.js"
     },
-    "./db-queries/schema": {
-      "types": "./dist/db-queries/schema.d.ts",
-      "default": "./dist/db-queries/schema.js"
+    "./db/schema": {
+      "types": "./dist/db/schema/index.d.ts",
+      "default": "./dist/db/schema/index.js"
+    },
+    "./db/queries": {
+      "types": "./dist/db/queries/index.d.ts",
+      "default": "./dist/db/queries/index.js"
     }
   },
   "scripts": {
@@ -36,7 +48,7 @@
     "dev": "tsc --build --watch"
   },
   "dependencies": {
-    "zod": "^3.24.1",
+    "zod": "^4.0.0",
     "drizzle-orm": "^0.38.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

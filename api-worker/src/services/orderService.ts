@@ -15,14 +15,14 @@
  */
 
 import { drizzle } from 'drizzle-orm/d1';
-import * as schema from '@nummygo/shared/db-queries/schema';
+import * as schema from '@nummygo/shared/db/schema';
 import {
   createOrder,
-  getOrdersByCustomer,
+  getOrdersByUser,
   getOrdersByTenant,
   updateOrderStatus,
   type DbOrder,
-} from '@nummygo/shared/db-queries';
+} from '@nummygo/shared/db/queries';
 import type {
   Order,
   OrderItem,
@@ -111,10 +111,10 @@ export async function placeOrder(
 
 export async function fetchCustomerOrders(
   env: Env,
-  customerId: string
+  userId: string
 ): Promise<Order[]> {
   const db   = getDb(env);
-  const rows = await getOrdersByCustomer(db, customerId);
+  const rows = await getOrdersByUser(db, userId);
   return rows.map(dbRowToOrder);
 }
 
