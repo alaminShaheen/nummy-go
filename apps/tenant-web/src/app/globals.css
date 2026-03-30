@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+
+  /* Brand palette – Bitresto-inspired */
+  --color-brand-bg:      #0D1117;
+  --color-brand-surface: #13191f;
+  --color-brand-card:    #1a2130;
+  --color-brand-border:  #252e3f;
+
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-orange-500: #f97316;
+  --color-orange-600: #ea580c;
+  --color-rose-500:   #f43f5e;
+  --color-indigo-400: #818cf8;
+  --color-indigo-500: #6366f1;
+
+  --color-text-primary:   #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted:     #475569;
+}
+
+/* ─── Base ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--color-brand-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Gradient text utility ─────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Glossy gradient border card ───────────────── */
+.gradient-border-card {
+  position: relative;
+  border-radius: 1rem;
+}
+.gradient-border-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  padding: 1.5px;
+  background: linear-gradient(135deg, #fbbf24, #f97316, #818cf8);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ─── Glassmorphism ──────────────────────────────── */
+.glass {
+  background: rgba(19, 25, 31, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* ─── Ambient glow blob ──────────────────────────── */
+.glow-amber {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(40px);
+}
+.glow-indigo {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+/* ─── Scrollbar ──────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-brand-bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-border);
+  border-radius: 3px;
+}
