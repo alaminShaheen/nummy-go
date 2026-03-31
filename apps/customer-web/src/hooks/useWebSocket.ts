@@ -20,7 +20,7 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
-import type { WsMessage } from '@nummygo/shared';
+import type { WsMessage } from '@nummygo/shared/models/types';
 
 /** Base URL for the api-worker WebSocket endpoint. */
 function getWsUrl(tenantId: string) {

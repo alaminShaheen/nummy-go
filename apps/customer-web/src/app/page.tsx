@@ -42,6 +42,7 @@ export default function CustomerPage() {
   const handlePlaceOrder = () => {
     placeOrderMutation.mutate({
       tenantId: DEMO_TENANT_ID,
+      userId: DEMO_USER_ID,
       items: [{ menuItemId: '00000000-0000-0000-0000-000000000003', quantity }],
     });
   };

@@ -15,7 +15,7 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
-import type { WsMessage } from '@nummygo/shared';
+import type { WsMessage } from '@nummygo/shared/models/types';
 
 function getWsUrl(tenantId: string) {
   const base =

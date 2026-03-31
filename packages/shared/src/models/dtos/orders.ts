@@ -8,6 +8,7 @@ const orderLineSchema = z.object({
 
 export const createOrderSchema = z.object({
   tenantId: z.uuid(),
+  userId: z.uuid(),
   items: z.array(orderLineSchema).min(1, 'An order must have at least one item'),
   specialInstruction: z.string().max(500).optional(),
 });

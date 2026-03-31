@@ -7,10 +7,8 @@ export const customerRouter = router({
   placeOrder: publicProcedure
     .input(createOrderSchema)
     .mutation(async ({ input, ctx }) => {
-      // TODO: replace hardcoded userId with ctx.session.user.id once auth is wired up
-      const userId = 'REPLACE_WITH_SESSION_USER_ID';
       try {
-        return await placeOrder(ctx.env, userId, input);
+        return await placeOrder(ctx.env, input.userId, input);
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',

@@ -15,25 +15,25 @@
     {
       "binding": "DB",
       "database_name": "nummygo-db",
-      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID",
+      "database_id": "c8d843a7-013e-4301-a349-e8567e25db7e",
       "migrations_dir": "drizzle/migrations"
     }
-  ],
+  ]
 
   // ── Durable Objects ──────────────────────────────────────────────────────────
-  "durable_objects": {
-    "bindings": [
-      { "name": "TENANT_ORDER_DO", "class_name": "TenantOrderDO" }
-    ]
-  },
-  "migrations": [
-    { "tag": "v1", "new_classes": ["TenantOrderDO"] }
-  ],
+//  "durable_objects": {
+//    "bindings": [
+//      { "name": "TENANT_ORDER_DO", "class_name": "TenantOrderDO" }
+//    ]
+//  },
+//  "migrations": [
+//    { "tag": "v1", "new_classes": ["TenantOrderDO"] }
+//  ],
 
   // ── Vars ─────────────────────────────────────────────────────────────────────
   // Add secrets with: wrangler secret put SECRET_NAME
-  "vars": {
-    "ENVIRONMENT": "development",
-    "CORS_ORIGIN": "http://localhost:3000,http://localhost:3001"
-  }
+//  "vars": {
+//    "ENVIRONMENT": "development",
+//    "CORS_ORIGIN": "http://localhost:3000,http://localhost:3001"
+//  }
 }

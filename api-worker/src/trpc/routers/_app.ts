@@ -13,11 +13,12 @@
  *   const trpc = createTRPCReact<AppRouter>();
  */
 
-import { router } from '../init';
+import { router, publicProcedure } from '../init';
 import { customerRouter } from './customerRouter';
 import { tenantRouter }   from './tenantRouter';
 
 export const appRouter = router({
+  health:   publicProcedure.query(() => ({ status: 'ok' })),
   customer: customerRouter,
   tenant:   tenantRouter,
 });

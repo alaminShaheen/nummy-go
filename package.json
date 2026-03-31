@@ -4,10 +4,12 @@
   "private": true,
   "description": "NummyGo – food-ordering monorepo (Next.js + Cloudflare Worker + Durable Objects)",
   "scripts": {
+    "build": "pnpm build:shared && pnpm --filter customer-web --filter tenant-web --filter api-worker build --parallel",
     "build:shared": "pnpm --filter @nummygo/shared build",
+    "deploy": "pnpm build:shared && pnpm --filter customer-web --filter tenant-web --filter api-worker deploy --parallel",
     "dev:api": "pnpm --filter api-worker dev",
-    "dev:customer": "pnpm --filter customer-web dev:next",
-    "dev:tenant": "pnpm --filter tenant-web dev:next"
+    "dev:customer": "pnpm --filter customer-web dev",
+    "dev:tenant": "pnpm --filter tenant-web dev"
   },
   "devDependencies": {
     "@types/node": "^22.15.19",

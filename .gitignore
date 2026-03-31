@@ -12,7 +12,6 @@ build/
 
 # Cloudflare / Wrangler
 .wrangler/
-worker-configuration.d.ts
 
 # Environment variables
 .env

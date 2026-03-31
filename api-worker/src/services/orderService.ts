@@ -7,7 +7,7 @@ import {
   updateOrderStatus,
   getMenuItemById,
 } from '@nummygo/shared/db/queries';
-import type { Order, WsMessage } from '@nummygo/shared/models/types';
+import type { Order } from '@nummygo/shared/models/types';
 import type {
   CreateOrderDto,
   UpdateOrderStatusDto,
@@ -66,8 +66,6 @@ export async function placeOrder(
 
   const order = rowToOrder(row);
 
-  await broadcastToDO(env, input.tenantId, { type: 'ORDER_CREATED', order });
-
   return order;
 }
 
@@ -98,8 +96,6 @@ export async function changeOrderStatus(env: Env, input: UpdateOrderStatusDto): 
   const row = await updateOrderStatus(db, input.orderId, input.status);
   const order = rowToOrder(row);
 
-  await broadcastToDO(env, order.tenantId, { type: 'ORDER_UPDATED', order });
-
   return order;
 }
 
@@ -117,15 +113,4 @@ function rowToOrder(row: typeof import('@nummygo/shared/db/schema').orders.$infe
     updatedAt:          row.updatedAt ?? null,
     completedAt:        row.completedAt ?? null,
   };
-}
-
-async function broadcastToDO(env: Env, tenantId: string, message: WsMessage): Promise<void> {
-  const doId   = env.TENANT_ORDER_DO.idFromName(tenantId);
-  const doStub = env.TENANT_ORDER_DO.get(doId);
-
-  await doStub.fetch('https://internal/broadcast', {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ tenantId, message }),
-  });
 }
