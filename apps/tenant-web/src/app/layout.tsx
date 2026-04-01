@@ -3,6 +3,7 @@
  * Root layout for the tenant landing page.
  */
 import type { Metadata } from 'next';
+import { TRPCProvider } from '../trpc/Provider';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body><TRPCProvider>{children}</TRPCProvider></body>
     </html>
   );
 }

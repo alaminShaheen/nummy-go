@@ -1,41 +1,19 @@
-/**
- * apps/customer-web/src/trpc/Provider.tsx
- *
- * Wraps the app with the tRPC + React Query providers.
- *
- * The tRPC client is pointed at the api-worker:
- *  - Dev:  http://localhost:8787/trpc  (wrangler dev default port)
- *  - Prod: NEXT_PUBLIC_API_WORKER_URL/trpc  (set in .env.local)
- *
- * To set up for production, add to apps/customer-web/.env.local:
- *   NEXT_PUBLIC_API_WORKER_URL=https://nummygo-api.your-subdomain.workers.dev
- */
-
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
 import { useState } from 'react';
 import { trpc } from './client';
-
-/** Resolve the api-worker base URL. Falls back to localhost for dev. */
-function getApiUrl() {
-  // NEXT_PUBLIC_ prefix makes the var available in the browser bundle
-  const base =
-    process.env.NEXT_PUBLIC_API_WORKER_URL ?? 'http://localhost:8787';
-  return `${base}/trpc`;
-}
+import { env } from '../env';
 
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
-  // Create clients once per component mount (not on every render).
   const [queryClient] = useState(
     () =>
       new QueryClient({
         defaultOptions: {
           queries: {
-            // Refetch in the background when the window regains focus
             refetchOnWindowFocus: true,
-            staleTime: 30_000, // 30 seconds
+            staleTime: 30_000,
           },
         },
       })
@@ -44,10 +22,7 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
-        httpBatchLink({
-          // Batch multiple queries into a single HTTP request
-          url: getApiUrl(),
-        }),
+        httpBatchLink({ url: `${env.NEXT_PUBLIC_API_WORKER_URL}/trpc` }),
       ],
     })
   );
