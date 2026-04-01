@@ -1,16 +1,37 @@
-import { z } from 'zod';
+import {z} from 'zod';
+import {ulidSchema} from '../enums';
 
-export const tenantSchema = z.object({
-  id: z.string(),
-  slug: z.string(),
-  name: z.string(),
-  phoneNumber: z.string(),
-  email: z.string().nullable(),
-  businessHours: z.string().nullable(), // serialised JSON
-  acceptsOrders: z.boolean(),
-  closedUntil: z.string().nullable(),
-  isActive: z.boolean(),
-  createdAt: z.string(),
+const dayHoursSchema = z.object({
+	open: z.string(), // e.g. "09:00"
+	close: z.string(), // e.g. "22:00"
+	closed: z.boolean(),
 });
 
+export const businessHoursSchema = z.object({
+	monday: dayHoursSchema,
+	tuesday: dayHoursSchema,
+	wednesday: dayHoursSchema,
+	thursday: dayHoursSchema,
+	friday: dayHoursSchema,
+	saturday: dayHoursSchema,
+	sunday: dayHoursSchema,
+});
+
+export const tenantSchema = z.object({
+	id: ulidSchema,
+	userId: ulidSchema,
+	slug: z.string(),
+	name: z.string(),
+	phoneNumber: z.string(),
+	email: z.string().nullable(),
+	businessHours: businessHoursSchema.nullable(),
+	acceptsOrders: z.boolean(),
+	closedUntil: z.string().nullable(),
+	isActive: z.boolean(),
+	onboardingCompleted: z.boolean(),
+	createdAt: z.string(),
+	updatedAt: z.string().nullable(),
+});
+
+export type BusinessHours = z.infer<typeof businessHoursSchema>;
 export type Tenant = z.infer<typeof tenantSchema>;

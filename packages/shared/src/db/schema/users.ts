@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
-import { sql } from 'drizzle-orm';
+import { userRoleEnum } from '../../models';
 
 export const users = sqliteTable('user', {
   id: text('id').primaryKey(),
@@ -8,6 +8,7 @@ export const users = sqliteTable('user', {
   email: text('email').unique(),
   emailVerified: integer('email_verified', { mode: 'boolean' }).notNull().default(false),
   image: text('image'),
+  role: text('role', { enum: userRoleEnum.options as [string, ...string[]] }).notNull().default('customer'),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 }, (table) => ({

@@ -2,6 +2,7 @@ import {WorkerEntrypoint} from 'cloudflare:workers';
 import {fetchRequestHandler} from '@trpc/server/adapters/fetch';
 import {appRouter} from '../trpc/routers/_app';
 import {createContext} from '../trpc/context';
+import {createAuth} from '../auth';
 import type {Env} from '../index';
 import {initDatabase} from "@nummygo/shared/db";
 
@@ -19,6 +20,11 @@ export class ApiWorker extends WorkerEntrypoint<Env> {
 		// ── CORS preflight ───────────────────────────────────────────────────
 		if (request.method === 'OPTIONS') {
 			return new Response(null, {status: 204, headers: cors});
+		}
+
+		// ── Auth: /api/auth/* ────────────────────────────────────────────────
+		if (url.pathname.startsWith('/api/auth')) {
+			return await createAuth(this.env).handler(request);
 		}
 
 		// ── tRPC: /trpc/* ────────────────────────────────────────────────────

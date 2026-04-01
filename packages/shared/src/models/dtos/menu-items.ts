@@ -1,25 +1,51 @@
 import { z } from 'zod';
+import { ulidSchema } from '../enums';
+
+// ── API-facing ─────────────────────────────────────────────────────────────
 
 export const createMenuItemSchema = z.object({
-  tenantId: z.uuid(),
-  name: z.string().min(1),
+  tenantId:    ulidSchema,
+  categoryId:  ulidSchema,
+  name:        z.string().min(1),
   description: z.string().optional(),
-  imageUrl: z.string().url().optional(),
-  price: z.number().positive(),
-  category: z.string().min(1),
+  imageUrl:    z.url().optional(),
+  price:       z.number().positive(),
   isAvailable: z.boolean().default(true),
-  isFeatured: z.boolean().default(false),
+  isFeatured:  z.boolean().default(false),
 });
 
 export const updateMenuItemSchema = z.object({
-  name: z.string().min(1).optional(),
+  name:        z.string().min(1).optional(),
   description: z.string().optional(),
-  imageUrl: z.string().url().nullable().optional(),
-  price: z.number().positive().optional(),
-  category: z.string().min(1).optional(),
+  imageUrl:    z.url().nullable().optional(),
+  price:       z.number().positive().optional(),
+  categoryId:  ulidSchema.optional(),
   isAvailable: z.boolean().optional(),
-  isFeatured: z.boolean().optional(),
+  isFeatured:  z.boolean().optional(),
 });
 
-export type CreateMenuItemDto = z.infer<typeof createMenuItemSchema>;
-export type UpdateMenuItemDto = z.infer<typeof updateMenuItemSchema>;
+export const createMenuItemCategorySchema = z.object({
+  tenantId:  ulidSchema,
+  name:      z.string().min(1),
+  sortOrder: z.number().int().min(0).default(0),
+});
+
+// ── Internal (query-facing) ────────────────────────────────────────────────
+
+export const createMenuItemRecordSchema = createMenuItemSchema.extend({
+  id:        ulidSchema,
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export const createMenuItemCategoryRecordSchema = createMenuItemCategorySchema.extend({
+  id:        ulidSchema,
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type CreateMenuItemDto               = z.infer<typeof createMenuItemSchema>;
+export type UpdateMenuItemDto               = z.infer<typeof updateMenuItemSchema>;
+export type CreateMenuItemCategoryDto       = z.infer<typeof createMenuItemCategorySchema>;
+export type CreateMenuItemRecordDto         = z.infer<typeof createMenuItemRecordSchema>;
+export type CreateMenuItemCategoryRecordDto = z.infer<typeof createMenuItemCategoryRecordSchema>;

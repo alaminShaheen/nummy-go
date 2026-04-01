@@ -1,48 +1,85 @@
 import { eq, and } from 'drizzle-orm';
-import type { DrizzleD1Database } from 'drizzle-orm/d1';
+import { getDb } from '../client';
 import { menuItems } from '../schema/menu-items';
-import type * as schema from '../schema';
+import { menuItemCategories } from '../schema/menu-item-categories';
+import type {
+  CreateMenuItemRecordDto,
+  CreateMenuItemCategoryRecordDto,
+  UpdateMenuItemDto,
+} from '../../models/dtos';
 
-type DB = DrizzleD1Database<typeof schema>;
-
-export async function createMenuItem(db: DB, data: typeof menuItems.$inferInsert) {
-  const result = await db.insert(menuItems).values(data).returning();
+export async function createMenuItem(data: CreateMenuItemRecordDto) {
+  const result = await getDb().insert(menuItems).values(data).returning();
   const row = result[0];
   if (!row) throw new Error('Insert returned no rows');
   return row;
 }
 
-export async function getMenuItemById(db: DB, id: string) {
-  const rows = await db.select().from(menuItems).where(eq(menuItems.id, id)).limit(1);
+export async function getMenuItemById(id: string) {
+  const rows = await getDb().select().from(menuItems).where(eq(menuItems.id, id)).limit(1);
   return rows[0];
 }
 
-export async function getMenuItemsByTenant(db: DB, tenantId: string) {
-  return db
+export async function getMenuItemsByTenant(tenantId: string) {
+  return getDb()
     .select()
     .from(menuItems)
     .where(and(eq(menuItems.tenantId, tenantId), eq(menuItems.isAvailable, true)));
 }
 
-export async function getMenuItemsByCategory(db: DB, tenantId: string, category: string) {
-  return db
+export async function getMenuItemsByCategory(tenantId: string, categoryId: string) {
+  return getDb()
     .select()
     .from(menuItems)
-    .where(and(eq(menuItems.tenantId, tenantId), eq(menuItems.category, category), eq(menuItems.isAvailable, true)));
+    .where(and(
+      eq(menuItems.tenantId, tenantId),
+      eq(menuItems.categoryId, categoryId),
+      eq(menuItems.isAvailable, true),
+    ));
 }
 
-export async function getFeaturedMenuItems(db: DB, tenantId: string) {
-  return db
+export async function getFeaturedMenuItems(tenantId: string) {
+  return getDb()
     .select()
     .from(menuItems)
     .where(and(eq(menuItems.tenantId, tenantId), eq(menuItems.isFeatured, true)));
 }
 
-export async function updateMenuItemAvailability(db: DB, id: string, isAvailable: boolean) {
-  const result = await db
+export async function updateMenuItem(id: string, data: UpdateMenuItemDto) {
+  const result = await getDb()
     .update(menuItems)
-    .set({ isAvailable })
+    .set({ ...data, updatedAt: new Date().toISOString() })
     .where(eq(menuItems.id, id))
     .returning();
   return result[0];
+}
+
+export async function updateMenuItemAvailability(id: string, isAvailable: boolean) {
+  const result = await getDb()
+    .update(menuItems)
+    .set({ isAvailable, updatedAt: new Date().toISOString() })
+    .where(eq(menuItems.id, id))
+    .returning();
+  return result[0];
+}
+
+// ── Category queries ───────────────────────────────────────────────────────
+
+export async function createMenuItemCategory(data: CreateMenuItemCategoryRecordDto) {
+  const result = await getDb().insert(menuItemCategories).values(data).returning();
+  const row = result[0];
+  if (!row) throw new Error('Insert returned no rows');
+  return row;
+}
+
+export async function getMenuItemCategoriesByTenant(tenantId: string) {
+  return getDb()
+    .select()
+    .from(menuItemCategories)
+    .where(eq(menuItemCategories.tenantId, tenantId))
+    .orderBy(menuItemCategories.sortOrder);
+}
+
+export async function deleteMenuItemCategory(id: string) {
+  return getDb().delete(menuItemCategories).where(eq(menuItemCategories.id, id));
 }

@@ -1,4 +1,5 @@
-import { initDatabase, getDb } from '@nummygo/shared/db';
+import { ulid } from 'ulidx';
+import { initDatabase } from '@nummygo/shared/db';
 import {
   createOrder,
   createOrderItems,
@@ -12,14 +13,15 @@ import type {
   CreateOrderDto,
   UpdateOrderStatusDto,
   GetOrdersByTenantDto,
+  CreateOrderRecordDto,
+  CreateOrderItemRecordDto,
 } from '@nummygo/shared/models/dtos';
 import type { Env } from '../index';
 
 // ── DB init ────────────────────────────────────────────────────────────────
 
-function useDb(env: Env) {
+function initDb(env: Env) {
   initDatabase(env.DB);
-  return getDb();
 }
 
 // ── placeOrder ─────────────────────────────────────────────────────────────
@@ -29,12 +31,11 @@ export async function placeOrder(
   userId: string,
   input: CreateOrderDto
 ): Promise<Order> {
-  const db = useDb(env);
+  initDb(env);
 
-  // Look up each menu item to get its price
   const resolvedItems = await Promise.all(
     input.items.map(async (line) => {
-      const menuItem = await getMenuItemById(db, line.menuItemId);
+      const menuItem = await getMenuItemById(line.menuItemId);
       if (!menuItem) throw new Error(`Menu item ${line.menuItemId} not found`);
       return { ...line, unitPrice: menuItem.price };
     })
@@ -45,43 +46,49 @@ export async function placeOrder(
     0
   );
 
-  const orderId = crypto.randomUUID();
+  const orderId = ulid();
+  const now = new Date().toISOString();
 
-  const row = await createOrder(db, {
+  const orderRecord: CreateOrderRecordDto = {
     id:                 orderId,
     userId,
     tenantId:           input.tenantId,
     totalAmount,
     specialInstruction: input.specialInstruction ?? null,
-  });
+    createdAt:          now,
+    updatedAt:          now,
+  };
 
-  await createOrderItems(db, resolvedItems.map((item) => ({
-    id:          crypto.randomUUID(),
-    tenantId:    input.tenantId,
+  const row = await createOrder(orderRecord);
+
+  const orderItemRecords: CreateOrderItemRecordDto[] = resolvedItems.map((item) => ({
+    id:         ulid(),
+    tenantId:   input.tenantId,
     orderId,
-    menuItemId:  item.menuItemId,
-    quantity:    item.quantity,
-    totalPrice:  item.unitPrice * item.quantity,
-  })));
+    menuItemId: item.menuItemId,
+    quantity:   item.quantity,
+    totalPrice: item.unitPrice * item.quantity,
+    createdAt:  now,
+  }));
 
-  const order = rowToOrder(row);
+  await createOrderItems(orderItemRecords);
 
-  return order;
+  return rowToOrder(row);
 }
 
 // ── fetchUserOrders ────────────────────────────────────────────────────────
 
 export async function fetchUserOrders(env: Env, userId: string): Promise<Order[]> {
-  const db = useDb(env);
-  const rows = await getOrdersByUser(db, userId);
+  initDb(env);
+  const rows = await getOrdersByUser(userId);
   return rows.map(rowToOrder);
 }
 
 // ── fetchTenantOrders ──────────────────────────────────────────────────────
 
 export async function fetchTenantOrders(env: Env, input: GetOrdersByTenantDto): Promise<Order[]> {
-  const db = useDb(env);
-  const rows = await getOrdersByTenant(db, input.tenantId, {
+  initDb(env);
+  const rows = await getOrdersByTenant(input.tenantId, {
     status: input.status,
     limit:  input.limit,
     offset: input.offset,
@@ -92,11 +99,9 @@ export async function fetchTenantOrders(env: Env, input: GetOrdersByTenantDto): 
 // ── changeOrderStatus ──────────────────────────────────────────────────────
 
 export async function changeOrderStatus(env: Env, input: UpdateOrderStatusDto): Promise<Order> {
-  const db  = useDb(env);
-  const row = await updateOrderStatus(db, input.orderId, input.status);
-  const order = rowToOrder(row);
-
-  return order;
+  initDb(env);
+  const row = await updateOrderStatus(input.orderId, input.status);
+  return rowToOrder(row);
 }
 
 // ── helpers ────────────────────────────────────────────────────────────────

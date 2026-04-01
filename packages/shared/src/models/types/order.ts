@@ -1,26 +1,26 @@
 import { z } from 'zod';
-import { orderStatusEnum } from '../enums';
+import { orderStatusEnum, ulidSchema } from '../enums';
 
 export const orderItemSchema = z.object({
-  id: z.string(),
-  tenantId: z.string(),
-  orderId: z.string(),
-  menuItemId: z.string(),
-  quantity: z.number().int().positive(),
+  id:         ulidSchema,
+  tenantId:   ulidSchema,
+  orderId:    ulidSchema,
+  menuItemId: ulidSchema,
+  quantity:   z.number().int().positive(),
   totalPrice: z.number(),
-  createdAt: z.string(),
+  createdAt:  z.string(),
 });
 
 export const orderSchema = z.object({
-  id: z.string(),
-  userId: z.string(),
-  tenantId: z.string(),
-  status: orderStatusEnum,
-  totalAmount: z.number(),
+  id:                 ulidSchema,
+  userId:             ulidSchema,
+  tenantId:           ulidSchema,
+  status:             orderStatusEnum,
+  totalAmount:        z.number(),
   specialInstruction: z.string().nullable(),
-  createdAt: z.string(),
-  updatedAt: z.string().nullable(),
-  completedAt: z.string().nullable(),
+  createdAt:          z.string(),
+  updatedAt:          z.string().nullable(),
+  completedAt:        z.string().nullable(),
 });
 
 export type OrderItem = z.infer<typeof orderItemSchema>;

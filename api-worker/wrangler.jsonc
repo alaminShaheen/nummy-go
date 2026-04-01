@@ -8,32 +8,43 @@
     "enabled": true
   },
 
-  // ── D1 Database ─────────────────────────────────────────────────────────────
-  // Create with: wrangler d1 create nummygo-db
-  // Then paste the database_id below.
+  // ── D1 Database ──────────────────────────────────────────────────────────
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "nummygo-db",
-      "database_id": "c8d843a7-013e-4301-a349-e8567e25db7e",
+      "database_id": "9874b454-a0a4-4384-b47f-9cf9cadc9daa",
       "migrations_dir": "drizzle/migrations"
     }
-  ]
+  ],
 
-  // ── Durable Objects ──────────────────────────────────────────────────────────
-//  "durable_objects": {
-//    "bindings": [
-//      { "name": "TENANT_ORDER_DO", "class_name": "TenantOrderDO" }
-//    ]
-//  },
-//  "migrations": [
-//    { "tag": "v1", "new_classes": ["TenantOrderDO"] }
-//  ],
+  // ── Durable Objects (uncomment when enabling WebSockets) ─────────────────
+  // "durable_objects": {
+  //   "bindings": [{ "name": "TENANT_ORDER_DO", "class_name": "TenantOrderDO" }]
+  // },
+  // "migrations": [{ "tag": "v1", "new_classes": ["TenantOrderDO"] }],
 
-  // ── Vars ─────────────────────────────────────────────────────────────────────
-  // Add secrets with: wrangler secret put SECRET_NAME
-//  "vars": {
-//    "ENVIRONMENT": "development",
-//    "CORS_ORIGIN": "http://localhost:3000,http://localhost:3001"
-//  }
+  // ── Environments ─────────────────────────────────────────────────────────
+  // Secrets (never put here): BETTER_AUTH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+  // Local: add to .dev.vars — Production: add via CF dashboard
+  "env": {
+    "local": {
+      "vars": {
+        "ENVIRONMENT":      "development",
+        "CORS_ORIGIN":      "http://localhost:3000,http://localhost:3001",
+        "CUSTOMER_WEB_URL": "http://localhost:3000",
+        "TENANT_WEB_URL":   "http://localhost:3001",
+        "BETTER_AUTH_URL":  "http://localhost:8787"
+      }
+    },
+    "production": {
+      "vars": {
+        "ENVIRONMENT":      "production",
+        "CORS_ORIGIN":      "https://nummygo-customer-web.alaminshaheen23.workers.dev,https://nummygo-tenant-web.alaminshaheen23.workers.dev",
+        "CUSTOMER_WEB_URL": "https://nummygo-customer-web.alaminshaheen23.workers.dev",
+        "TENANT_WEB_URL":   "https://nummygo-tenant-web.alaminshaheen23.workers.dev",
+        "BETTER_AUTH_URL":  "https://nummygo-api.alaminshaheen23.workers.dev"
+      }
+    }
+  }
 }
