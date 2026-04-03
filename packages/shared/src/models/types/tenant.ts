@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {ulidSchema} from '../enums';
+import {ulidSchema, timestampSchema} from '../schemas';
 
 const dayHoursSchema = z.object({
 	open: z.string(), // e.g. "09:00"
@@ -26,11 +26,11 @@ export const tenantSchema = z.object({
 	email: z.string().nullable(),
 	businessHours: businessHoursSchema.nullable(),
 	acceptsOrders: z.boolean(),
-	closedUntil: z.string().nullable(),
+	closedUntil: timestampSchema.nullable(),
 	isActive: z.boolean(),
 	onboardingCompleted: z.boolean(),
-	createdAt: z.string(),
-	updatedAt: z.string().nullable(),
+	createdAt: timestampSchema,
+	updatedAt: timestampSchema.nullable(),
 });
 
 export type BusinessHours = z.infer<typeof businessHoursSchema>;

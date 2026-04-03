@@ -33,8 +33,8 @@ export async function updateOrderStatus(id: string, status: UpdateOrderStatusDto
     .update(orders)
     .set({
       status,
-      updatedAt: new Date().toISOString(),
-      ...(status === 'completed' ? { completedAt: new Date().toISOString() } : {}),
+      updatedAt: Date.now(),
+      ...(status === 'completed' ? { completedAt: Date.now() } : {}),
     })
     .where(eq(orders.id, id))
     .returning();

@@ -3,21 +3,22 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
+import {UserRole} from "@nummygo/shared";
 
 export default function VendorLoginPage() {
   const [loading, setLoading] = useState(false);
 
-  async function handleGoogleLogin() {
-    setLoading(true);
-    try {
-      await authClient.signIn.social({
-        provider: 'google',
-        callbackURL: '/onboarding',
-      });
-    } catch {
-      setLoading(false);
+    async function handleGoogleLogin() {
+        setLoading(true);
+        await authClient.signIn.social({
+            provider: 'google',
+            callbackURL: `${window.location.origin}/tenant/onboarding`,
+            additionalData: {
+                role: 'tenant' as UserRole,
+            },
+        });
+        setLoading(false);
     }
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
@@ -62,7 +63,7 @@ export default function VendorLoginPage() {
           "
         >
           {/* Logo */}
-          <Link href="/" className="flex items-center justify-center gap-2 mb-2">
+          <Link href="/apps/web/public" className="flex items-center justify-center gap-2 mb-2">
             <span className="text-3xl" aria-hidden="true">🔥</span>
             <span className="text-2xl font-black tracking-tight gradient-text">nummyGo</span>
           </Link>
@@ -149,7 +150,7 @@ export default function VendorLoginPage() {
           {/* Back to platform */}
           <div className="text-center">
             <Link
-              href="/"
+              href="/apps/web/public"
               className="
                 inline-flex items-center gap-1.5
                 text-sm text-slate-500 hover:text-amber-400

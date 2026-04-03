@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { orderStatusEnum, ulidSchema } from '../enums';
+import { orderStatusEnum } from '../enums';
+import {ulidSchema, timestampSchema, priceSchema} from '../schemas';
 
 // ── API-facing ─────────────────────────────────────────────────────────────
 
@@ -37,10 +38,10 @@ export const createOrderRecordSchema = z.object({
   id:                 ulidSchema,
   userId:             ulidSchema,
   tenantId:           ulidSchema,
-  totalAmount:        z.number(),
+  totalAmount:        priceSchema,
   specialInstruction: z.string().nullable().optional(),
-  createdAt:          z.string(),
-  updatedAt:          z.string(),
+  createdAt:          timestampSchema,
+  updatedAt:          timestampSchema,
 });
 
 export const createOrderItemRecordSchema = z.object({
@@ -49,8 +50,8 @@ export const createOrderItemRecordSchema = z.object({
   tenantId:   ulidSchema,
   menuItemId: ulidSchema,
   quantity:   z.number().int().positive(),
-  totalPrice: z.number(),
-  createdAt:  z.string(),
+  totalPrice: priceSchema,
+  createdAt:  timestampSchema,
 });
 
 export type CreateOrderDto           = z.infer<typeof createOrderSchema>;

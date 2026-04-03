@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { ulidSchema } from '../enums';
-import { businessHoursSchema } from '../types/tenant';
+import { ulidSchema, timestampSchema } from '../schemas';
+import { businessHoursSchema } from '../types';
 
 // ── API-facing ─────────────────────────────────────────────────────────────
 
@@ -18,7 +18,9 @@ export const updateTenantSchema = z.object({
   email:         z.email().optional(),
   businessHours: businessHoursSchema.optional(),
   acceptsOrders: z.boolean().optional(),
-  closedUntil:   z.string().nullable().optional(),
+  closedUntil:   timestampSchema.nullable().optional(),
+    onboardingCompleted: z.boolean().optional(),
+    slug: z.string().optional(),
 });
 
 export const checkTenantSlugSchema = z.object({
@@ -34,10 +36,10 @@ export const createTenantRecordSchema = z.object({
   name:                z.string(),
   phoneNumber:         z.string(),
   email:               z.string().optional(),
-  businessHours:       z.string().optional(), // serialized JSON string for DB
+  businessHours:       businessHoursSchema.optional(), // serialized JSON string for DB
   onboardingCompleted: z.boolean(),
-  createdAt:           z.string(),
-  updatedAt:           z.string(),
+  createdAt:           timestampSchema,
+  updatedAt:           timestampSchema,
 });
 
 export type RegisterTenantDto     = z.infer<typeof registerTenantSchema>;

@@ -48,7 +48,7 @@ export async function getFeaturedMenuItems(tenantId: string) {
 export async function updateMenuItem(id: string, data: UpdateMenuItemDto) {
   const result = await getDb()
     .update(menuItems)
-    .set({ ...data, updatedAt: new Date().toISOString() })
+    .set({ ...data, updatedAt: Date.now() })
     .where(eq(menuItems.id, id))
     .returning();
   return result[0];
@@ -57,7 +57,7 @@ export async function updateMenuItem(id: string, data: UpdateMenuItemDto) {
 export async function updateMenuItemAvailability(id: string, isAvailable: boolean) {
   const result = await getDb()
     .update(menuItems)
-    .set({ isAvailable, updatedAt: new Date().toISOString() })
+    .set({ isAvailable, updatedAt: Date.now() })
     .where(eq(menuItems.id, id))
     .returning();
   return result[0];

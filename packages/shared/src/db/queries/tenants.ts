@@ -1,8 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { getDb } from '../client';
-import { tenants } from '../schema/tenants';
-import type { CreateTenantRecordDto, UpdateTenantDto } from '../../models/dtos';
-import type { BusinessHours } from '../../models/types';
+import { tenants } from '../schema';
+import type { CreateTenantRecordDto, UpdateTenantDto } from '../../models';
 
 export async function createTenant(data: CreateTenantRecordDto) {
   const result = await getDb().insert(tenants).values(data).returning();
@@ -21,16 +20,16 @@ export async function getTenantByUserId(userId: string) {
   return rows[0];
 }
 
-export async function updateTenant(userId: string, data: Omit<UpdateTenantDto, 'businessHours'> & { businessHours?: BusinessHours | string; onboardingCompleted?: boolean; slug?: string }) {
+export async function updateTenant(userId: string, data: UpdateTenantDto) {
   const { businessHours, ...rest } = data;
   const result = await getDb()
     .update(tenants)
     .set({
       ...rest,
       ...(businessHours !== undefined
-        ? { businessHours: typeof businessHours === 'string' ? businessHours : JSON.stringify(businessHours) }
+        ? { businessHours }
         : {}),
-      updatedAt: new Date().toISOString(),
+      updatedAt: Date.now(),
     })
     .where(eq(tenants.userId, userId))
     .returning();

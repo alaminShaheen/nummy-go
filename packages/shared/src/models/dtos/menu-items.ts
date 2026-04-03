@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ulidSchema } from '../enums';
+import {ulidSchema, timestampSchema, priceSchema,} from '../schemas';
 
 // ── API-facing ─────────────────────────────────────────────────────────────
 
@@ -9,7 +9,7 @@ export const createMenuItemSchema = z.object({
   name:        z.string().min(1),
   description: z.string().optional(),
   imageUrl:    z.url().optional(),
-  price:       z.number().positive(),
+  price:       priceSchema,
   isAvailable: z.boolean().default(true),
   isFeatured:  z.boolean().default(false),
 });
@@ -18,7 +18,7 @@ export const updateMenuItemSchema = z.object({
   name:        z.string().min(1).optional(),
   description: z.string().optional(),
   imageUrl:    z.url().nullable().optional(),
-  price:       z.number().positive().optional(),
+  price:       priceSchema.optional(),
   categoryId:  ulidSchema.optional(),
   isAvailable: z.boolean().optional(),
   isFeatured:  z.boolean().optional(),
@@ -34,14 +34,14 @@ export const createMenuItemCategorySchema = z.object({
 
 export const createMenuItemRecordSchema = createMenuItemSchema.extend({
   id:        ulidSchema,
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  createdAt: timestampSchema,
+  updatedAt: timestampSchema,
 });
 
 export const createMenuItemCategoryRecordSchema = createMenuItemCategorySchema.extend({
   id:        ulidSchema,
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  createdAt: timestampSchema,
+  updatedAt: timestampSchema,
 });
 
 export type CreateMenuItemDto               = z.infer<typeof createMenuItemSchema>;

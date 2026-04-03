@@ -14,8 +14,8 @@ export async function createTenantForUser(userId: string) {
 		name:                '',
 		phoneNumber:         '',
 		onboardingCompleted: false,
-		createdAt:           new Date().toISOString(),
-		updatedAt:           new Date().toISOString(),
+		createdAt:           Date.now(),
+		updatedAt:           Date.now(),
 	});
 }
 

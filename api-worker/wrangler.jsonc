@@ -29,9 +29,9 @@
       ],
       "vars": {
         "ENVIRONMENT":      "development",
-        "CORS_ORIGIN":      "http://localhost:3000,http://localhost:3001",
+        "CORS_ORIGIN":      "http://localhost:3000",
         "CUSTOMER_WEB_URL": "http://localhost:3000",
-        "TENANT_WEB_URL":   "http://localhost:3001",
+        "TENANT_WEB_URL":   "http://localhost:3000",
         "BETTER_AUTH_URL":  "http://localhost:8787"
       }
     },

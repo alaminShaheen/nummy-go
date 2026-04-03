@@ -3,7 +3,13 @@
     "allow": [
       "Bash(tree:*)",
       "Bash(mkdir:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(pnpm install)",
+      "Bash(pnpm dev:*)",
+      "Bash(pnpm build:*)",
+      "WebSearch",
+      "Bash(wrangler d1 execute:*)",
+      "Bash(pnpm generate:*)"
     ],
     "deny": [],
     "ask": []

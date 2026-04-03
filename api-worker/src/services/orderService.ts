@@ -47,7 +47,7 @@ export async function placeOrder(
   );
 
   const orderId = ulid();
-  const now = new Date().toISOString();
+  const now = Date.now();
 
   const orderRecord: CreateOrderRecordDto = {
     id:                 orderId,

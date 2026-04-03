@@ -10,8 +10,8 @@ export const orderItems = sqliteTable('order_items', {
   orderId: text('order_id').notNull().references(() => orders.id),
   menuItemId: text('menu_item_id').notNull().references(() => menuItems.id),
   quantity: integer('quantity').notNull(),
-  totalPrice: real('total_price').notNull(),
-  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
+  totalPrice: integer('total_price').notNull(),
+  createdAt: integer('created_at', { mode: 'number' }).notNull(),
 }, (table) => ({
   tenantIdx: index('order_items_tenant_id_idx').on(table.tenantId),
   orderIdx: index('order_items_order_id_idx').on(table.orderId),
