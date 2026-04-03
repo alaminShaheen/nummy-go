@@ -1,10 +1,10 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  output: 'export',  // generates ./out for wrangler static assets
   images: {
-    unoptimized: true, // required for static export
+    unoptimized: true,
   },
+  transpilePackages: ['@nummygo/shared'],
 };
 
 export default nextConfig;
