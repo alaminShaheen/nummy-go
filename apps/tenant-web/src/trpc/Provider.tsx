@@ -22,7 +22,7 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
-        httpBatchLink({ url: `${env.NEXT_PUBLIC_API_WORKER_URL}/trpc` }),
+        httpBatchLink({ url: `${env.NEXT_PUBLIC_API_WORKER_URL}/trpc`, fetch: (url, options) => fetch(url, { ...options, credentials: 'include' }) }),
       ],
     })
   );

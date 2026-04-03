@@ -8,16 +8,6 @@
     "enabled": true
   },
 
-  // ── D1 Database ──────────────────────────────────────────────────────────
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "nummygo-db",
-      "database_id": "9874b454-a0a4-4384-b47f-9cf9cadc9daa",
-      "migrations_dir": "drizzle/migrations"
-    }
-  ],
-
   // ── Durable Objects (uncomment when enabling WebSockets) ─────────────────
   // "durable_objects": {
   //   "bindings": [{ "name": "TENANT_ORDER_DO", "class_name": "TenantOrderDO" }]
@@ -29,6 +19,14 @@
   // Local: add to .dev.vars — Production: add via CF dashboard
   "env": {
     "local": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "nummygo-db",
+          "database_id": "9874b454-a0a4-4384-b47f-9cf9cadc9daa",
+          "migrations_dir": "drizzle/migrations"
+        }
+      ],
       "vars": {
         "ENVIRONMENT":      "development",
         "CORS_ORIGIN":      "http://localhost:3000,http://localhost:3001",

@@ -24,7 +24,12 @@ export class ApiWorker extends WorkerEntrypoint<Env> {
 
 		// ── Auth: /api/auth/* ────────────────────────────────────────────────
 		if (url.pathname.startsWith('/api/auth')) {
-			return await createAuth(this.env).handler(request);
+			const response = await createAuth(this.env).handler(request);
+			const headers = new Headers(response.headers);
+			for (const [key, value] of Object.entries(cors)) {
+				headers.set(key, value);
+			}
+			return new Response(response.body, { status: response.status, headers });
 		}
 
 		// ── tRPC: /trpc/* ────────────────────────────────────────────────────
@@ -56,10 +61,11 @@ export class ApiWorker extends WorkerEntrypoint<Env> {
 		const allowed = (this.env.CORS_ORIGIN ?? '*').split(',').map((o) => o.trim());
 		const reflect = allowed.includes(origin) ? origin : (allowed[0] ?? '*');
 		return {
-			'Access-Control-Allow-Origin': reflect,
-			'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-			'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-			'Access-Control-Max-Age': '86400',
+			'Access-Control-Allow-Origin':      reflect,
+			'Access-Control-Allow-Methods':     'GET, POST, OPTIONS',
+			'Access-Control-Allow-Headers':     'Content-Type, Authorization',
+			'Access-Control-Allow-Credentials': 'true',
+			'Access-Control-Max-Age':           '86400',
 		};
 	}
 }

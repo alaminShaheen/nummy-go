@@ -5,19 +5,16 @@
  * Import from '@nummygo/shared/ui' in frontend apps.
  */
 
-export { Button, buttonVariants }          from './Button';
-export type { ButtonProps }                from './Button';
+export { Button, buttonVariants } from './Button';
 
 export {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
+  CardAction,
   CardContent,
   CardFooter,
-}                                          from './Card';
+} from './Card';
 
-export { Badge, badgeVariants, OrderStatusBadge } from './Badge';
-export type { BadgeProps }                 from './Badge';
-
-export { cn }                              from './utils';
+export { cn } from './utils';

@@ -1,40 +1,18 @@
 import {betterAuth} from 'better-auth';
 import {drizzleAdapter} from 'better-auth/adapters/drizzle';
 import {phoneNumber} from 'better-auth/plugins';
-import {drizzle} from 'drizzle-orm/libsql';
-import {createClient} from '@libsql/client';
-import {getDb} from '@nummygo/shared/db';
+import {drizzle} from 'drizzle-orm/d1';
 import {createTenantForUser} from './services/tenantService';
 import * as schema from '@nummygo/shared/db/schema';
 import type {Env} from './index';
 
-// ── Static export for BetterAuth CLI ──────────────────────────────────────
-// Uses in-memory SQLite so `pnpm generate` works without D1.
-export const auth = betterAuth({
-	appName: 'nummy-go',
-	database: drizzleAdapter(drizzle(createClient({url: ':memory:'})), {
-		provider: 'sqlite',
-		schema: {user: schema.users},
-	}),
-	socialProviders: {
-		google: {clientId: '', clientSecret: ''},
-	},
-	plugins: [
-		phoneNumber({
-			sendOTP: async ({phoneNumber, code}) => {
-				console.log(`OTP for ${phoneNumber}: ${code}`);
-			},
-		}),
-	],
-});
-
-// ── Runtime factory ────────────────────────────────────────────────────────
 export function createAuth(env: Env) {
 	return betterAuth({
 		appName: 'nummy-go',
 		baseURL: env.BETTER_AUTH_URL,
 		secret: env.BETTER_AUTH_SECRET,
-		database: drizzleAdapter(getDb(), {
+		trustedOrigins: env.CORS_ORIGIN.split(',').map((o) => o.trim()),
+		database: drizzleAdapter(drizzle(env.DB, {schema}), {
 			provider: 'sqlite',
 			schema: {
 				user: schema.users,
@@ -67,9 +45,9 @@ export function createAuth(env: Env) {
 				create: {
 					after: async (user, ctx) => {
 						const origin = ctx?.request?.headers.get('origin') ?? '';
-						const isTenant = origin === env.TENANT_WEB_URL;
-						if (!isTenant) return;
-						await createTenantForUser(user.id);
+						if (origin === env.TENANT_WEB_URL) {
+							await createTenantForUser(user.id);
+						}
 					},
 				},
 			},

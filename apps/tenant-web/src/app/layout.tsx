@@ -5,6 +5,10 @@
 import type { Metadata } from 'next';
 import { TRPCProvider } from '../trpc/Provider';
 import './globals.css';
+import { Geist } from "next/font/google";
+import { cn } from '@nummygo/shared/ui';
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: 'NummyGo – Order Your Favorite Meals',
@@ -13,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("dark font-sans", geist.variable)}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

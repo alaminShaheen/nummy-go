@@ -14,13 +14,15 @@
     }
   },
   "scripts": {
-    "dev": "wrangler dev --port 8787 --env local",
+    "dev": "wrangler dev --port 8787 --env local --remote",
     "deploy": "wrangler deploy --env production",
     "cf-typegen": "wrangler types --env-interface Env",
     "generate": "drizzle-kit generate",
-    "migrate": "wrangler d1 migrations apply nummygo-db --remote",
-    "migrate:local": "wrangler d1 migrations apply nummygo-db --local",
-    "db:studio": "drizzle-kit studio"
+    "migrate:local": "wrangler d1 migrations apply nummygo-db --local --env local",
+    "db:studio": "drizzle-kit studio",
+    "auth:generate": "better-auth generate --config src/auth.cli.ts",
+
+    "migrate": "wrangler d1 migrations apply nummygo-db --remote --env production"
   },
   "dependencies": {
     "@nummygo/shared": "workspace:*",
