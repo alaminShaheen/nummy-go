@@ -1,9 +1,9 @@
 /**
- * apps/tenant-web/src/app/layout.tsx
- * Root layout for the tenant landing page.
+ * apps/web/src/app/layout.tsx
+ * Root layout for the unified web app.
  */
 import type { Metadata } from 'next';
-import { TRPCProvider } from '../trpc/Provider';
+import { TRPCProvider } from '@/trpc/Provider';
 import './globals.css';
 import { Geist } from "next/font/google";
 import { cn } from '@nummygo/shared/ui';
@@ -11,8 +11,8 @@ import { cn } from '@nummygo/shared/ui';
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: 'NummyGo – Order Your Favorite Meals',
-  description: 'Freshly prepared meals from your favourite local restaurant, delivered fast.',
+  title: 'NummyGo',
+  description: 'Food ordering platform',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
