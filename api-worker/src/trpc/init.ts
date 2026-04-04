@@ -18,7 +18,7 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 
 /** Requires a valid session AND role: tenant. */
 export const tenantProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (ctx.session.user.role !== 'tenant') {
+  if ((ctx.session.user as any).role !== 'tenant') {
     throw new TRPCError({ code: 'FORBIDDEN' });
   }
   return next({ ctx });

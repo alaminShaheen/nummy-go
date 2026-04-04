@@ -1,5 +1,5 @@
 import {drizzle} from 'drizzle-orm/d1';
-import {createBetterAuth} from '@nummygo/shared/models/types';
+import {betterAuth} from 'better-auth';
 import {createTenantForUser} from './services/tenantService';
 import * as schema from '@nummygo/shared/db/schema';
 import type {Env} from './index';
@@ -8,7 +8,7 @@ import {phoneNumber} from "better-auth/plugins";
 import {getOAuthState} from "better-auth/api";
 
 export function createAuth(env: Env) {
-	return createBetterAuth({
+	return betterAuth({
         appName: 'nummy-go',
         baseURL: env.BETTER_AUTH_URL,
         secret: env.BETTER_AUTH_SECRET,

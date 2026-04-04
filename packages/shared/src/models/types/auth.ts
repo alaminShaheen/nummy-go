@@ -1,13 +1,19 @@
-import {betterAuth, BetterAuthOptions} from 'better-auth';
+import type { betterAuth } from 'better-auth';
+import {UserRole} from "../enums";
 
-
-/**
- * Create a betterAuth instance with the shared configuration
- * This is used by the server and ensures type consistency with the client
- */
-export function createBetterAuth(options: BetterAuthOptions) {
-    return betterAuth(options);
+// Define the additional user fields that extend Better Auth's base user
+export interface UserAdditionalFields {
+    role: UserRole;
+    phoneNumber: string | null;
 }
 
-// Export the Auth type for client-side usage
-export type Auth = ReturnType<typeof createBetterAuth>;
+// Create a type that represents our auth instance with additional fields
+// This will be used by inferAdditionalFields on the client
+export type Auth = ReturnType<typeof betterAuth<{
+    user: {
+        additionalFields: {
+            role: { type: 'string'; defaultValue: 'customer'; input: true };
+            phoneNumber: { type: 'string'; unique: true };
+        };
+    };
+}>>;

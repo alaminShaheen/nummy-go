@@ -9,7 +9,8 @@
       "Bash(pnpm build:*)",
       "WebSearch",
       "Bash(wrangler d1 execute:*)",
-      "Bash(pnpm generate:*)"
+      "Bash(pnpm generate:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,5 +1,5 @@
 /**
- * packages/shared/src/ui/index.ts
+ * packages/shared/src/ui/page.tsx
  *
  * Barrel export for all shared UI components.
  * Import from '@nummygo/shared/ui' in frontend apps.

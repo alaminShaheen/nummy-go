@@ -36,6 +36,14 @@
       }
     },
     "production": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "nummygo-db",
+          "database_id": "9874b454-a0a4-4384-b47f-9cf9cadc9daa",
+          "migrations_dir": "drizzle/migrations"
+        }
+      ],
       "vars": {
         "ENVIRONMENT":      "production",
         "CORS_ORIGIN":      "https://nummygo-customer-web.alaminshaheen23.workers.dev,https://nummygo-tenant-web.alaminshaheen23.workers.dev",

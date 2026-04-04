@@ -34,7 +34,7 @@ export async function getTenantProfile(userId: string) {
 	if (!tenant) return null;
 
 	const businessHours = tenant.businessHours
-		? businessHoursSchema.parse(JSON.parse(tenant.businessHours))
+		? businessHoursSchema.parse(tenant.businessHours)
 		: null;
 
 	return { ...tenant, businessHours };

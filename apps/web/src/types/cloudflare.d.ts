@@ -37,7 +37,7 @@ export interface CloudflareEnv extends Env {
   // Queue Producer
   // MY_QUEUE: Queue;
 
-  // Vectorize Index
+  // Vectorize Page
   // VECTORIZE_INDEX: VectorizeIndex;
 
   // Environment variables
