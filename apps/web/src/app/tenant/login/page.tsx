@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 import { GlossButton } from '@/components/ui';
 import { ArrowLeft } from 'lucide-react';
+import { UserRole } from '@nummygo/shared/models';
 
 export default function VendorLoginPage() {
   const [loading, setLoading] = useState(false);
@@ -14,6 +15,9 @@ export default function VendorLoginPage() {
     await authClient.signIn.social({
       provider: 'google',
       callbackURL: `${window.location.origin}/tenant/onboarding`,
+      additionalData: {
+        role: 'tenant' as UserRole,
+      }
     });
     setLoading(false);
   }
