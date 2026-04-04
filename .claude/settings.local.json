@@ -22,7 +22,8 @@
       "Bash(wrangler types:*)",
       "Bash(pnpm wrangler types:*)",
       "Bash(wrangler secret --help:*)",
-      "Bash(pnpm wrangler secret --help:*)"
+      "Bash(pnpm wrangler secret --help:*)",
+      "Bash(pnpm opennextjs-cloudflare preview:*)"
     ],
     "deny": [],
     "ask": []

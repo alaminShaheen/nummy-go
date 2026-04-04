@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { authClientVanilla } from '@/lib/auth-client-vanilla';
+
+// Use vanilla client (not React client) for middleware
+// Middleware runs in edge runtime without React context
 
 // Routes that require tenant authentication
 const tenantProtectedRoutes = ['/tenant/onboarding', '/tenant/dashboard'];
@@ -14,30 +18,33 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check route types
-  const isTenantProtectedRoute = tenantProtectedRoutes.some((route) => pathname.startsWith(route));
-  const isTenantAuthRoute = tenantAuthRoutes.some((route) => pathname.startsWith(route));
-  const isCustomerProtectedRoute = customerProtectedRoutes.some((route) => pathname.startsWith(route));
+  const isTenantProtectedRoute = tenantProtectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+  const isTenantAuthRoute = tenantAuthRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+  const isCustomerProtectedRoute = customerProtectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
 
   // Skip middleware for public routes
   if (!isTenantProtectedRoute && !isTenantAuthRoute && !isCustomerProtectedRoute) {
     return NextResponse.next();
   }
 
-  // Get the API worker URL from environment
-  const apiUrl = process.env.NEXT_PUBLIC_API_WORKER_URL || 'http://localhost:8787';
-
   try {
-    // Validate session by calling better-auth on the API worker
-    const sessionResponse = await fetch(`${apiUrl}/api/auth/get-session`, {
-      headers: {
-        // Forward the cookie header to validate session
-        cookie: request.headers.get('cookie') || '',
+    // Use better-auth vanilla client to get session
+    const session = await authClientVanilla.getSession({
+      fetchOptions: {
+        headers: {
+          cookie: request.headers.get('cookie') || '',
+        },
       },
     });
 
-    const session = sessionResponse.ok ? await sessionResponse.json() : null;
-    const isAuthenticated = !!(session as any)?.user;
-    const userRole = (session as any)?.user?.role || 'customer';
+    const isAuthenticated = !!session?.data?.user;
+    const userRole = session?.data?.user?.role || 'customer';
 
     // === Tenant-specific routes ===
 

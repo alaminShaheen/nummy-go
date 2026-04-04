@@ -1,12 +1,10 @@
-import {createAuthClient} from 'better-auth/react';
-import {env} from '@/env';
-import {inferAdditionalFields} from "better-auth/client/plugins";
-import type {Auth} from '@nummygo/shared/models/types';
+import { createAuthClient } from 'better-auth/react';
+import { authConfig } from './auth-config';
 
-export const authClient = createAuthClient({
-	baseURL: env.NEXT_PUBLIC_API_WORKER_URL,
-	fetchOptions: {
-		credentials: 'include',
-	},
-	plugins: [inferAdditionalFields<Auth>()],
-});
+/**
+ * React auth client for components
+ *
+ * Uses better-auth/react for React hooks (useSession, useSignIn, etc.)
+ * For middleware, import from './auth-client-vanilla' instead
+ */
+export const authClient = createAuthClient(authConfig);

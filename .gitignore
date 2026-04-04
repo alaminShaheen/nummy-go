@@ -5,6 +5,7 @@ node_modules/
 .next/
 out/
 .vercel/
+.open-next/
 
 # Build outputs
 dist/

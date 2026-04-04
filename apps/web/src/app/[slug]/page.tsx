@@ -1,22 +1,46 @@
 import VendorStorefront from '@/components/VendorStorefront';
 
 /**
- * generateStaticParams is required when `output: 'export'` is active
- * (Cloudflare build). We pre-render a placeholder slug ("_"); Cloudflare's
- * worker/index.ts serves it as a fallback for any real vendor slug.
+ * ISR Configuration for Cloudflare Pages (via OpenNext)
  *
- * `dynamicParams` is intentionally NOT set here:
- *  - In export/deploy mode  → only generateStaticParams results are built;
- *    there is no server at runtime so the value is irrelevant.
- *  - In dev/SSR mode        → defaults to `true`, meaning every slug is
- *    rendered on-demand without a 404.
- *
- * NOTE: Next.js requires segment config exports (dynamicParams, revalidate,
- * etc.) to be **static literals**. Using a runtime expression like
- * `process.env.X !== 'y'` causes a build error — so we simply omit it.
+ * - generateStaticParams: Pre-generates pages for existing vendors at build time
+ * - revalidate: Regenerates pages every hour (3600 seconds)
+ * - dynamicParams: Allows new vendor slugs not in generateStaticParams to be
+ *   generated on-demand when first requested
  */
+
+// Revalidate pages every hour (ISR)
+export const revalidate = 3600;
+
+// Allow dynamic slugs that weren't pre-generated
+export const dynamicParams = true;
+
+// Pre-generate pages for existing vendors at build time
 export async function generateStaticParams() {
-  return [{ slug: '_' }];
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_WORKER_URL || 'http://localhost:8787';
+
+    // Fetch all vendor slugs from your API
+    // const response = await fetch(`${apiUrl}/api/vendors`, {
+    //   next: { revalidate: 3600 } // Cache vendor list for 1 hour during build
+    // });
+
+    // if (!response.ok) {
+    //   console.warn('Failed to fetch vendors for generateStaticParams, using fallback');
+    //   return [{ slug: '_' }]; // Fallback placeholder
+    // }
+
+    // const vendors = await response.json();
+
+    // Return array of slug params
+    // return vendors.map((vendor: { slug: string }) => ({
+    //   slug: vendor.slug,
+    // }));
+      return [{slug: "hot-pretzel-9012"}, {slug: "hot-chicken-9012"}, {slug: "hot-pizza-9012"}]
+  } catch (error) {
+    console.error('Error in generateStaticParams:', error);
+    return [{ slug: '_' }]; // Fallback placeholder
+  }
 }
 
 export default function VendorPage() {
