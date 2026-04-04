@@ -3,9 +3,8 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     // Cloudflare Workers run in a non-Node environment.
-    // Using "webworker" + CF types gives correct globals (fetch, Request, etc.)
+    // Using "webworker" + generated types (worker-configuration.d.ts)
     "lib": ["ES2022", "WebWorker"],
-    "types": ["@cloudflare/workers-types"],
     // No output directory – Wrangler bundles directly from source
     "noEmit": true
   },

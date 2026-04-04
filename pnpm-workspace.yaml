@@ -2,6 +2,6 @@
 # Defines all packages in the NummyGo monorepo.
 # pnpm will hoist shared deps and link workspace packages automatically.
 packages:
-  - 'apps/*'       # Next.js frontends (customer-web, tenant-web)
+  - 'apps/*'       # Next.js frontends (web)
   - 'api-worker'   # Cloudflare Worker backend
   - 'packages/*'   # Shared libraries (@nummygo/shared)

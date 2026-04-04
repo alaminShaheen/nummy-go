@@ -14,14 +14,16 @@
     }
   },
   "scripts": {
-    "dev": "wrangler dev --port 8787 --env local --remote",
-    "deploy": "wrangler deploy --env production",
+    "dev": "wrangler dev --port 8787 --env local",
+    "deploy:staging": "wrangler deploy --env staging",
+    "deploy:prod": "wrangler deploy --env production",
     "cf-typegen": "wrangler types --env-interface Env",
     "generate": "drizzle-kit generate",
     "migrate:local": "wrangler d1 migrations apply nummygo-db-staging --remote --env local",
     "db:studio": "drizzle-kit studio",
     "auth:generate": "better-auth generate --config src/auth.cli.ts",
-    "migrate": "wrangler d1 migrations apply nummygo-db-staging --remote --env production"
+    "migrate:staging": "wrangler d1 migrations apply nummygo-db-staging --remote --env staging",
+    "migrate:prod": "wrangler d1 migrations apply nummygo-db-staging --remote --env production"
   },
   "dependencies": {
     "@nummygo/shared": "workspace:*",
@@ -33,10 +35,9 @@
   },
   "devDependencies": {
     "@better-auth/cli": "^1.4.21",
-    "@cloudflare/workers-types": "^4.20240925.0",
     "@libsql/client": "^0.17.2",
     "drizzle-kit": "^0.30.4",
     "typescript": "^5.9.2",
-    "wrangler": "^3.86.1"
+    "wrangler": "^4.80.0"
   }
 }

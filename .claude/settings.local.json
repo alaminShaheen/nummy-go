@@ -10,7 +10,19 @@
       "WebSearch",
       "Bash(wrangler d1 execute:*)",
       "Bash(pnpm generate:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(xargs:*)",
+      "Bash(pnpm list:*)",
+      "Bash(pnpm view:*)",
+      "Bash(cat:*)",
+      "Bash(pnpm update:*)",
+      "Bash(pnpm cf-typegen:*)",
+      "Bash(wrangler types:*)",
+      "Bash(pnpm wrangler types:*)",
+      "Bash(wrangler secret --help:*)",
+      "Bash(pnpm wrangler secret --help:*)"
     ],
     "deny": [],
     "ask": []
