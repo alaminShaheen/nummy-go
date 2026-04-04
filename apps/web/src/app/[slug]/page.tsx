@@ -1,19 +1,21 @@
 import VendorStorefront from '@/components/VendorStorefront';
 
 /**
- * `dynamicParams = false` is required by `output: 'export'` (Cloudflare build)
- * because static export can't render unknown slugs at request time.
- * We pre-render a single placeholder ("_"); the Cloudflare worker serves it
- * as a fallback for any real vendor slug.
+ * generateStaticParams is required when `output: 'export'` is active
+ * (Cloudflare build). We pre-render a placeholder slug ("_"); Cloudflare's
+ * worker/index.ts serves it as a fallback for any real vendor slug.
  *
- * In dev mode (SSR, NEXT_EXPORT not set), dynamicParams must be TRUE so that
- * Next.js renders any slug on-demand instead of 404-ing.
+ * `dynamicParams` is intentionally NOT set here:
+ *  - In export/deploy mode  → only generateStaticParams results are built;
+ *    there is no server at runtime so the value is irrelevant.
+ *  - In dev/SSR mode        → defaults to `true`, meaning every slug is
+ *    rendered on-demand without a 404.
+ *
+ * NOTE: Next.js requires segment config exports (dynamicParams, revalidate,
+ * etc.) to be **static literals**. Using a runtime expression like
+ * `process.env.X !== 'y'` causes a build error — so we simply omit it.
  */
-export const dynamicParams = process.env.NEXT_EXPORT !== 'true';
-
 export async function generateStaticParams() {
-  // In static export mode, pre-render a placeholder.
-  // In dev mode this is ignored (dynamicParams = true handles all slugs).
   return [{ slug: '_' }];
 }
 

@@ -22,8 +22,8 @@
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "nummygo-db",
-          "database_id": "9874b454-a0a4-4384-b47f-9cf9cadc9daa",
+          "database_name": "nummygo-db-staging",
+          "database_id": "2fc180c7-53ae-4bcd-956c-81713b20c53d",
           "migrations_dir": "drizzle/migrations"
         }
       ],
@@ -39,16 +39,15 @@
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "nummygo-db",
-          "database_id": "9874b454-a0a4-4384-b47f-9cf9cadc9daa",
+          "database_name": "nummygo-db-staging",
+          "database_id": "2fc180c7-53ae-4bcd-956c-81713b20c53d",
           "migrations_dir": "drizzle/migrations"
         }
       ],
       "vars": {
         "ENVIRONMENT":      "production",
-        "CORS_ORIGIN":      "https://nummygo-customer-web.alaminshaheen23.workers.dev,https://nummygo-tenant-web.alaminshaheen23.workers.dev",
-        "CUSTOMER_WEB_URL": "https://nummygo-customer-web.alaminshaheen23.workers.dev",
-        "TENANT_WEB_URL":   "https://nummygo-tenant-web.alaminshaheen23.workers.dev",
+        "CORS_ORIGIN":      "https://nummygo-web-stage.nummygo.workers.dev/",
+        "CUSTOMER_WEB_URL": "https://nummygo-web-stage.nummygo.workers.dev/",
         "BETTER_AUTH_URL":  "https://nummygo-api.alaminshaheen23.workers.dev"
       }
     }

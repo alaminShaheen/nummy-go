@@ -18,11 +18,10 @@
     "deploy": "wrangler deploy --env production",
     "cf-typegen": "wrangler types --env-interface Env",
     "generate": "drizzle-kit generate",
-    "migrate:local": "wrangler d1 migrations apply nummygo-db --remote --env local",
+    "migrate:local": "wrangler d1 migrations apply nummygo-db-staging --remote --env local",
     "db:studio": "drizzle-kit studio",
     "auth:generate": "better-auth generate --config src/auth.cli.ts",
-
-    "migrate": "wrangler d1 migrations apply nummygo-db --remote --env production"
+    "migrate": "wrangler d1 migrations apply nummygo-db-staging --remote --env production"
   },
   "dependencies": {
     "@nummygo/shared": "workspace:*",

@@ -36,8 +36,8 @@ export async function middleware(request: NextRequest) {
     });
 
     const session = sessionResponse.ok ? await sessionResponse.json() : null;
-    const isAuthenticated = !!session?.user;
-    const userRole = session?.user?.role || 'customer';
+    const isAuthenticated = !!(session as any)?.user;
+    const userRole = (session as any)?.user?.role || 'customer';
 
     // === Tenant-specific routes ===
 
