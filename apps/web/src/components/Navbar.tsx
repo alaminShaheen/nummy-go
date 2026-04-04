@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { ShoppingCart } from 'lucide-react';
 
 interface NavbarProps {
   cartCount?: number;
@@ -36,13 +37,8 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
           className="flex items-center gap-2"
           aria-label="NummyGo Home"
         >
-          {/* Flame icon */}
           <span className="text-2xl" aria-hidden="true">🔥</span>
-          <span
-            className="text-xl font-black tracking-tight gradient-text"
-          >
-            nummyGo
-          </span>
+          <span className="text-xl font-black tracking-tight gradient-text">nummyGo</span>
         </Link>
 
         {/* Right actions */}
@@ -50,11 +46,7 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
           {/* Menu anchor link */}
           <a
             href="#menu"
-            className="
-              hidden sm:block text-sm font-medium
-              text-slate-400 hover:text-slate-100
-              transition-colors duration-200
-            "
+            className="hidden sm:block text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors duration-200"
           >
             Menu
           </a>
@@ -73,23 +65,11 @@ export default function Navbar({ cartCount = 0 }: NavbarProps) {
               group
             "
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+            <ShoppingCart
+              size={18}
               className="text-slate-300 group-hover:text-amber-400 transition-colors"
               aria-hidden="true"
-            >
-              <circle cx="9" cy="21" r="1" />
-              <circle cx="20" cy="21" r="1" />
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-            </svg>
+            />
             {cartCount > 0 && (
               <span
                 className="

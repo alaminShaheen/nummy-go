@@ -1,13 +1,11 @@
+import { GlassCard } from '@/components/ui';
+import { cn } from '@nummygo/shared/ui';
+
 interface BenefitCardProps {
-  /** Emoji or icon character */
   icon: string;
-  /** Card title */
   title: string;
-  /** Card description */
   description: string;
-  /** Accent colour for the icon glow — 'amber' or 'indigo' */
   accent?: 'amber' | 'indigo';
-  /** Animation delay in ms for stagger effect */
   delay?: number;
 }
 
@@ -24,8 +22,9 @@ export default function BenefitCard({
       : 'rgba(129, 140, 248, 0.15)';
 
   return (
-    <div
-      className="benefit-card group animate-slide-up"
+    <GlassCard
+      plain
+      className={cn('benefit-card group animate-slide-up')}
       style={{ animationDelay: `${delay}ms` }}
     >
       {/* Icon with glow */}
@@ -40,6 +39,7 @@ export default function BenefitCard({
 
       <h3 className="text-lg font-bold text-slate-100 mb-2">{title}</h3>
       <p className="text-sm text-slate-400 leading-relaxed">{description}</p>
-    </div>
+    </GlassCard>
   );
 }
+

@@ -1,4 +1,6 @@
 import Image from 'next/image';
+import { GradientButton, GlossButton, SectionLabel } from '@/components/ui';
+import { ArrowRight } from 'lucide-react';
 
 export default function HeroBanner() {
   return (
@@ -7,16 +9,8 @@ export default function HeroBanner() {
       className="relative min-h-screen flex items-center overflow-hidden"
     >
       {/* Ambient glow blobs */}
-      <div
-        className="glow-amber"
-        style={{ top: '-10%', left: '-5%' }}
-        aria-hidden="true"
-      />
-      <div
-        className="glow-indigo"
-        style={{ bottom: '5%', right: '-5%' }}
-        aria-hidden="true"
-      />
+      <div className="glow-amber" style={{ top: '-10%', left: '-5%' }} aria-hidden="true" />
+      <div className="glow-indigo" style={{ bottom: '5%', right: '-5%' }} aria-hidden="true" />
 
       {/* Subtle grid overlay */}
       <div
@@ -59,37 +53,19 @@ export default function HeroBanner() {
 
             {/* CTA row */}
             <div className="flex flex-wrap gap-4 pt-2">
-              <a
-                href="#menu"
+              <GradientButton
                 id="hero-cta-menu"
-                className="
-                  inline-flex items-center gap-2
-                  px-7 py-3.5 rounded-full
-                  bg-gradient-to-r from-amber-500 to-orange-600
-                  text-white font-semibold text-sm
-                  shadow-lg shadow-orange-900/40
-                  hover:shadow-xl hover:shadow-orange-900/60
-                  hover:scale-105
-                  transition-all duration-200
-                "
+                onClick={() => { document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' }); }}
               >
                 Browse Menu
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              </a>
-              <a
-                href="#vendor-info"
+                <ArrowRight size={16} aria-hidden="true" />
+              </GradientButton>
+              <GlossButton
                 id="hero-cta-info"
-                className="
-                  inline-flex items-center gap-2
-                  px-7 py-3.5 rounded-full
-                  border border-white/10
-                  text-slate-300 font-semibold text-sm
-                  hover:border-amber-400/30 hover:text-amber-400
-                  transition-all duration-200
-                "
+                onClick={() => { document.getElementById('vendor-info')?.scrollIntoView({ behavior: 'smooth' }); }}
               >
                 About Us
-              </a>
+              </GlossButton>
             </div>
 
             {/* Quick stats */}
@@ -129,12 +105,9 @@ export default function HeroBanner() {
                 sizes="288px"
                 priority
               />
-              {/* Glossy overlay */}
               <div
                 className="absolute inset-0"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%)',
-                }}
+                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%)' }}
                 aria-hidden="true"
               />
             </div>
@@ -144,18 +117,8 @@ export default function HeroBanner() {
               className="gradient-border-card absolute -top-6 -right-4 w-36 h-36 overflow-hidden shadow-xl shadow-indigo-900/30"
               style={{ transform: 'rotate(6deg)' }}
             >
-              <Image
-                src="/images/pasta.png"
-                alt="Truffle pasta"
-                fill
-                className="object-cover"
-                sizes="144px"
-              />
-              <div
-                className="absolute inset-0"
-                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%)' }}
-                aria-hidden="true"
-              />
+              <Image src="/images/pasta.png" alt="Truffle pasta" fill className="object-cover" sizes="144px" />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%)' }} aria-hidden="true" />
             </div>
 
             {/* Floating mini card 2 */}
@@ -163,18 +126,8 @@ export default function HeroBanner() {
               className="gradient-border-card absolute -bottom-4 -left-6 w-32 h-32 overflow-hidden shadow-xl shadow-indigo-900/30"
               style={{ transform: 'rotate(-8deg)' }}
             >
-              <Image
-                src="/images/dessert.png"
-                alt="Chocolate lava cake"
-                fill
-                className="object-cover"
-                sizes="128px"
-              />
-              <div
-                className="absolute inset-0"
-                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%)' }}
-                aria-hidden="true"
-              />
+              <Image src="/images/dessert.png" alt="Chocolate lava cake" fill className="object-cover" sizes="128px" />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%)' }} aria-hidden="true" />
             </div>
           </div>
         </div>

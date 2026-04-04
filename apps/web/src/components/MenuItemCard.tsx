@@ -2,6 +2,10 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { Button } from '@nummygo/shared/ui';
+import { GradientButton, NummyGoBadge } from '@/components/ui';
+import { cn } from '@nummygo/shared/ui';
+import { ShoppingCart, Check, Plus, Minus } from 'lucide-react';
 
 export interface MenuItem {
   id:          string;
@@ -13,7 +17,7 @@ export interface MenuItem {
 }
 
 interface MenuItemCardProps {
-  item:       MenuItem;
+  item:        MenuItem;
   onAddToCart: (item: MenuItem, qty: number) => void;
 }
 
@@ -59,16 +63,8 @@ export default function MenuItemCard({ item, onAddToCart }: MenuItemCardProps) {
 
         {/* Badge */}
         {item.badge && (
-          <span
-            className="
-              absolute top-3 left-3
-              px-2.5 py-1 rounded-full
-              text-[10px] font-bold uppercase tracking-wider
-              bg-gradient-to-r from-amber-500 to-orange-600
-              text-white shadow-md
-            "
-          >
-            {item.badge}
+          <span className="absolute top-3 left-3">
+            <NummyGoBadge label={item.badge} />
           </span>
         )}
 
@@ -99,79 +95,64 @@ export default function MenuItemCard({ item, onAddToCart }: MenuItemCardProps) {
         <div className="flex items-center gap-3 pt-1">
           {/* Quantity stepper */}
           <div
-            className="
-              flex items-center gap-1
-              bg-white/5 rounded-full
-              border border-white/10 p-0.5
-            "
+            className="flex items-center gap-1 bg-white/5 rounded-full border border-white/10 p-0.5"
             role="group"
             aria-label={`Quantity for ${item.name}`}
           >
-            <button
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={decrement}
               id={`qty-dec-${item.id}`}
               aria-label="Decrease quantity"
               disabled={qty === 0}
-              className="
-                w-8 h-8 rounded-full flex items-center justify-center
-                text-slate-400
-                hover:bg-white/10 hover:text-slate-100
-                disabled:opacity-30 disabled:cursor-not-allowed
-                transition-all duration-150
-                font-bold text-lg leading-none
-              "
+              className="rounded-full text-slate-400 hover:bg-white/10 hover:text-slate-100 disabled:opacity-30"
             >
-              −
-            </button>
+              <Minus className="size-3.5" />
+            </Button>
             <span
               className="w-6 text-center text-sm font-semibold text-slate-200 select-none tabular-nums"
               aria-live="polite"
             >
               {qty}
             </span>
-            <button
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={increment}
               id={`qty-inc-${item.id}`}
               aria-label="Increase quantity"
-              className="
-                w-8 h-8 rounded-full flex items-center justify-center
-                text-slate-400
-                hover:bg-white/10 hover:text-slate-100
-                transition-all duration-150
-                font-bold text-lg leading-none
-              "
+              className="rounded-full text-slate-400 hover:bg-white/10 hover:text-slate-100"
             >
-              +
-            </button>
+              <Plus className="size-3.5" />
+            </Button>
           </div>
 
           {/* Add to cart button */}
-          <button
-            onClick={handleAddToCart}
-            id={`add-cart-${item.id}`}
-            aria-label={`Add ${item.name} to cart`}
-            className={`
-              flex-1 flex items-center justify-center gap-2
-              py-2 rounded-full text-sm font-semibold
-              transition-all duration-200
-              ${added
-                ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400'
-                : 'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:opacity-90 hover:scale-[1.02] shadow shadow-orange-900/40'
-              }
-            `}
-          >
-            {added ? (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Added!
-              </>
-            ) : (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                Add to Cart
-              </>
-            )}
-          </button>
+          {added ? (
+            <button
+              className={cn(
+                'flex-1 flex items-center justify-center gap-2',
+                'py-2 rounded-full text-sm font-semibold',
+                'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400',
+              )}
+              aria-label={`${item.name} added to cart`}
+              disabled
+            >
+              <Check className="size-3.5" />
+              Added!
+            </button>
+          ) : (
+            <GradientButton
+              onClick={handleAddToCart}
+              id={`add-cart-${item.id}`}
+              aria-label={`Add ${item.name} to cart`}
+              className="flex-1 py-2 px-3 rounded-full text-sm shadow shadow-orange-900/40"
+            >
+              <ShoppingCart className="size-3.5" />
+              Add to Cart
+            </GradientButton>
+          )}
         </div>
       </div>
     </article>

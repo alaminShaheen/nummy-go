@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@nummygo/shared/ui';
+import { SectionLabel } from '@/components/ui';
 import MenuItemCard, { type MenuItem } from './MenuItemCard';
 
 interface MenuSectionProps {
@@ -26,32 +28,27 @@ export default function MenuSection({ items, onAddToCart }: MenuSectionProps) {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400 mb-2">
-              Fresh Today
-            </p>
-            <h2 className="text-4xl font-black text-slate-100">
-              Our Menu
-            </h2>
+            <SectionLabel className="mb-2">Fresh Today</SectionLabel>
+            <h2 className="text-4xl font-black text-slate-100">Our Menu</h2>
           </div>
 
           {/* Category pills */}
           <div className="flex gap-2 flex-wrap" role="tablist" aria-label="Menu categories">
             {CATEGORIES.map((cat) => (
-              <button
+              <Button
                 key={cat}
                 role="tab"
                 id={`cat-${cat.toLowerCase()}`}
-                className={`
-                  px-4 py-1.5 rounded-full text-xs font-semibold
-                  border transition-all duration-200
-                  ${cat === 'All'
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white border-transparent'
-                    : 'bg-white/5 text-slate-400 border-white/10 hover:border-amber-400/30 hover:text-amber-400'
-                  }
-                `}
+                variant={cat === 'All' ? 'default' : 'outline'}
+                size="sm"
+                className={
+                  cat === 'All'
+                    ? 'rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-white border-transparent hover:opacity-90'
+                    : 'rounded-full bg-white/5 text-slate-400 border-white/10 hover:border-amber-400/30 hover:text-amber-400 dark:bg-white/5 dark:border-white/10'
+                }
               >
                 {cat}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

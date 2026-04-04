@@ -2,6 +2,9 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { Input } from '@nummygo/shared/ui';
+import { GradientButton } from '@/components/ui';
+import { Search } from 'lucide-react';
 
 interface VendorSearchBarProps {
   /** Placeholder text */
@@ -50,57 +53,39 @@ export default function VendorSearchBar({
       >
         {/* Search icon */}
         <div className={`flex items-center justify-center text-slate-500 ${isLarge ? 'pl-5' : 'pl-4'}`}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width={isLarge ? 22 : 18}
-            height={isLarge ? 22 : 18}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" />
-          </svg>
+          <Search size={isLarge ? 22 : 18} aria-hidden="true" />
         </div>
 
         {/* Input */}
-        <input
+        <Input
           type="text"
           id="vendor-search-input"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
           placeholder={placeholder}
           className={`
-            w-full bg-transparent border-none outline-none
+            flex-1 h-full bg-transparent border-none shadow-none outline-none ring-0
+            focus-visible:ring-0 focus-visible:border-none
             text-slate-100 placeholder:text-slate-600
+            rounded-none
             ${isLarge ? 'px-4 text-base sm:text-lg' : 'px-3 text-sm'}
           `}
         />
 
         {/* Submit button */}
-        <button
+        <GradientButton
           type="submit"
           id="vendor-search-submit"
           className={`
-            flex items-center justify-center
-            bg-gradient-to-r from-amber-500 to-orange-600
-            text-white font-semibold
             rounded-full
-            hover:shadow-lg hover:shadow-orange-900/40
-            hover:scale-105
-            transition-all duration-200
             ${isLarge
-              ? 'h-10 sm:h-12 px-5 sm:px-7 mr-2 text-sm'
-              : 'h-8 sm:h-9 px-4 sm:px-5 mr-1.5 text-xs'
+              ? 'h-10 sm:h-12 px-5 sm:px-7 mr-2 text-sm py-0'
+              : 'h-8 sm:h-9 px-4 sm:px-5 mr-1.5 text-xs py-0'
             }
           `}
         >
           Search
-        </button>
+        </GradientButton>
       </div>
     </form>
   );
