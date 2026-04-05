@@ -1,31 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(tree:*)",
-      "Bash(mkdir:*)",
-      "Bash(ls:*)",
-      "Bash(pnpm install)",
-      "Bash(pnpm dev:*)",
-      "Bash(pnpm build:*)",
-      "WebSearch",
-      "Bash(wrangler d1 execute:*)",
-      "Bash(pnpm generate:*)",
-      "Bash(npx tsc:*)",
-      "Bash(pnpm add:*)",
-      "Bash(pnpm remove:*)",
-      "Bash(xargs:*)",
-      "Bash(pnpm list:*)",
-      "Bash(pnpm view:*)",
-      "Bash(cat:*)",
-      "Bash(pnpm update:*)",
-      "Bash(pnpm cf-typegen:*)",
-      "Bash(wrangler types:*)",
-      "Bash(pnpm wrangler types:*)",
-      "Bash(wrangler secret --help:*)",
-      "Bash(pnpm wrangler secret --help:*)",
-      "Bash(pnpm opennextjs-cloudflare preview:*)",
-      "Bash(xargs cat:*)",
-      "Bash(node:*)"
+      "Bash(find:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { Button } from '@nummygo/shared/ui';
+import { Button } from '@/components/ui';
 import { GradientButton, NummyGoBadge } from '@/components/ui';
-import { cn } from '@nummygo/shared/ui';
+import { cn } from '@/components/ui';
 import { ShoppingCart, Check, Plus, Minus } from 'lucide-react';
 
 export interface MenuItem {

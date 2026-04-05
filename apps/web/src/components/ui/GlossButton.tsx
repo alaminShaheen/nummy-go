@@ -4,7 +4,7 @@
  * Used for secondary actions: "About Us", "Google Sign-in", vendor edit links.
  */
 import * as React from 'react';
-import { cn } from '@nummygo/shared/ui';
+import { cn } from '@/components/ui';
 
 export interface GlossButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {}

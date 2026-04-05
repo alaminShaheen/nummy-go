@@ -14,8 +14,8 @@
  */
 
 import * as React from 'react';
-import { Input } from './Input';
-import { cn } from './utils';
+import { Input } from '@nummygo/shared/ui';
+import { cn } from '@nummygo/shared/ui';
 
 export interface BrandInputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'prefix'> {

@@ -4,7 +4,7 @@
  * Example: "Fresh Today", "The Restaurant", "Now Taking Orders"
  */
 import * as React from 'react';
-import { cn } from '@nummygo/shared/ui';
+import { cn } from '@/components/ui';
 
 export interface SectionLabelProps extends React.HTMLAttributes<HTMLParagraphElement> {
   children: React.ReactNode;

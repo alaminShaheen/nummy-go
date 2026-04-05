@@ -4,7 +4,7 @@
  * Wraps shadcn Button with brand styling and scale micro-animation.
  */
 import * as React from 'react';
-import { cn } from '@nummygo/shared/ui';
+import { cn } from '@/components/ui';
 
 export interface GradientButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {

@@ -1,73 +1,66 @@
-import { router, tenantProcedure, protectedProcedure, publicProcedure, TRPCError } from '../init';
+import {protectedProcedure, publicProcedure, router, tenantProcedure} from '../init';
 import {
-	getOrdersByTenantSchema,
-	updateOrderStatusSchema,
-	registerTenantSchema,
-	checkTenantSlugSchema,
+    checkTenantSlugSchema,
+    getOrdersByTenantSchema,
+    registerTenantSchema,
+    updateOrderStatusSchema,
 } from '@nummygo/shared/models/dtos';
-import { changeOrderStatus, fetchTenantOrders } from '../../services/orderService';
-import { completeTenantOnboarding, getTenantProfile } from '../../services/tenantService';
-import { getTenantBySlug } from '@nummygo/shared/db/queries';
+import {changeOrderStatus, fetchTenantOrders} from '../../services/orderService';
+import {completeTenantOnboarding, getTenantProfile} from '../../services/tenantService';
+import {getAllTenantSlugs, getTenantBySlug} from '@nummygo/shared/db/queries';
+import {ZodError} from "zod";
 
 export const tenantRouter = router({
+    // ── General ───────────────────────────────────────────────────────────
+    allTenantSlugs: publicProcedure.query(async () => {
+        return await getAllTenantSlugs();
+    }),
 
-	// ── Onboarding ───────────────────────────────────────────────────────────
+    // ── Onboarding ───────────────────────────────────────────────────────────
 
-	me: protectedProcedure.query(async ({ ctx }) => {
-		return getTenantProfile(ctx.session.user.id);
-	}),
+    me: protectedProcedure.query(async ({ctx}) => {
+        return getTenantProfile(ctx.session.user.id);
+    }),
 
-	getTenantBySlug: publicProcedure
-		.input(checkTenantSlugSchema)
-		.query(async ({ input }) => {
-			return getTenantBySlug(input.slug);
-		}),
+    getTenantBySlug: publicProcedure
+        .input(checkTenantSlugSchema)
+        .query(async ({input}) => {
+            return getTenantBySlug(input.slug);
+        }),
 
-	checkSlug: protectedProcedure
-		.input(checkTenantSlugSchema)
-		.query(async ({ input }) => {
-			const existing = await getTenantBySlug(input.slug);
-			return { available: !existing };
-		}),
+    checkSlug: protectedProcedure
+        .input(checkTenantSlugSchema)
+        .query(async ({input, ctx}) => {
+            const existing = await getTenantBySlug(input.slug);
+            if (!existing || existing.userId === ctx.session.user.id) {
+                return {available: true}
+            }
 
-	onboard: protectedProcedure
-		.input(registerTenantSchema)
-		.mutation(async ({ input, ctx }) => {
-			const tenant = await getTenantProfile(ctx.session.user.id);
-			if (!tenant) throw new TRPCError({ code: 'NOT_FOUND', message: 'Tenant record not found' });
-			if (tenant.onboardingCompleted) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Onboarding already completed' });
+            return {available: false};
+        }),
 
-			const existing = await getTenantBySlug(input.slug);
-			if (existing) throw new TRPCError({ code: 'CONFLICT', message: 'Slug is already taken' });
+    onboard: protectedProcedure
+        .input(registerTenantSchema)
+        .mutation(async ({input, ctx}) => {
+            throw new ZodError([{
+                code: "custom",
+                path: ["slug"],
+                message: "Slug is not available"
+            }])
+            return await completeTenantOnboarding(ctx.session.user.id, input);
+        }),
 
-			return completeTenantOnboarding(ctx.session.user.id, input);
-		}),
+    // ── Dashboard ────────────────────────────────────────────────────────────
 
-	// ── Dashboard ────────────────────────────────────────────────────────────
+    getDashboardOrders: tenantProcedure
+        .input(getOrdersByTenantSchema)
+        .query(async ({input, ctx}) => {
+            return await fetchTenantOrders(ctx.env, input);
+        }),
 
-	getDashboardOrders: tenantProcedure
-		.input(getOrdersByTenantSchema)
-		.query(async ({ input, ctx }) => {
-			try {
-				return await fetchTenantOrders(ctx.env, input);
-			} catch (error) {
-				throw new TRPCError({
-					code: 'INTERNAL_SERVER_ERROR',
-					message: error instanceof Error ? error.message : 'Failed to fetch orders',
-				});
-			}
-		}),
-
-	updateOrderStatus: tenantProcedure
-		.input(updateOrderStatusSchema)
-		.mutation(async ({ input, ctx }) => {
-			try {
-				return await changeOrderStatus(ctx.env, input);
-			} catch (error) {
-				throw new TRPCError({
-					code: 'INTERNAL_SERVER_ERROR',
-					message: error instanceof Error ? error.message : 'Failed to update order status',
-				});
-			}
-		}),
+    updateOrderStatus: tenantProcedure
+        .input(updateOrderStatusSchema)
+        .mutation(async ({input, ctx}) => {
+            return await changeOrderStatus(ctx.env, input);
+        }),
 });

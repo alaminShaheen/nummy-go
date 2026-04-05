@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import { TRPCProvider } from '@/trpc/Provider';
 import './globals.css';
 import { Geist } from "next/font/google";
-import { cn } from '@nummygo/shared/ui';
+import { cn } from '@/components/ui';
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 

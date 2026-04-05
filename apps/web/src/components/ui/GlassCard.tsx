@@ -4,7 +4,7 @@
  * Wraps the .gradient-border-card + .glass CSS classes as a reusable component.
  */
 import * as React from 'react';
-import { cn } from '@nummygo/shared/ui';
+import { cn } from '@/components/ui';
 
 export interface GlassCardProps extends React.ComponentProps<'div'> {
   /** Removes the gradient border decoration */

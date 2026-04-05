@@ -7,24 +7,21 @@
  * storefront page will look to customers. Designed to be reused by both
  * the Onboarding page and the Edit Profile page.
  *
- * Props map 1-to-1 with TenantFormValues so the parent just passes its form state.
+ * Props map to RegisterTenantDto fields for consistency.
  */
 
 import { Clock, Mail, Phone, Link as LinkIcon, MapPin } from 'lucide-react';
-import {
-  DAYS,
-  DAY_LABELS,
-  type WeeklyHours,
-} from '@/constants/tenant';
+import type { BusinessHours } from '@nummygo/shared/models/types';
+import { DAYS, DAY_LABELS } from '@/constants/tenant';
 import { fmt24To12 } from '@/utils/tenant';
 
 export interface StorefrontPreviewProps {
   name:          string;
   slug:          string;
   phoneNumber:   string;
-  email:         string;
-  address:       string;
-  businessHours: WeeklyHours;
+  email?:        string;
+  address?:      string;
+  businessHours?: BusinessHours;
 }
 
 export default function StorefrontPreview({
@@ -35,7 +32,7 @@ export default function StorefrontPreview({
   address,
   businessHours,
 }: StorefrontPreviewProps) {
-  const openDays = DAYS.filter((d) => !businessHours[d].closed);
+  const openDays = businessHours ? DAYS.filter((d) => !businessHours[d].closed) : [];
 
   return (
     <div
@@ -126,7 +123,7 @@ export default function StorefrontPreview({
         </div>
 
         {/* Business hours */}
-        {openDays.length > 0 && (
+        {openDays.length > 0 && businessHours && (
           <div className="px-5 py-4">
             <InfoRow icon={<Clock size={12} />} label="Hours">
               <dl className="flex flex-col gap-1.5 mt-1">

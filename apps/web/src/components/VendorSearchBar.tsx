@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Input } from '@nummygo/shared/ui';
+import { Input } from '@/components/ui';
 import { GradientButton } from '@/components/ui';
 import { Search } from 'lucide-react';
 

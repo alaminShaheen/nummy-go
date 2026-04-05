@@ -4,8 +4,8 @@
  * Used in customer/page.tsx OrderCard and any order management views.
  */
 import * as React from 'react';
-import { Badge } from '@nummygo/shared/ui';
-import { cn } from '@nummygo/shared/ui';
+import { Badge } from '@/components/ui';
+import { cn } from '@/components/ui';
 
 export type OrderStatus =
   | 'pending'

@@ -5,11 +5,11 @@ import { businessHoursSchema } from '../types';
 // ── API-facing ─────────────────────────────────────────────────────────────
 
 export const registerTenantSchema = z.object({
-  name:          z.string().min(1),
-  slug:          z.string().min(2).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
-  phoneNumber:   z.string().min(7),
-  email:         z.email().optional(),
-  address:       z.string().optional(),
+  name:          z.string().trim().min(1, 'Restaurant name is required'),
+  slug:          z.string().min(2, 'Slug must be at least 2 characters long').regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers and hyphens allowed'),
+  phoneNumber:   z.string().min(7, 'Valid phone number required'),
+  email:         z.email('Invalid email address').optional().or(z.literal('')),
+  address:       z.string().trim().min(1, 'Business address is required').optional().or(z.literal('')),
   businessHours: businessHoursSchema.optional(),
 });
 
@@ -26,7 +26,7 @@ export const updateTenantSchema = z.object({
 });
 
 export const checkTenantSlugSchema = z.object({
-  slug: z.string().min(2).regex(/^[a-z0-9-]+$/),
+  slug: registerTenantSchema.shape.slug,
 });
 
 // ── Internal (query-facing) ────────────────────────────────────────────────

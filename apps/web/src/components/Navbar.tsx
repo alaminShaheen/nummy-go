@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { ClipboardList, Pencil, LogOut, LogIn, User } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { trpc } from '@/trpc/client';
-import { Avatar, AvatarImage, AvatarFallback } from '@nummygo/shared/ui';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
 import { GradientButton } from '@/components/ui';
 import VendorSearchBar from '@/components/VendorSearchBar';
 

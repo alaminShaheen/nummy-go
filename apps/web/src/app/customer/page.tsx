@@ -5,7 +5,7 @@ import { trpc }         from '@/trpc/client';
 import { useOrders }    from '@/hooks/useOrders';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import type { Order, WsMessage } from '@nummygo/shared/models/types';
-import { Button, Input, Card, CardHeader, CardTitle, CardContent } from '@nummygo/shared/ui';
+import { Button, Input, Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { StatusBadge } from '@/components/ui';
 
 const DEMO_TENANT_ID = '00000000-0000-0000-0000-000000000001';

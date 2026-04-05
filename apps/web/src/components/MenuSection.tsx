@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@nummygo/shared/ui';
+import { Button } from '@/components/ui';
 import { SectionLabel } from '@/components/ui';
 import MenuItemCard, { type MenuItem } from './MenuItemCard';
 

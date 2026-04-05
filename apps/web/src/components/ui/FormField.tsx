@@ -11,7 +11,7 @@
  */
 
 import * as React from 'react';
-import { cn } from './utils';
+import { cn } from '@nummygo/shared/ui';
 
 /** Inline alert circle SVG — avoids adding lucide-react to the shared package */
 function ErrorIcon() {

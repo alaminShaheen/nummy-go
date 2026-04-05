@@ -4,7 +4,7 @@
  * `<div className="h-px …" style={…}>` pattern used throughout.
  */
 import * as React from 'react';
-import { cn } from '@nummygo/shared/ui';
+import { cn } from '@/components/ui';
 
 export interface GradientDividerProps extends React.ComponentProps<'div'> {
   /** Colour of the gradient accent */

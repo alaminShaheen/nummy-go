@@ -2,10 +2,33 @@
  * apps/web/src/components/ui/index.ts
  *
  * NummyGo design-system barrel export.
- * These are brand-styled wrappers on top of shadcn primitives.
+ * Custom components and re-exports of shadcn primitives.
  * Import from '@/components/ui' throughout the web app.
  */
 
+// Re-export shadcn/ui components from shared package
+export {
+  cn,
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  Badge,
+  badgeVariants,
+  Button,
+  buttonVariants,
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  Input,
+  Separator,
+  Skeleton,
+} from '@nummygo/shared/ui';
+export type { InputProps } from '@nummygo/shared/ui';
+
+// Custom NummyGo components
 export { GradientButton } from './GradientButton';
 export type { GradientButtonProps } from './GradientButton';
 
@@ -26,3 +49,9 @@ export type { SectionLabelProps } from './SectionLabel';
 
 export { GradientDivider } from './GradientDivider';
 export type { GradientDividerProps } from './GradientDivider';
+
+// Custom form components
+export { BrandInput } from './BrandInput';
+export type { BrandInputProps } from './BrandInput';
+export { FormField } from './FormField';
+export type { FormFieldProps } from './FormField';

@@ -1,5 +1,5 @@
 import { GlassCard } from '@/components/ui';
-import { cn } from '@nummygo/shared/ui';
+import { cn } from '@/components/ui';
 
 interface BenefitCardProps {
   icon: string;

@@ -5,6 +5,8 @@
  * StorefrontPreview, and any future tenant-facing pages.
  */
 
+import type { BusinessHours } from '@nummygo/shared/models/types';
+
 // ─── Day ordering ─────────────────────────────────────────────────────────────
 
 export const DAYS = [
@@ -31,42 +33,15 @@ export const DAY_LABELS: Record<Day, string> = {
 
 // ─── Business hours defaults ──────────────────────────────────────────────────
 
-export interface DayHours {
-  open:   string;   // "HH:MM" 24-hour
-  close:  string;   // "HH:MM" 24-hour
-  closed: boolean;
-}
-
-export type WeeklyHours = Record<Day, DayHours>;
-
-export function makeDefaultDayHours(): DayHours {
-  return { open: '09:00', close: '22:00', closed: false };
-}
-
-export function makeDefaultWeeklyHours(): WeeklyHours {
-  return Object.fromEntries(
-    DAYS.map((d) => [d, makeDefaultDayHours()]),
-  ) as WeeklyHours;
-}
-
-// ─── Form shape (shared between onboarding & edit profile) ───────────────────
-
-export interface TenantFormValues {
-  name:          string;
-  slug:          string;
-  phoneNumber:   string;
-  email:         string;
-  address:       string;
-  businessHours: WeeklyHours;
-}
-
-export function makeDefaultTenantForm(): TenantFormValues {
+export function makeDefaultWeeklyHours(): BusinessHours {
+  const defaultDay: BusinessHours['monday'] = { open: '09:00', close: '22:00', closed: false };
   return {
-    name:          '',
-    slug:          '',
-    phoneNumber:   '',
-    email:         '',
-    address:       '',
-    businessHours: makeDefaultWeeklyHours(),
+    monday: defaultDay,
+    tuesday: defaultDay,
+    wednesday: defaultDay,
+    thursday: defaultDay,
+    friday: defaultDay,
+    saturday: defaultDay,
+    sunday: defaultDay,
   };
 }

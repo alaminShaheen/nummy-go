@@ -4,8 +4,8 @@
  * Wraps shadcn Badge with NummyGo brand variants.
  */
 import * as React from 'react';
-import { Badge } from '@nummygo/shared/ui';
-import { cn } from '@nummygo/shared/ui';
+import { Badge } from '@/components/ui';
+import { cn } from '@/components/ui';
 
 type NummyBadgeVariant = 'popular' | 'new' | 'chefs-pick' | 'vegan';
 
