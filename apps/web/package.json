@@ -6,11 +6,7 @@
     "dev": "next dev --port 3000",
     "build": "next build",
     "preview": "node scripts/copy-env.js .env.local .env && opennextjs-cloudflare build && opennextjs-cloudflare preview",
-
-    "build:staging": "node scripts/copy-env.js .env.staging .env",
-    "preview:staging": "pnpm build:staging && opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy:staging": "pnpm build:staging && opennextjs-cloudflare deploy",
-
+    "deploy:staging": "dotenv -e .env.staging -- opennextjs-cloudflare build && opennextjs-cloudflare deploy --env staging",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
@@ -42,6 +38,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "api-worker": "workspace:*",
+    "dotenv-cli": "^11.0.0",
     "typescript": "^5.0.0",
     "vercel": "^50.39.0",
     "wrangler": "^4.80.0"

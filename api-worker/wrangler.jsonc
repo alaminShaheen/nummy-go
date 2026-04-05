@@ -46,8 +46,8 @@
       ],
       "vars": {
         "ENVIRONMENT":      "staging",
-        "CORS_ORIGIN":      "https://nummygo-web-stage.nummygo.workers.dev/",
-        "CUSTOMER_WEB_URL": "https://nummygo-web-stage.nummygo.workers.dev/",
+        "CORS_ORIGIN":      "https://nummygo-web-stage.nummygo.workers.dev",
+        "CUSTOMER_WEB_URL": "https://nummygo-web-stage.nummygo.workers.dev",
         "BETTER_AUTH_URL":  "https://nummygo-api-staging.nummygo.workers.dev"
       }
     }

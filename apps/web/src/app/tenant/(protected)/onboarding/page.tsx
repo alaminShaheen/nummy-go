@@ -9,11 +9,11 @@ import { Card, CardHeader, CardTitle, CardContent, Skeleton } from '@nummygo/sha
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { data: tenant, isLoading } = trpc.tenant.me.useQuery();
   const { data: session } = authClient.useSession();
+  const { data: tenant, isLoading } = trpc.tenant.me.useQuery();
 
   useEffect(() => {
-    if (tenant && tenant.onboardingCompleted) {
+    if (tenant?.onboardingCompleted) {
       router.push('/');
     }
   }, [tenant, router]);
@@ -43,7 +43,6 @@ export default function OnboardingPage() {
           </div>
 
           <div className="space-y-6">
-            {/* User Session */}
             <Card>
               <CardHeader>
                 <CardTitle>User Session</CardTitle>
@@ -55,7 +54,6 @@ export default function OnboardingPage() {
               </CardContent>
             </Card>
 
-            {/* Tenant Information */}
             <Card>
               <CardHeader>
                 <CardTitle>Tenant Information</CardTitle>

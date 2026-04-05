@@ -1,14 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { GlossButton } from '@/components/ui';
 import { ArrowLeft } from 'lucide-react';
 import { UserRole } from '@nummygo/shared/models';
 
-export default function VendorLoginPage() {
+function VendorLoginContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const { data: session, isPending } = authClient.useSession();
+
+  useEffect(() => {
+    if (!isPending && session?.user) {
+      router.replace(searchParams.get('from') || '/tenant/onboarding');
+    }
+  }, [session, isPending, router, searchParams]);
 
   async function handleGoogleLogin() {
     setLoading(true);
@@ -128,5 +138,13 @@ export default function VendorLoginPage() {
         />
       </div>
     </div>
+  );
+}
+
+export default function VendorLoginPage() {
+  return (
+    <Suspense>
+      <VendorLoginContent />
+    </Suspense>
   );
 }

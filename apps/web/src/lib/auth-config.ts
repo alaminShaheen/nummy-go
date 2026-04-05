@@ -1,11 +1,12 @@
 import { inferAdditionalFields } from "better-auth/client/plugins";
+import { env } from '@/env';
 
 /**
  * Shared auth configuration
  * Used by both React and vanilla clients to ensure consistency
  */
 export const authConfig = {
-	baseURL: process.env.NEXT_PUBLIC_API_WORKER_URL || 'http://localhost:8787',
+	baseURL: env.NEXT_PUBLIC_API_WORKER_URL,
 	fetchOptions: {
 		credentials: 'include' as const,
 	},

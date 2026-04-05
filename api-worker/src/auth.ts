@@ -12,7 +12,7 @@ export function createAuth(env: Env) {
         appName: 'nummy-go',
         baseURL: env.BETTER_AUTH_URL,
         secret: env.BETTER_AUTH_SECRET,
-        trustedOrigins: env.CORS_ORIGIN.split(',').map((o) => o.trim()),
+        trustedOrigins: env.CORS_ORIGIN.split(',').map((o) => o.trim().replace(/\/$/, '')),
         database: drizzleAdapter(drizzle(env.DB, {schema}), {
             provider: 'sqlite',
             schema: {

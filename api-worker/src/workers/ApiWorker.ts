@@ -58,7 +58,7 @@ export class ApiWorker extends WorkerEntrypoint<Env> {
 	// ── Private helpers ────────────────────────────────────────────────────
 
 	#corsHeaders(origin: string): HeadersInit {
-		const allowed = (this.env.CORS_ORIGIN ?? '*').split(',').map((o) => o.trim());
+		const allowed = (this.env.CORS_ORIGIN ?? '*').split(',').map((o) => o.trim().replace(/\/$/, ''));
 		const reflect = allowed.includes(origin) ? origin : (allowed[0] ?? '*');
 		return {
 			'Access-Control-Allow-Origin':      reflect,

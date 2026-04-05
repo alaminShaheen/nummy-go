@@ -16,10 +16,10 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import type { WsMessage } from '@nummygo/shared/models/types';
+import { env } from '@/env';
 
 function getWsUrl(tenantId: string) {
-  const base =
-    process.env.NEXT_PUBLIC_API_WORKER_URL ?? 'http://localhost:8787';
+  const base = env.NEXT_PUBLIC_API_WORKER_URL;
   const wsBase = base.replace(/^http/, 'ws');
   return `${wsBase}/ws/tenant/${tenantId}`;
 }
