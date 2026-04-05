@@ -2,7 +2,7 @@
  * apps/web/src/app/page.tsx
  * NummyGo platform landing page — the root "/" route.
  */
-import PlatformNavbar from '@/components/PlatformNavbar';
+import Navbar from '@/components/Navbar';
 import VendorSearchBar from '@/components/VendorSearchBar';
 import BenefitCard from '@/components/BenefitCard';
 import { SectionLabel, GradientButton, GradientDivider } from '@/components/ui';
@@ -60,7 +60,7 @@ const VENDOR_BENEFITS = [
 export default function PlatformHome() {
   return (
     <>
-      <PlatformNavbar />
+      <Navbar />
 
       <main>
         {/* ── Hero ─────────────────────────────────── */}

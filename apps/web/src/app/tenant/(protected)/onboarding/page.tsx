@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { trpc } from '@/trpc/client';
 import { authClient } from '@/lib/auth-client';
-import { AuthNavbar } from '@/components/AuthNavbar';
+import Navbar from '@/components/Navbar';
 import { Card, CardHeader, CardTitle, CardContent, Skeleton } from '@nummygo/shared/ui';
 
 export default function OnboardingPage() {
@@ -14,7 +14,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     if (tenant?.onboardingCompleted) {
-      router.push('/');
+      router.push(`/${tenant.slug}`);
     }
   }, [tenant, router]);
 
@@ -34,7 +34,7 @@ export default function OnboardingPage() {
 
   return (
     <>
-      <AuthNavbar />
+      <Navbar />
       <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
         <div className="w-full max-w-4xl">
           <div className="text-center mb-8">

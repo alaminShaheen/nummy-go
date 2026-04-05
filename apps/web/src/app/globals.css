@@ -186,6 +186,87 @@ body {
   border-radius: 3px;
 }
 
+/* ─── CartFab badge pop animation ───────────────── */
+@keyframes cart-badge-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.55); }
+  65%  { transform: scale(0.88); }
+  85%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+/* ─── AuthNavbar pill link ───────────────────────── */
+.auth-pill-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+.auth-pill-link:hover,
+.auth-pill-link:focus-visible {
+  color: #fbbf24;
+  outline: none;
+}
+.auth-pill-link__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.auth-pill-link:hover .auth-pill-link__icon {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.95));
+}
+/* Glowing amber bar that sweeps in on hover */
+.auth-pill-link__bar {
+  position: absolute;
+  bottom: 5px;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #fbbf24, #f97316);
+  box-shadow: 0 0 8px 2px rgba(251, 191, 36, 0.7);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: opacity 0.2s ease, transform 0.22s ease;
+  pointer-events: none;
+}
+.auth-pill-link:hover .auth-pill-link__bar {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* ─── AuthNavbar avatar glow ring ────────────────── */
+/*
+  outline is NEVER clipped by overflow:hidden (CSS spec).
+  drop-shadow filter creates the diffuse amber aura.
+*/
+.auth-avatar-ring {
+  border-radius: 9999px;
+  display: block;
+  outline: 2px solid rgba(251, 191, 36, 0.60);
+  outline-offset: 2px;
+  filter: drop-shadow(0 0 7px rgba(251, 191, 36, 0.55));
+  transition: filter 0.25s ease, outline-color 0.25s ease;
+}
+.auth-avatar-ring:hover,
+button:hover > .auth-avatar-ring,
+button:hover .auth-avatar-ring {
+  outline-color: rgba(251, 191, 36, 0.90);
+  filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.80));
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
