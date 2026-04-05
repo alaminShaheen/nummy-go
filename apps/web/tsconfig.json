@@ -21,6 +21,7 @@
     },
     "noEmit": true,
     "declaration": false,
+    "declarationMap": false,
     "allowJs": true,
     "incremental": true
   },

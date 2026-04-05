@@ -9,6 +9,7 @@ export const tenants = sqliteTable('tenants', {
   name: text('name').notNull(),
   phoneNumber: text('phone_number').notNull(),
   email: text('email'),
+  address: text('address'),
   businessHours: text('business_hours', { mode: 'json' }),
   acceptsOrders: integer('accepts_orders', { mode: 'boolean' }).notNull().default(true),
   closedUntil: integer('closed_until', { mode: 'number' }),

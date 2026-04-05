@@ -29,23 +29,23 @@ function PillDivider() {
 
 // ─── Main unified Navbar ──────────────────────────────────────────────────────
 export default function Navbar() {
-  const pathname   = usePathname();
+  const pathname = usePathname();
 
   // "Menu" anchor is shown on storefront pages only: any /{slug} path
   // that doesn't belong to a reserved top-level segment.
-  const RESERVED   = new Set(['tenant', 'customer', 'cart', 'api']);
-  const firstSeg   = pathname.split('/')[1] ?? '';
+  const RESERVED = new Set(['tenant', 'customer', 'cart', 'api']);
+  const firstSeg = pathname.split('/')[1] ?? '';
   const isSlugPage = !!firstSeg && !RESERVED.has(firstSeg);
   const { data: session, isPending } = authClient.useSession();
   const { data: tenant } = trpc.tenant.me.useQuery(undefined, {
     enabled: !!session?.user,
   });
 
-  const slug        = tenant?.slug ?? '';
-  const ordersHref  = slug ? `/${slug}/orders` : '/tenant/orders';
-  const profileHref = slug ? `/${slug}`        : '/';
+  const slug = tenant?.slug ?? '';
+  const ordersHref = '/tenant/orders';
+  const profileHref = slug ? `/${slug}` : '/';
 
-  const [scrolled, setScrolled]             = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
@@ -77,11 +77,11 @@ export default function Navbar() {
     await authClient.signOut({ fetchOptions: { onSuccess: () => { window.location.href = '/'; } } });
   };
 
-  const user        = session?.user;
-  const initials    = user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U';
+  const user = session?.user;
+  const initials = user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U';
   const displayName = user?.name || user?.email || 'User';
-  const role        = (user as { role?: string })?.role || 'vendor';
-  const isLoggedIn  = !isPending && !!user;
+  const role = (user as { role?: string })?.role || 'vendor';
+  const isLoggedIn = !isPending && !!user;
 
   return (
     <header
@@ -143,9 +143,9 @@ export default function Navbar() {
                     className="flex items-center rounded-full"
                     style={{ background: 'rgba(19,25,31,0.88)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
-                    <PillLink href={ordersHref}  id="nav-orders"       icon={<ClipboardList size={15} />} label="Orders" />
+                    <PillLink href={ordersHref} id="nav-orders" icon={<ClipboardList size={15} />} label="Orders" />
                     <PillDivider />
-                    <PillLink href={profileHref} id="nav-edit-profile" icon={<Pencil size={15} />}       label="Profile" />
+                    <PillLink href={profileHref} id="nav-edit-profile" icon={<Pencil size={15} />} label="Profile" />
                     <PillDivider />
 
                     {/* Avatar + role badge */}
