@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "preview": "node scripts/copy-env.js .env.local .env && opennextjs-cloudflare build && opennextjs-cloudflare preview",
 
     "build:staging": "node scripts/copy-env.js .env.staging .env",
     "preview:staging": "pnpm build:staging && opennextjs-cloudflare build && opennextjs-cloudflare preview",

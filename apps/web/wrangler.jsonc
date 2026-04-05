@@ -1,18 +1,25 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "nummygo-web",
-  "compatibility_date": "2025-06-17",
-  "compatibility_flags": ["nodejs_compat"]
-
-  // NOTE: These vars are for the Cloudflare Worker runtime ONLY
-  // They are NOT available to Next.js at build time
-  //
-  // For Next.js environment variables:
-  // - Build time: Use .env.production, .env.staging files
-  // - Local dev: Use .env.local
-  //
-  // Use wrangler.jsonc vars for:
-  // - Worker-specific runtime config
-  // - Bindings (KV, R2, D1, Durable Objects)
-  // - Secrets (use wrangler secret put command)
+  "main": ".open-next/worker.js",
+  "name": "nummygo-web-stage",
+  "compatibility_date": "2024-12-30",
+  "compatibility_flags": [
+    // Enable Node.js API
+    // see https://developers.cloudflare.com/workers/configuration/compatibility-flags/#nodejs-compatibility-flag
+    "nodejs_compat",
+    // Allow to fetch URLs in your app
+    // see https://developers.cloudflare.com/workers/configuration/compatibility-flags/#global-fetch-strictly-public
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      // The service should match the "name" of your worker
+      "service": "nummygo-web-stage"
+    }
+  ]
 }

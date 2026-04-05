@@ -14,7 +14,7 @@
     }
   },
   "scripts": {
-    "dev": "wrangler dev --port 8787 --env local",
+    "dev": "wrangler dev --port 8787 --remote --env local",
     "deploy:staging": "wrangler deploy --env staging",
     "deploy:prod": "wrangler deploy --env production",
     "cf-typegen": "wrangler types --env-interface Env",
