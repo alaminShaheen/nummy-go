@@ -30,3 +30,9 @@ export function fmt24To12(time: string | undefined | null): string {
   const display = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
   return `${display}:${m} ${period}`;
 }
+
+export function getGoogleMapsUrl(address: string): string {
+  const baseUrl = "https://www.google.com/maps/search/?api=1&query=";
+  const encodedAddress = encodeURIComponent(address);
+  return baseUrl + encodedAddress;
+}

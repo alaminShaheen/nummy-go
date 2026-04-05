@@ -1,4 +1,7 @@
 import VendorStorefront from '@/components/VendorStorefront';
+import { Tenant } from '@nummygo/shared/models';
+import { serverTRPC } from '@/trpc/server';
+import { notFound } from 'next/navigation';
 
 /**
  * ISR Configuration for Cloudflare Pages (via OpenNext)
@@ -36,13 +39,26 @@ export async function generateStaticParams() {
     // return vendors.map((vendor: { slug: string }) => ({
     //   slug: vendor.slug,
     // }));
-      return [{slug: "hot-pretzel-9012"}, {slug: "hot-chicken-9012"}, {slug: "hot-pizza-9012"}]
+    return [{ slug: "hot-pretzel-9012" }, { slug: "hot-chicken-9012" }, { slug: "hot-pizza-9012" }]
   } catch (error) {
     console.error('Error in generateStaticParams:', error);
     return [{ slug: '_' }]; // Fallback placeholder
   }
 }
 
-export default function VendorPage() {
-  return <VendorStorefront />;
+export default async function VendorPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+
+  let tenant = null;
+  try {
+    tenant = await serverTRPC.tenant.getTenantBySlug.query({ slug });
+  } catch (error) {
+    console.error('Failed to fetch tenant:', error);
+  }
+
+  if (!tenant) {
+    notFound();
+  }
+
+  return <VendorStorefront tenant={tenant as unknown as Tenant} />;
 }

@@ -1,5 +1,5 @@
-import {z} from 'zod';
-import {ulidSchema, timestampSchema} from '../schemas';
+import { z } from 'zod';
+import { ulidSchema, timestampSchema } from '../schemas';
 
 const dayHoursSchema = z.object({
 	open: z.string(), // e.g. "09:00"
@@ -23,6 +23,7 @@ export const tenantSchema = z.object({
 	slug: z.string(),
 	name: z.string(),
 	phoneNumber: z.string(),
+	address: z.string(),
 	email: z.string().nullable(),
 	businessHours: businessHoursSchema.nullable(),
 	acceptsOrders: z.boolean(),

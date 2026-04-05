@@ -8,6 +8,7 @@ import { authClient } from '@/lib/auth-client';
 import { trpc } from '@/trpc/client';
 import { Avatar, AvatarImage, AvatarFallback } from '@nummygo/shared/ui';
 import { GradientButton } from '@/components/ui';
+import VendorSearchBar from '@/components/VendorSearchBar';
 
 
 
@@ -106,6 +107,13 @@ export default function Navbar() {
           <span className="text-2xl" aria-hidden="true">🔥</span>
           <span className="text-xl font-black tracking-tight gradient-text">nummyGo</span>
         </Link>
+
+        {/* ── Desktop Center Search (hidden on landing) ── */}
+        {pathname !== '/' && (
+          <div className="hidden md:flex flex-1 max-w-md mx-6">
+            <VendorSearchBar size="default" placeholder="Find restaurants..." className="w-full" />
+          </div>
+        )}
 
         {/* ── Right side ── */}
         <div className="flex items-center gap-3">
@@ -294,6 +302,13 @@ export default function Navbar() {
 
         </div>
       </nav>
+
+      {/* ── Mobile Search (hidden on landing) ── */}
+      {pathname !== '/' && (
+        <div className="md:hidden w-full px-4 pb-3">
+          <VendorSearchBar size="default" placeholder="Find restaurants..." className="w-full" />
+        </div>
+      )}
     </header>
   );
 }

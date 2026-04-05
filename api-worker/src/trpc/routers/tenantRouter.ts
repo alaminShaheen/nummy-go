@@ -1,9 +1,9 @@
-import { router, tenantProcedure, protectedProcedure, TRPCError } from '../init';
+import { router, tenantProcedure, protectedProcedure, publicProcedure, TRPCError } from '../init';
 import {
-  getOrdersByTenantSchema,
-  updateOrderStatusSchema,
-  registerTenantSchema,
-  checkTenantSlugSchema,
+	getOrdersByTenantSchema,
+	updateOrderStatusSchema,
+	registerTenantSchema,
+	checkTenantSlugSchema,
 } from '@nummygo/shared/models/dtos';
 import { changeOrderStatus, fetchTenantOrders } from '../../services/orderService';
 import { completeTenantOnboarding, getTenantProfile } from '../../services/tenantService';
@@ -16,6 +16,12 @@ export const tenantRouter = router({
 	me: protectedProcedure.query(async ({ ctx }) => {
 		return getTenantProfile(ctx.session.user.id);
 	}),
+
+	getTenantBySlug: publicProcedure
+		.input(checkTenantSlugSchema)
+		.query(async ({ input }) => {
+			return getTenantBySlug(input.slug);
+		}),
 
 	checkSlug: protectedProcedure
 		.input(checkTenantSlugSchema)

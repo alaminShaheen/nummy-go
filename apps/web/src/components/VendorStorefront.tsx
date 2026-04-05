@@ -11,6 +11,8 @@ import CartFab from '@/components/CartFab';
 import type { MenuItem } from '@/components/MenuItemCard';
 import { GradientDivider } from '@/components/ui';
 import { authClient } from '@/lib/auth-client';
+import { Tenant } from '@nummygo/shared/models';
+import { getGoogleMapsUrl } from '@/utils/tenant';
 
 /* ─── Mock Data ─────────────────────────────────── */
 
@@ -67,7 +69,7 @@ interface CartEntry { item: MenuItem; qty: number; }
 
 /* ─── Component ─────────────────────────────────── */
 
-export default function VendorStorefrontPage() {
+export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
   const params = useParams<{ slug: string }>();
   const [cart, setCart] = useState<CartEntry[]>([]);
 
@@ -93,7 +95,23 @@ export default function VendorStorefrontPage() {
       <main>
         <HeroBanner />
         <GradientDivider accent="amber" />
-        <VendorInfo {...VENDOR} />
+        <VendorInfo
+          name={tenant.name}
+          address={tenant.address}
+          mapUrl={getGoogleMapsUrl(tenant.address)}
+          phone={tenant.phoneNumber}
+          email={tenant.email || ''}
+          hours={tenant.businessHours ? [
+            { day: 'Mon', time: tenant.businessHours.monday.closed ? 'Closed' : `${tenant.businessHours.monday.open} – ${tenant.businessHours.monday.close}` },
+            { day: 'Tue', time: tenant.businessHours.tuesday.closed ? 'Closed' : `${tenant.businessHours.tuesday.open} – ${tenant.businessHours.tuesday.close}` },
+            { day: 'Wed', time: tenant.businessHours.wednesday.closed ? 'Closed' : `${tenant.businessHours.wednesday.open} – ${tenant.businessHours.wednesday.close}` },
+            { day: 'Thu', time: tenant.businessHours.thursday.closed ? 'Closed' : `${tenant.businessHours.thursday.open} – ${tenant.businessHours.thursday.close}` },
+            { day: 'Fri', time: tenant.businessHours.friday.closed ? 'Closed' : `${tenant.businessHours.friday.open} – ${tenant.businessHours.friday.close}` },
+            { day: 'Sat', time: tenant.businessHours.saturday.closed ? 'Closed' : `${tenant.businessHours.saturday.open} – ${tenant.businessHours.saturday.close}` },
+            { day: 'Sun', time: tenant.businessHours.sunday.closed ? 'Closed' : `${tenant.businessHours.sunday.open} – ${tenant.businessHours.sunday.close}` },
+          ] : VENDOR.hours}
+          tags={VENDOR.tags}
+        />
         <GradientDivider accent="indigo" />
         <MenuSection items={MENU_ITEMS} onAddToCart={handleAddToCart} />
 
