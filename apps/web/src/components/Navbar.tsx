@@ -37,6 +37,7 @@ export default function Navbar() {
   const RESERVED = new Set(['tenant', 'customer', 'cart', 'api']);
   const firstSeg = pathname.split('/')[1] ?? '';
   const isSlugPage = !!firstSeg && !RESERVED.has(firstSeg);
+  const isOnboarding = pathname === '/tenant/onboarding';
   const { data: session, isPending } = authClient.useSession();
   const { data: tenant } = trpc.tenant.me.useQuery(undefined, {
     enabled: !!session?.user,
@@ -151,10 +152,14 @@ export default function Navbar() {
                     className="flex items-center rounded-full"
                     style={{ background: 'rgba(19,25,31,0.88)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
-                    <PillLink href={ordersHref} id="nav-orders" icon={<ClipboardList size={15} />} label="Orders" />
-                    <PillDivider />
-                    <PillLink href={profileHref} id="nav-edit-profile" icon={<Pencil size={15} />} label="Profile" />
-                    <PillDivider />
+                    {!isOnboarding && (
+                      <>
+                        <PillLink href={ordersHref} id="nav-orders" icon={<ClipboardList size={15} />} label="Orders" />
+                        <PillDivider />
+                        <PillLink href={profileHref} id="nav-edit-profile" icon={<Pencil size={15} />} label="Profile" />
+                        <PillDivider />
+                      </>
+                    )}
 
                     {/* Avatar + role badge */}
                     <div className="relative px-2 py-1.5 flex-shrink-0">
@@ -257,16 +262,18 @@ export default function Navbar() {
                         </div>
                       </div>
                     </div>
-                    <div className="py-1">
-                      <Link href={ordersHref} role="menuitem" id="nav-mobile-orders" onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-amber-400 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/5">
-                        <ClipboardList size={15} aria-hidden="true" className="text-slate-500" /> Orders
-                      </Link>
-                      <Link href={profileHref} role="menuitem" id="nav-mobile-profile" onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-amber-400 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/5">
-                        <User size={15} aria-hidden="true" className="text-slate-500" /> Profile
-                      </Link>
-                    </div>
+                    {!isOnboarding && (
+                      <div className="py-1">
+                        <Link href={ordersHref} role="menuitem" id="nav-mobile-orders" onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-amber-400 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/5">
+                          <ClipboardList size={15} aria-hidden="true" className="text-slate-500" /> Orders
+                        </Link>
+                        <Link href={profileHref} role="menuitem" id="nav-mobile-profile" onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-amber-400 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/5">
+                          <User size={15} aria-hidden="true" className="text-slate-500" /> Profile
+                        </Link>
+                      </div>
+                    )}
                     <div aria-hidden="true" className="mx-4 my-1 h-px bg-white/8" />
                     <div className="py-1">
                       <button role="menuitem" id="nav-mobile-signout" type="button" onClick={handleLogout}

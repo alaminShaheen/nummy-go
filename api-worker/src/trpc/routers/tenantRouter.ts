@@ -42,11 +42,6 @@ export const tenantRouter = router({
     onboard: protectedProcedure
         .input(registerTenantSchema)
         .mutation(async ({ input, ctx }) => {
-            throw new ZodError([{
-                code: "custom",
-                path: ["slug"],
-                message: "Slug is not available"
-            }])
             return await completeTenantOnboarding(ctx.session.user.id, input);
         }),
 
