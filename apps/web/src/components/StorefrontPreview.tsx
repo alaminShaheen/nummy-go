@@ -22,6 +22,8 @@ export interface StorefrontPreviewProps {
   email?:        string;
   address?:      string;
   businessHours?: BusinessHours;
+  acceptsOrders?: boolean;
+  closedUntil?:  number | null;
 }
 
 export default function StorefrontPreview({
@@ -31,8 +33,11 @@ export default function StorefrontPreview({
   email,
   address,
   businessHours,
+  acceptsOrders = true,
+  closedUntil,
 }: StorefrontPreviewProps) {
   const openDays = businessHours ? DAYS.filter((d) => !businessHours[d].closed) : [];
+  const reopenDate = closedUntil ? new Date(closedUntil) : null;
 
   return (
     <div
@@ -68,11 +73,25 @@ export default function StorefrontPreview({
             aria-hidden="true"
           />
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-400 text-[10px] font-semibold uppercase tracking-wider mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" aria-hidden="true" />
-              Now Taking Orders
-            </div>
-            <h2 className="text-xl font-black text-slate-100 leading-tight">
+            {acceptsOrders ? (
+              <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-400/10 border border-green-400/20 text-green-400 text-[10px] font-semibold uppercase tracking-wider mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" aria-hidden="true" />
+                Now Taking Orders
+              </div>
+            ) : (
+              <div className="inline-flex flex-col gap-1">
+                <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-rose-400/10 border border-rose-400/20 text-rose-400 text-[10px] font-semibold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-400" aria-hidden="true" />
+                  Temporarily Closed
+                </div>
+                {reopenDate && (
+                  <p className="text-[10px] text-slate-500 mt-1 ml-1">
+                    Reopening {reopenDate.toLocaleDateString()} at {reopenDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                )}
+              </div>
+            )}
+            <h2 className="text-xl font-black text-slate-100 leading-tight mt-2">
               {name || <span className="text-slate-600 italic font-normal">Your Restaurant Name</span>}
             </h2>
             <div className="flex gap-2 mt-2 flex-wrap">
