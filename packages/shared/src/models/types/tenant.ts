@@ -2,8 +2,8 @@ import { z } from 'zod';
 import { timestampSchema, ulidSchema } from '../schemas';
 
 const dayHoursSchema = z.object({
-	open: z.string(), // e.g. "09:00"
-	close: z.string(), // e.g. "22:00"
+	open: z.iso.time(), // e.g. "09:00"
+	close: z.iso.time(), // e.g. "22:00"
 	closed: z.boolean(),
 });
 

@@ -97,8 +97,8 @@ export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
         <GradientDivider accent="amber" />
         <VendorInfo
           name={tenant.name}
-          address={tenant.address}
-          mapUrl={getGoogleMapsUrl(tenant.address)}
+          address={tenant.address || ''}
+          mapUrl={getGoogleMapsUrl(tenant.address || '')}
           phone={tenant.phoneNumber}
           email={tenant.email || ''}
           hours={tenant.businessHours ? [

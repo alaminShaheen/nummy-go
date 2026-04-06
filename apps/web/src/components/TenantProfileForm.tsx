@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Controller, type UseFormReturn } from 'react-hook-form';
+import { Controller, type UseFormReturn, type Path, type PathValue } from 'react-hook-form';
 import { useDebounceCallback } from 'usehooks-ts';
 import { trpc } from '@/trpc/client';
 import StorefrontPreview from '@/components/StorefrontPreview';
@@ -14,28 +14,20 @@ import { AlertCircle, Building2, CheckCircle2, ChevronRight, Clock, Loader2, Pho
 import { clsx } from 'clsx';
 
 // ─── TenantProfileForm Props ──────────────────────────────────────────────────
-type TenantProfileFormProps =
-	| {
-			mode: 'onboarding';
-			form: UseFormReturn<RegisterTenantDto>;
-			onSubmit: (data: RegisterTenantDto) => Promise<void>;
-			isPending: boolean;
-			isError: boolean;
-			error?: { message?: string } | null;
-			submitButtonText?: string;
-	  }
-	| {
-			mode: 'edit';
-			form: UseFormReturn<UpdateTenantDto>;
-			onSubmit: (data: UpdateTenantDto) => Promise<void>;
-			isPending: boolean;
-			isError: boolean;
-			error?: { message?: string } | null;
-			submitButtonText?: string;
-	  };
+type TenantFormValues = RegisterTenantDto | UpdateTenantDto;
+
+type TenantProfileFormProps<T extends TenantFormValues> = {
+	mode: 'onboarding' | 'edit';
+	form: UseFormReturn<T>;
+	onSubmit: (data: T) => Promise<void>;
+	isPending: boolean;
+	isError: boolean;
+	error?: { message?: string } | null;
+	submitButtonText?: string;
+};
 
 // ─── TenantProfileForm Component ──────────────────────────────────────────────
-export default function TenantProfileForm(props: TenantProfileFormProps) {
+export default function TenantProfileForm<T extends TenantFormValues>(props: TenantProfileFormProps<T>) {
 	const { mode, form, onSubmit, isPending, isError, error, submitButtonText } = props;
 
 	const [slugManual, setSlugManual] = useState(false);
@@ -51,11 +43,11 @@ export default function TenantProfileForm(props: TenantProfileFormProps) {
 		formState: { errors },
 	} = form;
 
-	// Watch all fields for live preview (type assertion needed for discriminated union)
+	// Watch all fields for live preview
 	const formValues = watch() as RegisterTenantDto;
-	const nameValue = watch('name' as any) as string | undefined;
-	const slugValue = watch('slug' as any) as string | undefined;
-	const acceptsOrdersValue = watch('acceptsOrders' as any) as boolean | undefined;
+	const nameValue = watch('name' as Path<T>) as string | undefined;
+	const slugValue = watch('slug' as Path<T>) as string | undefined;
+	const acceptsOrdersValue = watch('acceptsOrders' as Path<T>) as boolean | undefined;
 
 	// Lazy query - only runs when we call refetch()
 	const checkSlugQuery = trpc.tenant.checkSlug.useQuery(
@@ -74,7 +66,7 @@ export default function TenantProfileForm(props: TenantProfileFormProps) {
 	useEffect(() => {
 		if (mode === 'onboarding' && !slugManual) {
 			const newSlug = toSlug(nameValue || '');
-			setValue('slug' as any, newSlug, { shouldValidate: false, shouldTouch: false });
+			setValue('slug' as Path<T>, newSlug as PathValue<T, Path<T>>, { shouldValidate: false, shouldTouch: false });
 			if (newSlug && newSlug.length >= 2) {
 				checkSlugAvailability(newSlug);
 			}
@@ -92,31 +84,31 @@ export default function TenantProfileForm(props: TenantProfileFormProps) {
 		) {
 			setSlugAvailable(checkSlugQuery.data.available);
 			if (!checkSlugQuery.data.available) {
-				setError('slug', { message: 'This slug is already taken' });
+				setError('slug' as Path<T>, { message: 'This slug is already taken' });
 			} else {
-				clearErrors('slug');
+				clearErrors('slug' as Path<T>);
 			}
 		}
 	}, [mode, checkSlugQuery.data, checkSlugQuery.fetchStatus, checkSlugQuery.dataUpdatedAt, setError, clearErrors]);
 
 	const setDayHours = (day: Day, field: keyof BusinessHours['monday'], value: string | boolean) => {
-		const currentHours = (watch('businessHours' as any) as BusinessHours | undefined) || makeDefaultWeeklyHours();
+		const currentHours = (watch('businessHours' as Path<T>) as BusinessHours | undefined) || makeDefaultWeeklyHours();
 		setValue(
-			'businessHours' as any,
+			'businessHours' as Path<T>,
 			{
 				...currentHours,
 				[day]: { ...currentHours[day], [field]: value },
-			},
+			} as PathValue<T, Path<T>>,
 			{ shouldValidate: false }
 		);
 	};
 
-	const handleFormSubmit = async (data: RegisterTenantDto | UpdateTenantDto) => {
+	const handleFormSubmit = async (data: T) => {
 		if (mode === 'onboarding' && slugAvailable === false) {
-			setError('slug', { message: 'This slug is already taken' });
+			setError('slug' as Path<T>, { message: 'This slug is already taken' });
 			return;
 		}
-		await onSubmit(data as any);
+		await onSubmit(data);
 	};
 
 	// Slug availability indicator (only for onboarding)
@@ -143,28 +135,29 @@ export default function TenantProfileForm(props: TenantProfileFormProps) {
 				{/* ── Card: Basic Info ── */}
 				<FormCard icon={<Building2 size={15} />} title="Basic Info">
 					<Controller
-						name="name"
-						control={control as any}
+						name={"name" as Path<T>}
+						control={control}
 						render={({ field }) => (
-							<FormField id="name" label="Restaurant Name" required error={errors.name?.message}>
-								<BrandInput id="name" {...field} placeholder="The Golden Fork" autoFocus />
+							<FormField id="name" label="Restaurant Name" required error={(errors as any).name?.message}>
+								<BrandInput id="name" {...field} value={(field.value as string) ?? ''} placeholder="The Golden Fork" autoFocus />
 							</FormField>
 						)}
 					/>
 
 					<Controller
-						name="slug"
-						control={control as any}
+						name={"slug" as Path<T>}
+						control={control}
 						render={({ field }) => (
 							<FormField
 								id="slug"
 								label="Your nummyGo URL"
 								required
-								hint={!errors.slug ? 'Lowercase letters, numbers and hyphens only.' : undefined}
+								hint={!(errors as any).slug ? 'Lowercase letters, numbers and hyphens only.' : undefined}
 							>
 								<BrandInput
 									id="slug"
 									{...field}
+									value={(field.value as string) ?? ''}
 									onChange={(e) => {
 										if (mode === 'onboarding') {
 											setSlugManual(true);
@@ -197,7 +190,7 @@ export default function TenantProfileForm(props: TenantProfileFormProps) {
 										) : (
 											<p className="text-xs text-rose-400 flex items-center gap-1 mt-0.5">
 												<AlertCircle size={13} className="text-rose-400" />
-												{errors.slug?.message || 'Not Available!'}
+												{(errors as any).slug?.message || 'Not Available!'}
 											</p>
 										)}
 									</>
@@ -210,48 +203,48 @@ export default function TenantProfileForm(props: TenantProfileFormProps) {
 				{/* ── Card: Contact ── */}
 				<FormCard icon={<Phone size={15} />} title="Contact">
 					<Controller
-						name="phoneNumber"
-						control={control as any}
+						name={"phoneNumber" as Path<T>}
+						control={control}
 						render={({ field }) => (
 							<FormField
 								id="phoneNumber"
 								label="Phone Number"
 								required
-								error={errors.phoneNumber?.message}
+								error={(errors as any).phoneNumber?.message}
 								hint="Customers will use this to call you."
 							>
-								<BrandInput id="phoneNumber" type="tel" {...field} placeholder="+1 (416) 555-0100" />
+								<BrandInput id="phoneNumber" type="tel" {...field} value={(field.value as string) ?? ''} placeholder="+1 (416) 555-0100" />
 							</FormField>
 						)}
 					/>
 
 					<Controller
-						name="email"
-						control={control as any}
+						name={"email" as Path<T>}
+						control={control}
 						render={({ field }) => (
 							<FormField
 								id="email"
 								label="Email Address"
-								error={errors.email?.message}
+								error={(errors as any).email?.message}
 								hint="Optional — shown on your storefront for customer enquiries."
 							>
-								<BrandInput id="email" type="email" {...field} placeholder="hello@yourrestaurant.com" />
+								<BrandInput id="email" type="email" {...field} value={(field.value as string) ?? ''} placeholder="hello@yourrestaurant.com" />
 							</FormField>
 						)}
 					/>
 
 					<Controller
-						name="address"
-						control={control as any}
+						name={"address" as Path<T>}
+						control={control}
 						render={({ field }) => (
 							<FormField
 								id="address"
 								label="Business Address"
 								required
-								error={errors.address?.message}
+								error={(errors as any).address?.message}
 								hint="Where customers can find you. This will open Google Maps when clicked."
 							>
-								<BrandInput id="address" {...field} placeholder="123 Main St, New York, NY 10001" />
+								<BrandInput id="address" {...field} value={(field.value as string) ?? ''} placeholder="123 Main St, New York, NY 10001" />
 							</FormField>
 						)}
 					/>
@@ -261,8 +254,8 @@ export default function TenantProfileForm(props: TenantProfileFormProps) {
 				{mode === 'edit' && (
 					<FormCard icon={<Power size={15} />} title="Availability">
 						<Controller
-							name="acceptsOrders"
-							control={control as any}
+							name={"acceptsOrders" as Path<T>}
+							control={control}
 							render={({ field }) => (
 								<FormField
 									id="acceptsOrders"
@@ -307,8 +300,8 @@ export default function TenantProfileForm(props: TenantProfileFormProps) {
 
 						{!acceptsOrdersValue && (
 							<Controller
-								name="closedUntil"
-								control={control as any}
+								name={"closedUntil" as Path<T>}
+								control={control}
 								render={({ field }) => (
 									<FormField
 										id="closedUntil"
@@ -317,7 +310,7 @@ export default function TenantProfileForm(props: TenantProfileFormProps) {
 									>
 										<input
 											type="datetime-local"
-											value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ''}
+											value={field.value ? new Date(field.value as number).toISOString().slice(0, 16) : ''}
 											onChange={(e) => {
 												const value = e.target.value
 													? new Date(e.target.value).getTime()

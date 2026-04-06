@@ -7,7 +7,7 @@ import {
 	updateTenant,
 	updateUserRole,
 } from '@nummygo/shared/db/queries';
-import type { RegisterTenantDto } from '@nummygo/shared/models/dtos';
+import type { RegisterTenantDto, UpdateTenantDto } from '@nummygo/shared/models/dtos';
 import { TRPCError } from '@trpc/server';
 import { ZodError } from 'zod';
 
@@ -49,6 +49,19 @@ export async function completeTenantOnboarding(userId: string, data: RegisterTen
 		...data,
 		onboardingCompleted: true,
 	});
+}
+
+export async function updateTenantInformation(userId: string, data: UpdateTenantDto) {
+	const tenant = await getTenantProfile(userId);
+	if (!tenant) throw new TRPCError({ code: 'NOT_FOUND', message: 'Tenant record not found' });
+	if (!tenant.onboardingCompleted) {
+		throw new TRPCError({
+			code: 'BAD_REQUEST',
+			message: 'Tenant onboarding not completed',
+		});
+	}
+
+	return updateTenant(userId, data);
 }
 
 export async function getTenantProfile(userId: string) {

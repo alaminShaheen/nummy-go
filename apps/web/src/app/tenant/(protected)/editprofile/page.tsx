@@ -128,7 +128,6 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          {/* Reusable form component */}
           <TenantProfileForm
             mode="edit"
             form={form}
