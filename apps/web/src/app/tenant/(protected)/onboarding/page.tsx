@@ -1,25 +1,27 @@
 'use client';
 
-import {useEffect, useRef, useState} from 'react';
-import {useRouter} from 'next/navigation';
-import {Controller, useForm} from 'react-hook-form';
-import {zodResolver} from '@hookform/resolvers/zod';
-import {useDebounceCallback} from 'usehooks-ts';
-import {trpc} from '@/trpc/client';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useDebounceCallback } from 'usehooks-ts';
+import { trpc } from '@/trpc/client';
 import Navbar from '@/components/Navbar';
 import StorefrontPreview from '@/components/StorefrontPreview';
-import {BrandInput, Button, FormField} from '@/components/ui';
-import type {BusinessHours} from '@nummygo/shared/models/types';
-import type {RegisterTenantDto} from '@nummygo/shared/models/dtos';
-import {registerTenantSchema} from '@nummygo/shared/models/dtos';
-import {type Day, DAY_LABELS, DAYS, makeDefaultWeeklyHours} from '@/constants/tenant';
-import {toSlug} from '@/utils/tenant';
-import {AlertCircle, Building2, CheckCircle2, ChevronRight, Clock, Loader2, Phone,} from 'lucide-react';
+import { BrandInput, Button, FormField } from '@/components/ui';
+import type { BusinessHours } from '@nummygo/shared/models/types';
+import type { RegisterTenantDto } from '@nummygo/shared/models/dtos';
+import { registerTenantSchema } from '@nummygo/shared/models/dtos';
+import { type Day, DAY_LABELS, DAYS, makeDefaultWeeklyHours } from '@/constants/tenant';
+import { toSlug } from '@/utils/tenant';
+import { AlertCircle, Building2, CheckCircle2, ChevronRight, Clock, Loader2, Phone, } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
 
 // ─── Onboarding Page ──────────────────────────────────────────────────────────
 export default function OnboardingPage() {
     const router = useRouter();
-    const {data: tenant, isLoading} = trpc.tenant.me.useQuery();
+    const { data: session, isPending } = authClient.useSession();
+    const { data: tenant, isLoading } = trpc.tenant.me.useQuery();
     const onboard = trpc.tenant.onboard.useMutation({
         onSuccess: (data) => router.push(`/${data?.slug}`),
         onError: (error) => {
@@ -39,7 +41,7 @@ export default function OnboardingPage() {
         setError,
         clearErrors,
         reset,
-        formState: {errors},
+        formState: { errors },
     } = useForm<RegisterTenantDto>({
         resolver: zodResolver(registerTenantSchema),
         defaultValues: {
@@ -61,8 +63,8 @@ export default function OnboardingPage() {
 
     // Lazy query - only runs when we call refetch()
     const checkSlugQuery = trpc.tenant.checkSlug.useQuery(
-        {slug: slugValue},
-        {enabled: false, refetchOnWindowFocus: false},
+        { slug: slugValue },
+        { enabled: false, refetchOnWindowFocus: false },
     );
 
     // Debounced function to check slug availability
@@ -85,7 +87,7 @@ export default function OnboardingPage() {
                 name: tenant.name || '',
                 slug: tenant.slug || '',
                 phoneNumber: tenant.phoneNumber || '',
-                email: tenant.email || '',
+                email: session?.user.email || '',
                 address: tenant.address || '',
                 businessHours: tenant.businessHours || makeDefaultWeeklyHours(),
             });
@@ -97,7 +99,7 @@ export default function OnboardingPage() {
     useEffect(() => {
         if (!slugManual) {
             const newSlug = toSlug(nameValue || '');
-            setValue('slug', newSlug, {shouldValidate: false, shouldTouch: false});
+            setValue('slug', newSlug, { shouldValidate: false, shouldTouch: false });
             if (newSlug && newSlug.length >= 2) {
                 checkSlugAvailability(newSlug);
             }
@@ -118,7 +120,7 @@ export default function OnboardingPage() {
         ) {
             setSlugAvailable(checkSlugQuery.data.available);
             if (!checkSlugQuery.data.available) {
-                setError('slug', {message: 'This slug is already taken'});
+                setError('slug', { message: 'This slug is already taken' });
             } else {
                 clearErrors('slug');
             }
@@ -129,25 +131,25 @@ export default function OnboardingPage() {
         const currentHours = watch('businessHours') || makeDefaultWeeklyHours();
         setValue('businessHours', {
             ...currentHours,
-            [day]: {...currentHours[day], [field]: value},
-        }, {shouldValidate: false});
+            [day]: { ...currentHours[day], [field]: value },
+        }, { shouldValidate: false });
     };
 
     const onSubmit = async (data: RegisterTenantDto) => {
         if (slugAvailable === false) {
-            setError('slug', {message: 'This slug is already taken'});
+            setError('slug', { message: 'This slug is already taken' });
             return;
         }
         await onboard.mutateAsync(data);
     };
 
     // ── Loading state ──────────────────────────────────────────────────────────
-    if (isLoading) {
+    if (isLoading || isPending) {
         return (
-            <div className="min-h-screen flex items-center justify-center" style={{background: '#0D1117'}}>
+            <div className="min-h-screen flex items-center justify-center" style={{ background: '#0D1117' }}>
                 <div className="flex flex-col items-center gap-4">
                     <div
-                        className="w-10 h-10 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin"/>
+                        className="w-10 h-10 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin" />
                     <p className="text-slate-500 text-sm">Loading your profile…</p>
                 </div>
             </div>
@@ -159,19 +161,19 @@ export default function OnboardingPage() {
     // ── Slug availability indicator (passed to BrandInput suffix) ─────────────
     const slugSuffix = slugValue && slugValue.length >= 2
         ? checkSlugQuery.isFetching
-            ? <Loader2 size={13} className="text-slate-500 animate-spin"/>
+            ? <Loader2 size={13} className="text-slate-500 animate-spin" />
             : slugAvailable === true
-                ? <CheckCircle2 size={13} className="text-green-400"/>
+                ? <CheckCircle2 size={13} className="text-green-400" />
                 : slugAvailable === false
-                    ? <AlertCircle size={13} className="text-rose-400"/>
+                    ? <AlertCircle size={13} className="text-rose-400" />
                     : null
         : null;
 
     return (
         <>
-            <Navbar/>
+            <Navbar />
 
-            <div className="min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8" style={{background: '#0D1117'}}>
+            <div className="min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8" style={{ background: '#0D1117' }}>
                 {/* Ambient glows — matches global brand palette */}
                 <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
                     <div style={{
@@ -179,13 +181,13 @@ export default function OnboardingPage() {
                         width: 600, height: 600, borderRadius: '50%',
                         background: 'radial-gradient(circle, rgba(251,191,36,0.10) 0%, transparent 70%)',
                         filter: 'blur(40px)',
-                    }}/>
+                    }} />
                     <div style={{
                         position: 'absolute', bottom: '5%', right: '-5%',
                         width: 500, height: 500, borderRadius: '50%',
                         background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
                         filter: 'blur(40px)',
-                    }}/>
+                    }} />
                 </div>
 
                 <div className="relative z-10 max-w-6xl mx-auto">
@@ -194,8 +196,8 @@ export default function OnboardingPage() {
                     <div className="text-center mb-10">
                         <div
                             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-semibold uppercase tracking-widest mb-4">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" aria-hidden="true"/>
-                            Step 1 of 1 · Set up your storefront
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" aria-hidden="true" />
+                            Set up your storefront
                         </div>
                         <h1 className="text-3xl sm:text-4xl font-black text-slate-100">
                             Welcome to <span className="gradient-text">nummyGo</span> 🔥
@@ -217,13 +219,13 @@ export default function OnboardingPage() {
                             aria-label="Restaurant onboarding form"
                         >
                             {/* ── Card: Basic Info ── */}
-                            <FormCard icon={<Building2 size={15}/>} title="Basic Info">
+                            <FormCard icon={<Building2 size={15} />} title="Basic Info">
                                 <Controller
                                     name="name"
                                     control={control}
-                                    render={({field}) => (
+                                    render={({ field }) => (
                                         <FormField id="name" label="Restaurant Name" required
-                                                   error={errors.name?.message}>
+                                            error={errors.name?.message}>
                                             <BrandInput
                                                 id="name"
                                                 {...field}
@@ -237,7 +239,7 @@ export default function OnboardingPage() {
                                 <Controller
                                     name="slug"
                                     control={control}
-                                    render={({field}) => (
+                                    render={({ field }) => (
                                         <FormField
                                             id="slug"
                                             label="Your nummyGo URL"
@@ -270,17 +272,17 @@ export default function OnboardingPage() {
                                                     {checkSlugQuery.isFetching || slugAvailable === null ?
                                                         (
                                                             <p className="text-xs text-amber-400 flex items-center gap-1 mt-0.5">
-                                                                <Loader2 size={13} className="animate-spin"/> Checking
+                                                                <Loader2 size={13} className="animate-spin" /> Checking
                                                             </p>
                                                         )
                                                         :
                                                         slugAvailable ? (
-                                                                <p className="text-xs text-green-400 flex items-center gap-1 mt-0.5">
-                                                                    <CheckCircle2 size={11} aria-hidden="true"/> Available!
-                                                                </p>
-                                                            ) :
+                                                            <p className="text-xs text-green-400 flex items-center gap-1 mt-0.5">
+                                                                <CheckCircle2 size={11} aria-hidden="true" /> Available!
+                                                            </p>
+                                                        ) :
                                                             <p className="text-xs text-rose-400 flex items-center gap-1 mt-0.5">
-                                                                <AlertCircle size={13} className="text-rose-400"/>
+                                                                <AlertCircle size={13} className="text-rose-400" />
                                                                 {errors.slug?.message || "Not Available!"}
                                                             </p>
                                                     }
@@ -293,11 +295,11 @@ export default function OnboardingPage() {
                             </FormCard>
 
                             {/* ── Card: Contact ── */}
-                            <FormCard icon={<Phone size={15}/>} title="Contact">
+                            <FormCard icon={<Phone size={15} />} title="Contact">
                                 <Controller
                                     name="phoneNumber"
                                     control={control}
-                                    render={({field}) => (
+                                    render={({ field }) => (
                                         <FormField
                                             id="phoneNumber"
                                             label="Phone Number"
@@ -318,7 +320,7 @@ export default function OnboardingPage() {
                                 <Controller
                                     name="email"
                                     control={control}
-                                    render={({field}) => (
+                                    render={({ field }) => (
                                         <FormField
                                             id="email"
                                             label="Email Address"
@@ -338,7 +340,7 @@ export default function OnboardingPage() {
                                 <Controller
                                     name="address"
                                     control={control}
-                                    render={({field}) => (
+                                    render={({ field }) => (
                                         <FormField
                                             id="address"
                                             label="Business Address"
@@ -357,7 +359,7 @@ export default function OnboardingPage() {
                             </FormCard>
 
                             {/* ── Card: Business Hours ── */}
-                            <FormCard icon={<Clock size={15}/>} title="Business Hours">
+                            <FormCard icon={<Clock size={15} />} title="Business Hours">
                                 <div className="flex flex-col gap-2">
                                     {DAYS.map((day) => {
                                         const dh = formValues.businessHours?.[day];
@@ -373,8 +375,8 @@ export default function OnboardingPage() {
                                             >
                                                 {/* Day label */}
                                                 <span className="text-xs font-medium text-slate-400 w-8 flex-shrink-0">
-                          {DAY_LABELS[day]}
-                        </span>
+                                                    {DAY_LABELS[day]}
+                                                </span>
 
                                                 {/* Open/closed toggle */}
                                                 <button
@@ -386,11 +388,11 @@ export default function OnboardingPage() {
                             ${dh.closed ? 'bg-white/10' : 'bg-amber-500'}
                           `}
                                                 >
-                          <span className={`
+                                                    <span className={`
                             absolute top-0.5 w-3 h-3 rounded-full bg-white shadow
                             transition-transform duration-200
                             ${dh.closed ? 'left-0.5' : 'left-4'}
-                          `}/>
+                          `} />
                                                 </button>
 
                                                 {dh.closed ? (
@@ -424,7 +426,7 @@ export default function OnboardingPage() {
                             {onboard.isError && (
                                 <div
                                     className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm">
-                                    <AlertCircle size={15} className="flex-shrink-0" aria-hidden="true"/>
+                                    <AlertCircle size={15} className="flex-shrink-0" aria-hidden="true" />
                                     {onboard.error?.message ?? 'Something went wrong. Please try again.'}
                                 </div>
                             )}
@@ -446,9 +448,9 @@ export default function OnboardingPage() {
                 "
                             >
                                 {onboard.isPending ? (
-                                    <><Loader2 size={16} className="animate-spin"/> Setting up your storefront…</>
+                                    <><Loader2 size={16} className="animate-spin" /> Setting up your storefront…</>
                                 ) : (
-                                    <><CheckCircle2 size={16}/> Launch My Storefront <ChevronRight size={15}/></>
+                                    <><CheckCircle2 size={16} /> Launch My Storefront <ChevronRight size={15} /></>
                                 )}
                             </Button>
                         </form>
@@ -480,10 +482,10 @@ export default function OnboardingPage() {
 
 // ─── FormCard sub-component ───────────────────────────────────────────────────
 function FormCard({
-                      icon,
-                      title,
-                      children,
-                  }: {
+    icon,
+    title,
+    children,
+}: {
     icon: React.ReactNode;
     title: string;
     children: React.ReactNode;
@@ -491,13 +493,13 @@ function FormCard({
     return (
         <section
             className="rounded-2xl p-6 flex flex-col gap-5 border border-white/8"
-            style={{background: 'rgba(19,25,31,0.85)', backdropFilter: 'blur(16px)'}}
+            style={{ background: 'rgba(19,25,31,0.85)', backdropFilter: 'blur(16px)' }}
         >
             <div className="flex items-center gap-2.5 mb-1">
-        <span
-            className="w-8 h-8 rounded-xl bg-amber-400/10 border border-amber-400/20 text-amber-400 flex items-center justify-center flex-shrink-0">
-          {icon}
-        </span>
+                <span
+                    className="w-8 h-8 rounded-xl bg-amber-400/10 border border-amber-400/20 text-amber-400 flex items-center justify-center flex-shrink-0">
+                    {icon}
+                </span>
                 <h2 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">{title}</h2>
             </div>
             {children}
