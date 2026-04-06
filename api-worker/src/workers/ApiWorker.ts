@@ -20,6 +20,7 @@ export class ApiWorker extends WorkerEntrypoint<Env> {
         // ── CORS preflight ───────────────────────────────────────────────────
         if (request.method === 'OPTIONS') {
             return new Response(null, {status: 204, headers: cors});
+            
         }
 
         // ── Auth: /api/auth/* ────────────────────────────────────────────────
