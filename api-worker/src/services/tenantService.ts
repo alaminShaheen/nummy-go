@@ -35,6 +35,7 @@ export async function completeTenantOnboarding(userId: string, data: RegisterTen
 			message: 'Onboarding already completed',
 		});
 	}
+
 	const existing = await getTenantBySlug(data.slug);
 	if (existing)
 		throw new ZodError([
