@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import Navbar from '@/components/Navbar';
@@ -14,15 +13,11 @@ import { authClient } from '@/lib/auth-client';
 import { Tenant } from '@nummygo/shared/models';
 import { getGoogleMapsUrl } from '@/utils/tenant';
 import { trpc } from '@/trpc/client';
+import { useCart } from '@/hooks/useCart';
 
-/* ─── Mock Data ─────────────────────────────────── */
+/* ─── Fallback Mock Data ────────────────────────── */
 
 const VENDOR = {
-  name: 'The Golden Fork',
-  address: '123 Maple Street, Toronto, ON M5V 2T6',
-  mapUrl: 'https://www.google.com/maps/search/?api=1&query=123+Maple+Street+Toronto+ON',
-  phone: '+1 (416) 555-0192',
-  email: 'hello@goldenfork.ca',
   hours: [
     { day: 'Mon – Fri', time: '11:00 AM – 10:00 PM' },
     { day: 'Saturday', time: '10:00 AM – 11:00 PM' },
@@ -65,43 +60,42 @@ const MENU_ITEMS: MenuItem[] = [
   },
 ];
 
-/* ─── Cart type ─────────────────────────────────── */
-interface CartEntry { item: MenuItem; qty: number; }
-
 /* ─── Component ─────────────────────────────────── */
 
 export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
   const params = useParams<{ slug: string }>();
-  const [cart, setCart] = useState<CartEntry[]>([]);
+  const { addToCart } = useCart();
 
   const { data: session } = authClient.useSession();
-  const isVendorOwner = !!session?.user;
+  const isVendorOwner = !!session?.user && session.user.id === tenant.userId;
 
   const { data: serverMenuItems } = trpc.tenant.getStorefrontMenu.useQuery({ tenantId: tenant.id });
   const { data: serverCategories } = trpc.tenant.getStorefrontCategories.useQuery({ tenantId: tenant.id });
-  const displayItems: MenuItem[] = serverMenuItems && serverMenuItems.length > 0 
+  const displayItems: MenuItem[] = serverMenuItems && serverMenuItems.length > 0
     ? serverMenuItems.map(item => ({
-        id: item.id,
-        name: item.name,
-        description: item.description || '',
-        price: item.price / 100,
-        image: item.imageUrl || '',
-        badge: item.badge || undefined,
-        categoryId: item.categoryId || null,
-      }))
+      id: item.id,
+      name: item.name,
+      description: item.description || '',
+      price: item.price / 100,
+      image: item.imageUrl || '',
+      badge: item.badge || undefined,
+      categoryId: item.categoryId || null,
+    }))
     : MENU_ITEMS;
 
   const handleAddToCart = (item: MenuItem, qty: number) => {
-    setCart((prev) => {
-      const existing = prev.find((e) => e.item.id === item.id);
-      if (existing) {
-        return prev.map((e) => e.item.id === item.id ? { ...e, qty: e.qty + qty } : e);
-      }
-      return [...prev, { item, qty }];
-    });
+    addToCart(
+      tenant.id,
+      tenant.name,
+      {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+      },
+      qty
+    );
   };
-
-  const totalItems = cart.reduce((sum, e) => sum + e.qty, 0);
 
   return (
     <>
@@ -140,7 +134,7 @@ export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
         </footer>
       </main>
 
-      <CartFab itemCount={totalItems} />
+      <CartFab />
     </>
   );
 }

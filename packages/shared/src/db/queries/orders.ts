@@ -28,6 +28,10 @@ export async function getOrdersByUser(userId: string) {
   return getDb().select().from(orders).where(eq(orders.userId, userId)).orderBy(desc(orders.createdAt));
 }
 
+export async function getOrdersByCheckoutSession(checkoutSessionId: string) {
+  return getDb().select().from(orders).where(eq(orders.checkoutSessionId, checkoutSessionId)).orderBy(desc(orders.createdAt));
+}
+
 export async function updateOrderStatus(id: string, status: UpdateOrderStatusDto['status']) {
   const result = await getDb()
     .update(orders)

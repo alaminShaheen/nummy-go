@@ -10,8 +10,9 @@ import {
     updateMenuItemSchema,
     deleteMenuItemSchema,
     createMenuItemCategorySchema,
+    posCheckoutSchema,
 } from '@nummygo/shared/models/dtos';
-import { changeOrderStatus, fetchTenantOrders } from '../../services/orderService';
+import { changeOrderStatus, fetchTenantOrders, placePosOrder } from '../../services/orderService';
 import { completeTenantOnboarding, getTenantProfile, updateTenantInformation } from '../../services/tenantService';
 import { addMenuItem, editMenuItem, fetchAllTenantMenuItems, removeMenuItem, fetchStorefrontMenu, addMenuCategory, fetchAllTenantMenuCategories } from '../../services/menuService';
 import { getAllTenantSlugs, getTenantBySlug, searchTenantsByName } from '@nummygo/shared/db/queries';
@@ -75,6 +76,14 @@ export const tenantRouter = router({
 	getDashboardOrders: tenantProcedure.input(getOrdersByTenantSchema).query(async ({ input, ctx }) => {
 		return await fetchTenantOrders(ctx.env, input);
 	}),
+
+    createPosOrder: tenantProcedure
+        .input(posCheckoutSchema)
+        .mutation(async ({ input, ctx }) => {
+            const tenant = await getTenantProfile(ctx.session.user.id);
+            if (!tenant) throw new Error("No tenant found");
+            return await placePosOrder(ctx.env, tenant.id, input);
+        }),
 
     updateOrderStatus: tenantProcedure
         .input(updateOrderStatusSchema)

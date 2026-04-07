@@ -3,12 +3,14 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import { ClipboardList, Pencil, LogOut, LogIn, User } from 'lucide-react';
+import { ClipboardList, Pencil, LogOut, LogIn, User, CookingPot, ShoppingCart } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { trpc } from '@/trpc/client';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
 import { GradientButton } from '@/components/ui';
 import VendorSearchBar from '@/components/VendorSearchBar';
+import { useCart } from '@/hooks/useCart';
+import CartDrawer from '@/components/CartDrawer';
 
 
 
@@ -86,7 +88,12 @@ export default function Navbar() {
   const role = (user as { role?: string })?.role || 'vendor';
   const isLoggedIn = !isPending && !!user;
 
+  const { totalItems: cartItemCount } = useCart();
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  const showNavCartIcon = cartItemCount > 0 && !isSlugPage;
+
   return (
+    <>
     <header
       id="navbar"
       className={`
@@ -120,6 +127,36 @@ export default function Navbar() {
         {/* ── Right side ── */}
         <div className="flex items-center gap-3">
 
+          {/* ── Cart icon (visible on non-slug pages when cart has items) ── */}
+          {showNavCartIcon && (
+            <button
+              id="nav-cart"
+              type="button"
+              onClick={() => setCartDrawerOpen(true)}
+              aria-label={`View cart – ${cartItemCount} items`}
+              className="
+                relative p-2 rounded-full
+                border border-white/10 hover:border-amber-400/30
+                text-slate-400 hover:text-amber-400
+                transition-all duration-200
+              "
+            >
+              <ShoppingCart size={17} />
+              <span
+                className="
+                  absolute -top-1 -right-1
+                  min-w-[18px] h-[18px] px-1
+                  flex items-center justify-center
+                  rounded-full
+                  bg-gradient-to-r from-amber-500 to-orange-600
+                  text-[10px] font-black text-white leading-none
+                "
+              >
+                {cartItemCount > 99 ? '99+' : cartItemCount}
+              </span>
+            </button>
+          )}
+
 
           {/* ══════════════════════════════════════════
               AUTHENTICATED  — auth cluster
@@ -146,7 +183,7 @@ export default function Navbar() {
                       <>
                         <PillLink href={ordersHref} id="nav-orders" icon={<ClipboardList size={15} />} label="Orders" />
                         <PillDivider />
-                        <PillLink href={profileHref} id="nav-edit-profile" icon={<Pencil size={15} />} label="Profile" />
+                        <PillLink href={profileHref} id="nav-edit-profile" icon={<CookingPot size={15} />} label="Profile" />
                         <PillDivider />
                       </>
                     )}
@@ -307,6 +344,10 @@ export default function Navbar() {
         </div>
       )}
     </header>
+
+      {/* Cart Drawer (rendered from Navbar so it's accessible on every page) */}
+      <CartDrawer isOpen={cartDrawerOpen} onClose={() => setCartDrawerOpen(false)} />
+    </>
   );
 }
 

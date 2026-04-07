@@ -18,8 +18,12 @@ export default function CustomerPage() {
 
   const { orders: initialOrders, isLoading } = useOrders(DEMO_USER_ID);
 
-  const placeOrderMutation = trpc.customer.placeOrder.useMutation({
-    onSuccess: (newOrder) => setLiveOrders((prev) => [newOrder, ...prev]),
+  const checkoutMutation = trpc.customer.checkout.useMutation({
+    onSuccess: (result) => {
+      // The new checkout returns { checkoutSessionId }, not an Order directly.
+      // For this demo page we'll just log it.
+      console.log('Checkout session:', result.checkoutSessionId);
+    },
   });
 
   const handleWsMessage = useCallback((msg: WsMessage) => {
@@ -42,10 +46,13 @@ export default function CustomerPage() {
   ];
 
   const handlePlaceOrder = () => {
-    placeOrderMutation.mutate({
-      tenantId: DEMO_TENANT_ID,
-      userId: DEMO_USER_ID,
-      items: [{ menuItemId: '00000000-0000-0000-0000-000000000003', quantity }],
+    checkoutMutation.mutate({
+      cart: [{
+        tenantId: DEMO_TENANT_ID,
+        items: [{ menuItemId: '00000000-0000-0000-0000-000000000003', quantity }],
+      }],
+      customerName: 'Demo Customer',
+      customerPhone: '4165550192',
     });
   };
 
@@ -74,14 +81,14 @@ export default function CustomerPage() {
             />
             <Button
               onClick={handlePlaceOrder}
-              disabled={placeOrderMutation.isPending}
+              disabled={checkoutMutation.isPending}
             >
-              {placeOrderMutation.isPending ? 'Placing…' : 'Place Order'}
+              {checkoutMutation.isPending ? 'Placing…' : 'Place Order'}
             </Button>
           </div>
-          {placeOrderMutation.isError && (
+          {checkoutMutation.isError && (
             <p className="text-destructive text-sm mt-2">
-              {placeOrderMutation.error.message}
+              {checkoutMutation.error.message}
             </p>
           )}
         </CardContent>

@@ -8,6 +8,7 @@ import BenefitCard from '@/components/BenefitCard';
 import { SectionLabel, GradientButton, GradientDivider } from '@/components/ui';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { Tenant } from '@nummygo/shared/models';
 
 const CUSTOMER_BENEFITS = [
   {
@@ -54,6 +55,17 @@ const VENDOR_BENEFITS = [
     description: 'Reach new customers in your area with zero upfront cost. Only pay when you earn.',
     accent: 'indigo' as const,
     delay: 200,
+  },
+];
+
+const POPULAR_VENDOR_NEAR_ME: Pick<Tenant, 'name' | 'slug'>[] = [
+  {
+    name: 'Authentic Dhakaiya',
+    slug: 'authentic-dhakaiya'
+  },
+  {
+    name: 'Deshi Kitchen',
+    slug: 'deshi-kitchen',
   },
 ];
 
@@ -115,13 +127,13 @@ export default function PlatformHome() {
               {/* Quick links */}
               <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-slate-500">
                 <span>Popular near you:</span>
-                {['the-golden-fork', 'sushi-express', 'pizza-palace'].map((slug) => (
+                {POPULAR_VENDOR_NEAR_ME.map((vendor) => (
                   <Link
-                    key={slug}
-                    href={`/${slug}`}
+                    key={vendor.slug}
+                    href={`/${vendor.slug}`}
                     className="text-amber-400/80 hover:text-amber-400 transition-colors"
                   >
-                    {slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                    {vendor.name}
                   </Link>
                 ))}
               </div>

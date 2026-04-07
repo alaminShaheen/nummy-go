@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { GradientButton, GlossButton, SectionLabel } from '@/components/ui';
+import { GradientButton, GlossButton } from '@/components/ui';
 import { ArrowRight, Pencil } from 'lucide-react';
 
 export default function HeroBanner({ isVendorOwner }: { isVendorOwner?: boolean }) {

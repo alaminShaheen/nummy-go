@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { orderStatusEnum } from '../enums';
+import { orderStatusEnum, paymentMethodEnum } from '../enums';
 import { ulidSchema, timestampSchema } from '../schemas';
 
 export const orderItemSchema = z.object({
@@ -14,9 +14,15 @@ export const orderItemSchema = z.object({
 
 export const orderSchema = z.object({
   id:                 ulidSchema,
-  userId:             ulidSchema,
+  userId:             ulidSchema.nullable(),
   tenantId:           ulidSchema,
+  checkoutSessionId:  ulidSchema.nullable(),
+  customerName:       z.string().nullable(),
+  customerPhone:      z.string().nullable(),
+  customerEmail:      z.string().nullable(),
   status:             orderStatusEnum,
+  paymentMethod:      paymentMethodEnum,
+  isPosOrder:         z.boolean(),
   totalAmount:        z.number().int().positive(),
   specialInstruction: z.string().nullable(),
   createdAt:          timestampSchema,

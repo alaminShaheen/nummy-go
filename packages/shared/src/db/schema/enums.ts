@@ -8,3 +8,8 @@ export const ORDER_STATUS = [
   'completed',
   'cancelled',
 ] as const;
+
+export const PAYMENT_METHOD = [
+  'card',
+  'counter',
+] as const;
