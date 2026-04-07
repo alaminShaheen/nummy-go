@@ -14,6 +14,7 @@ export interface MenuItem {
   price:       number;
   image:       string;
   badge?:      string; // e.g. "Popular", "New", "Chef's Pick"
+  categoryId?: string | null;
 }
 
 interface MenuItemCardProps {

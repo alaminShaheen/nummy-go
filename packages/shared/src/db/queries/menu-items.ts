@@ -27,6 +27,14 @@ export async function getMenuItemsByTenant(tenantId: string) {
     .where(and(eq(menuItems.tenantId, tenantId), eq(menuItems.isAvailable, true)));
 }
 
+export async function getAllMenuItemsByTenant(tenantId: string) {
+  return getDb()
+    .select()
+    .from(menuItems)
+    .where(eq(menuItems.tenantId, tenantId))
+    .orderBy(menuItems.createdAt);
+}
+
 export async function getMenuItemsByCategory(tenantId: string, categoryId: string) {
   return getDb()
     .select()
@@ -61,6 +69,10 @@ export async function updateMenuItemAvailability(id: string, isAvailable: boolea
     .where(eq(menuItems.id, id))
     .returning();
   return result[0];
+}
+
+export async function deleteMenuItem(id: string) {
+  return getDb().delete(menuItems).where(eq(menuItems.id, id));
 }
 
 // ── Category queries ───────────────────────────────────────────────────────

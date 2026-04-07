@@ -11,6 +11,7 @@ export const menuItems = sqliteTable('menu_items', {
   description: text('description'),
   imageUrl:    text('image_url'),
   price:       integer('price').notNull(),
+  badge:       text('badge'),
   isAvailable: integer('is_available', { mode: 'boolean' }).notNull().default(true),
   isFeatured:  integer('is_featured', { mode: 'boolean' }).notNull().default(false),
   createdAt:   integer('created_at', { mode: 'number' }).notNull(),

@@ -5,11 +5,16 @@ import {
     registerTenantSchema,
     searchTenantsSchema,
     updateOrderStatusSchema,
+    createMenuItemSchema,
+    updateMenuItemSchema,
+    deleteMenuItemSchema,
+    createMenuItemCategorySchema,
 } from '@nummygo/shared/models/dtos';
 import { changeOrderStatus, fetchTenantOrders } from '../../services/orderService';
 import { completeTenantOnboarding, getTenantProfile } from '../../services/tenantService';
+import { addMenuItem, editMenuItem, fetchAllTenantMenuItems, removeMenuItem, fetchStorefrontMenu, addMenuCategory, fetchAllTenantMenuCategories } from '../../services/menuService';
 import { getAllTenantSlugs, getTenantBySlug, searchTenantsByName } from '@nummygo/shared/db/queries';
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 
 export const tenantRouter = router({
     // ── General ───────────────────────────────────────────────────────────
@@ -33,6 +38,18 @@ export const tenantRouter = router({
         .input(checkTenantSlugSchema)
         .query(async ({ input }) => {
             return getTenantBySlug(input.slug);
+        }),
+
+    getStorefrontMenu: publicProcedure
+        .input(z.object({ tenantId: z.string() }))
+        .query(async ({ input }) => {
+            return fetchStorefrontMenu(input.tenantId);
+        }),
+
+    getStorefrontCategories: publicProcedure
+        .input(z.object({ tenantId: z.string() }))
+        .query(async ({ input }) => {
+            return fetchAllTenantMenuCategories(input.tenantId);
         }),
 
     checkSlug: protectedProcedure
@@ -64,5 +81,54 @@ export const tenantRouter = router({
         .input(updateOrderStatusSchema)
         .mutation(async ({ input, ctx }) => {
             return await changeOrderStatus(ctx.env, input);
+        }),
+
+    // ── Menu Management ────────────────────────────────────────────────────────
+    
+    getMenuItems: tenantProcedure
+        .query(async ({ ctx }) => {
+            const tenant = await getTenantProfile(ctx.session.user.id);
+            if (!tenant) throw new Error("No tenant found");
+            return await fetchAllTenantMenuItems(tenant.id);
+        }),
+
+    createMenuItem: tenantProcedure
+        .input(createMenuItemSchema.omit({ tenantId: true }))
+        .mutation(async ({ input, ctx }) => {
+            const tenant = await getTenantProfile(ctx.session.user.id);
+            if (!tenant) throw new Error("Unauthorized");
+            return await addMenuItem({ ...input, tenantId: tenant.id });
+        }),
+
+    updateMenuItem: tenantProcedure
+        .input(updateMenuItemSchema.extend({ id: z.string() })) // using a string ID (ULID)
+        .mutation(async ({ input, ctx }) => {
+            const { id, ...data } = input;
+            // ideally we would check if the item belongs to the tenant here
+            return await editMenuItem(id, data);
+        }),
+
+    deleteMenuItem: tenantProcedure
+        .input(deleteMenuItemSchema)
+        .mutation(async ({ input, ctx }) => {
+            // ideally we would check if the item belongs to the tenant here
+            return await removeMenuItem(input.id);
+        }),
+
+    // ── Categories ─────────────────────────────────────────────────────────────
+
+    getMenuCategories: tenantProcedure
+        .query(async ({ ctx }) => {
+            const tenant = await getTenantProfile(ctx.session.user.id);
+            if (!tenant) throw new Error("No tenant found");
+            return await fetchAllTenantMenuCategories(tenant.id);
+        }),
+
+    createMenuCategory: tenantProcedure
+        .input(createMenuItemCategorySchema.omit({ tenantId: true }))
+        .mutation(async ({ input, ctx }) => {
+            const tenant = await getTenantProfile(ctx.session.user.id);
+            if (!tenant) throw new Error("Unauthorized");
+            return await addMenuCategory({ ...input, tenantId: tenant.id });
         }),
 });

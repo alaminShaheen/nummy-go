@@ -43,6 +43,13 @@
       "when": 1775392673245,
       "tag": "0005_jittery_ender_wiggin",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1775523130329,
+      "tag": "0006_exotic_bloodstorm",
+      "breakpoints": true
     }
   ]
 }
