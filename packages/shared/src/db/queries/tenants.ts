@@ -1,4 +1,4 @@
-import { eq , like, and} from 'drizzle-orm';
+import { eq , like, and, inArray} from 'drizzle-orm';
 import { getDb } from '../client';
 import { tenants } from '../schema';
 import type { CreateTenantRecordDto, Tenant, UpdateTenantDto } from '../../models';
@@ -13,6 +13,11 @@ export async function createTenant(data: CreateTenantRecordDto) {
 export async function getTenantById(id: string) {
 	const rows = await getDb().select().from(tenants).where(eq(tenants.id, id)).limit(1);
 	return rows[0];
+}
+
+export async function getTenantsByIds(ids: string[]) {
+	if (ids.length === 0) return [];
+	return getDb().select().from(tenants).where(inArray(tenants.id, ids));
 }
 
 export async function getTenantByUserId(userId: string): Promise<Tenant> {
@@ -54,7 +59,13 @@ export async function updateTenantOrderAcceptance(id: string, acceptsOrders: boo
 
 export async function searchTenantsByName(query: string, limit = 50) {
     return getDb()
-        .select({name: tenants.name, slug: tenants.slug, address: tenants.address})
+        .select({
+            name: tenants.name,
+            slug: tenants.slug,
+            address: tenants.address,
+            acceptsOrders: tenants.acceptsOrders,
+            closedUntil: tenants.closedUntil,
+        })
         .from(tenants)
         .where(
             and(

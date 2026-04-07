@@ -164,7 +164,13 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             </div>
 
             {/* Checkout CTA */}
-            <GradientButton className="w-full py-3.5 text-sm rounded-full shadow-lg shadow-orange-900/40">
+            <GradientButton 
+              className="w-full py-3.5 text-sm rounded-full shadow-lg shadow-orange-900/40"
+              onClick={() => {
+                onClose();
+                window.location.href = '/checkout';
+              }}
+            >
               <ShoppingCart className="w-4 h-4" />
               Proceed to Checkout
             </GradientButton>

@@ -32,13 +32,18 @@ export async function getOrdersByCheckoutSession(checkoutSessionId: string) {
   return getDb().select().from(orders).where(eq(orders.checkoutSessionId, checkoutSessionId)).orderBy(desc(orders.createdAt));
 }
 
-export async function updateOrderStatus(id: string, status: UpdateOrderStatusDto['status']) {
+export async function updateOrderStatus(
+  id: string,
+  status: UpdateOrderStatusDto['status'],
+  rejectionReason?: string,
+) {
   const result = await getDb()
     .update(orders)
     .set({
       status,
       updatedAt: Date.now(),
       ...(status === 'completed' ? { completedAt: Date.now() } : {}),
+      ...(status === 'cancelled' && rejectionReason ? { rejectionReason } : {}),
     })
     .where(eq(orders.id, id))
     .returning();

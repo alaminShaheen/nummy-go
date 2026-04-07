@@ -16,11 +16,14 @@ export const orders = sqliteTable('orders', {
   
   // Order specifics
   paymentMethod: text('payment_method', { enum: PAYMENT_METHOD }).notNull().default('counter'),
+  fulfillmentMethod: text('fulfillment_method', { enum: ['pickup', 'delivery'] }).notNull().default('pickup'),
+  deliveryAddress: text('delivery_address'),
   isPosOrder: integer('is_pos_order', { mode: 'boolean' }).notNull().default(false),
   
   status: text('status', { enum: ORDER_STATUS }).notNull().default('pending'),
   totalAmount: integer('total_amount').notNull(),
   specialInstruction: text('special_instruction'),
+  rejectionReason: text('rejection_reason'),
   createdAt: integer('created_at', { mode: 'number' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'number' }),
   completedAt: integer('completed_at', { mode: 'number' }),

@@ -22,3 +22,5 @@ export const priceSchema = z
         message: "Price can have at most 2 decimal places",
     })
     .transform((val) => Math.round(val * 100));
+
+export const outputPriceSchema = z.number().transform((val) => parseFloat((val / 100).toFixed(2)));

@@ -1,6 +1,7 @@
-import { router, publicProcedure, TRPCError } from '../init';
-import { customerCheckoutSchema, getOrdersByUserSchema, getOrderGroupSchema } from '@nummygo/shared/models/dtos';
+import { router, publicProcedure, protectedProcedure, TRPCError } from '../init';
+import { customerCheckoutSchema, getOrdersByUserSchema, getOrderGroupSchema, orderResponseSchema } from '@nummygo/shared/models/dtos';
 import { placeCheckoutOrder, fetchUserOrders, fetchCheckoutSession } from '../../services/orderService';
+import { z } from 'zod';
 
 export const customerRouter = router({
 
@@ -18,11 +19,11 @@ export const customerRouter = router({
       }
     }),
 
-  getOrders: publicProcedure
-    .input(getOrdersByUserSchema)
-    .query(async ({ input, ctx }) => {
+  getOrders: protectedProcedure
+    .output(z.array(orderResponseSchema))
+    .query(async ({ ctx }) => {
       try {
-        return await fetchUserOrders(ctx.env, input.userId);
+        return await fetchUserOrders(ctx.env, ctx.session.user.id);
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -32,7 +33,8 @@ export const customerRouter = router({
     }),
 
   getCheckoutGroup: publicProcedure
-    .input(getOrderGroupSchema)
+    .input(z.object({ checkoutSessionId: z.string() }))
+    .output(z.array(orderResponseSchema))
     .query(async ({ input, ctx }) => {
       try {
         return await fetchCheckoutSession(ctx.env, input);

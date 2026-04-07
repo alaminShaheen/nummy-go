@@ -14,14 +14,14 @@
 
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import type { WsMessage } from '@nummygo/shared/models/types';
 import { env } from '@/env';
 
-function getWsUrl(tenantId: string) {
+function getWsUrl(endpoint: string, type: 'tenant' | 'session' = 'tenant') {
   const base = env.NEXT_PUBLIC_API_WORKER_URL;
   const wsBase = base.replace(/^http/, 'ws');
-  return `${wsBase}/ws/tenant/${tenantId}`;
+  return `${wsBase}/ws/${type}/${endpoint}`;
 }
 
 interface UseWebSocketOptions {
@@ -31,23 +31,25 @@ interface UseWebSocketOptions {
 }
 
 export function useWebSocket(
-  tenantId: string | null,
-  { onMessage, onConnect, onDisconnect }: UseWebSocketOptions
+  endpointId: string | null,
+  { onMessage, onConnect, onDisconnect, type = 'tenant' }: UseWebSocketOptions & { type?: 'tenant' | 'session' }
 ) {
   const wsRef          = useRef<WebSocket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
   const reconnectDelay = useRef(1000);
   const unmountedRef   = useRef(false);
   const onMessageRef   = useRef(onMessage);
   onMessageRef.current = onMessage;
 
   const connect = useCallback(() => {
-    if (!tenantId || unmountedRef.current) return;
+    if (!endpointId || unmountedRef.current) return;
 
-    const ws = new WebSocket(getWsUrl(tenantId));
+    const ws = new WebSocket(getWsUrl(endpointId, type));
     wsRef.current = ws;
 
     ws.onopen = () => {
       reconnectDelay.current = 1000;
+      setIsConnected(true);
       onConnect?.();
     };
 
@@ -59,6 +61,7 @@ export function useWebSocket(
     };
 
     ws.onclose = () => {
+      setIsConnected(false);
       onDisconnect?.();
       if (!unmountedRef.current) {
         const delay = Math.min(reconnectDelay.current, 30_000);
@@ -68,7 +71,7 @@ export function useWebSocket(
     };
 
     ws.onerror = () => ws.close();
-  }, [tenantId, onConnect, onDisconnect]);
+  }, [endpointId, type, onConnect, onDisconnect]);
 
   useEffect(() => {
     unmountedRef.current = false;
@@ -90,5 +93,6 @@ export function useWebSocket(
   return {
     disconnect: () => wsRef.current?.close(),
     readyState: wsRef.current?.readyState,
+    isConnected,
   };
 }

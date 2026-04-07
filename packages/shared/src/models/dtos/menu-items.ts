@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import {ulidSchema, timestampSchema, priceSchema,} from '../schemas';
+import {ulidSchema, timestampSchema, priceSchema, outputPriceSchema} from '../schemas';
 
 // ── API-facing ─────────────────────────────────────────────────────────────
 
@@ -50,8 +50,24 @@ export const createMenuItemCategoryRecordSchema = createMenuItemCategorySchema.e
   updatedAt: timestampSchema,
 });
 
+export const menuItemResponseSchema = z.object({
+  id:          ulidSchema,
+  tenantId:    ulidSchema,
+  categoryId:  ulidSchema.nullable(),
+  name:        z.string(),
+  description: z.string().nullable(),
+  imageUrl:    z.string().nullable(),
+  price:       outputPriceSchema,
+  isAvailable: z.boolean(),
+  isFeatured:  z.boolean(),
+  badge:       z.string().nullable(),
+  createdAt:   timestampSchema,
+  updatedAt:   timestampSchema.nullable(),
+});
+
 export type CreateMenuItemDto               = z.infer<typeof createMenuItemSchema>;
 export type UpdateMenuItemDto               = z.infer<typeof updateMenuItemSchema>;
 export type CreateMenuItemCategoryDto       = z.infer<typeof createMenuItemCategorySchema>;
 export type CreateMenuItemRecordDto         = z.infer<typeof createMenuItemRecordSchema>;
 export type CreateMenuItemCategoryRecordDto = z.infer<typeof createMenuItemCategoryRecordSchema>;
+export type MenuItemResponseDto             = z.infer<typeof menuItemResponseSchema>;

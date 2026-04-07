@@ -76,7 +76,7 @@ export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
       id: item.id,
       name: item.name,
       description: item.description || '',
-      price: item.price / 100,
+      price: item.price,
       image: item.imageUrl || '',
       badge: item.badge || undefined,
       categoryId: item.categoryId || null,

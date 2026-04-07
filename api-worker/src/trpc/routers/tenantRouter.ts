@@ -11,6 +11,8 @@ import {
     deleteMenuItemSchema,
     createMenuItemCategorySchema,
     posCheckoutSchema,
+    menuItemResponseSchema,
+    orderResponseSchema,
 } from '@nummygo/shared/models/dtos';
 import { changeOrderStatus, fetchTenantOrders, placePosOrder } from '../../services/orderService';
 import { completeTenantOnboarding, getTenantProfile, updateTenantInformation } from '../../services/tenantService';
@@ -42,6 +44,7 @@ export const tenantRouter = router({
 
     getStorefrontMenu: publicProcedure
         .input(z.object({ tenantId: z.string() }))
+        .output(z.array(menuItemResponseSchema))
         .query(async ({ input }) => {
             return fetchStorefrontMenu(input.tenantId);
         }),
@@ -73,9 +76,12 @@ export const tenantRouter = router({
 
 	// ── Dashboard ────────────────────────────────────────────────────────────
 
-	getDashboardOrders: tenantProcedure.input(getOrdersByTenantSchema).query(async ({ input, ctx }) => {
-		return await fetchTenantOrders(ctx.env, input);
-	}),
+	getDashboardOrders: tenantProcedure
+        .input(getOrdersByTenantSchema)
+        .output(z.array(orderResponseSchema))
+        .query(async ({ input, ctx }) => {
+		    return await fetchTenantOrders(ctx.env, input);
+	    }),
 
     createPosOrder: tenantProcedure
         .input(posCheckoutSchema)
@@ -94,6 +100,7 @@ export const tenantRouter = router({
     // ── Menu Management ────────────────────────────────────────────────────────
 
     getMenuItems: tenantProcedure
+        .output(z.array(menuItemResponseSchema))
         .query(async ({ ctx }) => {
             const tenant = await getTenantProfile(ctx.session.user.id);
             if (!tenant) throw new Error("No tenant found");

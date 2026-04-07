@@ -32,6 +32,24 @@ export class ApiWorker extends WorkerEntrypoint<Env> {
 			return new Response(response.body, { status: response.status, headers });
 		}
 
+		// ── WebSocket: /ws/tenant/:tenantId ──────────────────────────────────
+		if (url.pathname.startsWith('/ws/tenant/')) {
+			const tenantId = url.pathname.split('/ws/tenant/')[1];
+			if (!tenantId) return new Response('Missing tenantId', { status: 400, headers: cors });
+			return this.#forwardToDO(request, tenantId);
+		}
+
+		// ── WebSocket: /ws/session/:sessionId ────────────────────────────────
+		if (url.pathname.startsWith('/ws/session/')) {
+			const sessionId = url.pathname.split('/ws/session/')[1];
+			if (!sessionId) return new Response('Missing sessionId', { status: 400, headers: cors });
+
+			// Session may span multiple tenants. For now, use the sessionId as the DO name.
+			// All orders in a checkout session route to a single DO keyed by sessionId,
+			// and the orderService broadcasts to BOTH the tenant DO and the session DO.
+			return this.#forwardToDO(request, `session:${sessionId}`);
+		}
+
 		// ── tRPC: /trpc/* ────────────────────────────────────────────────────
 		if (url.pathname.startsWith('/trpc')) {
 			const response = await fetchRequestHandler({
@@ -56,6 +74,16 @@ export class ApiWorker extends WorkerEntrypoint<Env> {
 	}
 
 	// ── Private helpers ────────────────────────────────────────────────────
+
+	/**
+	 * Forward a WebSocket upgrade request to the TenantOrderDO.
+	 * The `doName` is used with idFromName() to get a deterministic DO instance.
+	 */
+	#forwardToDO(request: Request, doName: string): Promise<Response> {
+		const doId = this.env.TENANT_ORDER_DO.idFromName(doName);
+		const stub = this.env.TENANT_ORDER_DO.get(doId);
+		return stub.fetch(request);
+	}
 
 	#corsHeaders(origin: string): HeadersInit {
 		const corsOrigin = this.env?.CORS_ORIGIN || '*';

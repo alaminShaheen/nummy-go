@@ -4,7 +4,7 @@ import { trpc } from '@/trpc/client';
 
 export function useOrders(userId: string | null) {
   const query = trpc.customer.getOrders.useQuery(
-    { userId: userId ?? '' },
+    undefined,
     {
       enabled: !!userId,
       refetchInterval: 30_000,

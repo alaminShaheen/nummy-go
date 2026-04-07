@@ -50,6 +50,13 @@
       "when": 1775523130329,
       "tag": "0006_exotic_bloodstorm",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1775592177855,
+      "tag": "0007_regular_monster_badoon",
+      "breakpoints": true
     }
   ]
 }

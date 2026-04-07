@@ -23,7 +23,8 @@
     "db:studio": "drizzle-kit studio",
     "auth:generate": "better-auth generate --config src/auth.cli.ts",
     "migrate:staging": "wrangler d1 migrations apply nummygo-db-staging --remote --env staging",
-    "migrate:prod": "wrangler d1 migrations apply nummygo-db-staging --remote --env production"
+    "migrate:prod": "wrangler d1 migrations apply nummygo-db-staging --remote --env production",
+    "build": "tsc"
   },
   "dependencies": {
     "@nummygo/shared": "workspace:*",

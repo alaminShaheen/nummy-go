@@ -10,17 +10,20 @@
     "enabled": true
   },
   "account_id": "c22e009e9befc0843932aad9f5fbc1ce",
-  // ── Durable Objects (uncomment when enabling WebSockets) ─────────────────
-  // "durable_objects": {
-  //   "bindings": [{ "name": "TENANT_ORDER_DO", "class_name": "TenantOrderDO" }]
-  // },
-  // "migrations": [{ "tag": "v1", "new_classes": ["TenantOrderDO"] }],
+  // ── Durable Objects ─────────────────────────────────────────────────────
+  "durable_objects": {
+    "bindings": [{ "name": "TENANT_ORDER_DO", "class_name": "TenantOrderDO" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["TenantOrderDO"] }],
 
   // ── Environments ─────────────────────────────────────────────────────────
   // Secrets (never put here): BETTER_AUTH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
   // Local: add to .dev.vars — Production: add via CF dashboard
   "env": {
     "local": {
+      "durable_objects": {
+        "bindings": [{ "name": "TENANT_ORDER_DO", "class_name": "TenantOrderDO" }]
+      },
       "d1_databases": [
         {
           "remote": true,
@@ -38,6 +41,9 @@
       }
     },
     "staging": {
+      "durable_objects": {
+        "bindings": [{ "name": "TENANT_ORDER_DO", "class_name": "TenantOrderDO" }]
+      },
       "d1_databases": [
         {
           "binding": "DB",

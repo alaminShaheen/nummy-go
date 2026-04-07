@@ -2,6 +2,7 @@
 export interface Env {
   // ── Bindings ──────────────────────────────────────────────────────────
   DB: D1Database;
+  TENANT_ORDER_DO: DurableObjectNamespace;
 
   // ── Vars (wrangler.jsonc) ─────────────────────────────────────────────
   ENVIRONMENT:      string;
