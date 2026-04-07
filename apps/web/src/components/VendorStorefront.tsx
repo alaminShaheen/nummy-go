@@ -93,7 +93,7 @@ export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
       <Navbar />
 
       <main>
-        <HeroBanner />
+        <HeroBanner isVendorOwner={isVendorOwner} />
         <GradientDivider accent="amber" />
         <VendorInfo
           name={tenant.name}

@@ -25,8 +25,9 @@ export {
   Input,
   Separator,
   Skeleton,
+  VendorCard,
 } from '@nummygo/shared/ui';
-export type { InputProps } from '@nummygo/shared/ui';
+export type { InputProps, VendorCardProps } from '@nummygo/shared/ui';
 
 // Custom NummyGo components
 export { GradientButton } from './GradientButton';

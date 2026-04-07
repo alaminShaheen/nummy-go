@@ -3,11 +3,12 @@ import {
     checkTenantSlugSchema,
     getOrdersByTenantSchema,
     registerTenantSchema,
+    searchTenantsSchema,
     updateOrderStatusSchema,
 } from '@nummygo/shared/models/dtos';
 import { changeOrderStatus, fetchTenantOrders } from '../../services/orderService';
 import { completeTenantOnboarding, getTenantProfile } from '../../services/tenantService';
-import { getAllTenantSlugs, getTenantBySlug } from '@nummygo/shared/db/queries';
+import { getAllTenantSlugs, getTenantBySlug, searchTenantsByName } from '@nummygo/shared/db/queries';
 import { ZodError } from "zod";
 
 export const tenantRouter = router({
@@ -15,6 +16,12 @@ export const tenantRouter = router({
     allTenantSlugs: publicProcedure.query(async () => {
         return await getAllTenantSlugs();
     }),
+
+    searchTenants: publicProcedure
+        .input(searchTenantsSchema)
+        .query(async ({ input }) => {
+            return searchTenantsByName(input.query, input.limit);
+        }),
 
     // ── Onboarding ───────────────────────────────────────────────────────────
 
