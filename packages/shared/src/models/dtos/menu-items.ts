@@ -5,23 +5,29 @@ import {ulidSchema, timestampSchema, priceSchema,} from '../schemas';
 
 export const createMenuItemSchema = z.object({
   tenantId:    ulidSchema,
-  categoryId:  ulidSchema,
+  categoryId:  ulidSchema.optional(),
   name:        z.string().min(1),
   description: z.string().optional(),
-  imageUrl:    z.url().optional(),
+  imageUrl:    z.string().optional(),
   price:       priceSchema,
   isAvailable: z.boolean().default(true),
   isFeatured:  z.boolean().default(false),
+  badge:       z.string().nullable().optional(),
 });
 
 export const updateMenuItemSchema = z.object({
   name:        z.string().min(1).optional(),
   description: z.string().optional(),
-  imageUrl:    z.url().nullable().optional(),
+  imageUrl:    z.string().nullable().optional(),
   price:       priceSchema.optional(),
   categoryId:  ulidSchema.optional(),
   isAvailable: z.boolean().optional(),
   isFeatured:  z.boolean().optional(),
+  badge:       z.string().nullable().optional(),
+});
+
+export const deleteMenuItemSchema = z.object({
+  id: ulidSchema,
 });
 
 export const createMenuItemCategorySchema = z.object({

@@ -13,6 +13,7 @@ import { GradientDivider } from '@/components/ui';
 import { authClient } from '@/lib/auth-client';
 import { Tenant } from '@nummygo/shared/models';
 import { getGoogleMapsUrl } from '@/utils/tenant';
+import { trpc } from '@/trpc/client';
 
 /* ─── Mock Data ─────────────────────────────────── */
 
@@ -76,6 +77,20 @@ export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
   const { data: session } = authClient.useSession();
   const isVendorOwner = !!session?.user;
 
+  const { data: serverMenuItems } = trpc.tenant.getStorefrontMenu.useQuery({ tenantId: tenant.id });
+  const { data: serverCategories } = trpc.tenant.getStorefrontCategories.useQuery({ tenantId: tenant.id });
+  const displayItems: MenuItem[] = serverMenuItems && serverMenuItems.length > 0 
+    ? serverMenuItems.map(item => ({
+        id: item.id,
+        name: item.name,
+        description: item.description || '',
+        price: item.price / 100,
+        image: item.imageUrl || '',
+        badge: item.badge || undefined,
+        categoryId: item.categoryId || null,
+      }))
+    : MENU_ITEMS;
+
   const handleAddToCart = (item: MenuItem, qty: number) => {
     setCart((prev) => {
       const existing = prev.find((e) => e.item.id === item.id);
@@ -93,7 +108,7 @@ export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
       <Navbar />
 
       <main>
-        <HeroBanner />
+        <HeroBanner isVendorOwner={isVendorOwner} />
         <GradientDivider accent="amber" />
         <VendorInfo
           name={tenant.name}
@@ -113,7 +128,7 @@ export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
           tags={VENDOR.tags}
         />
         <GradientDivider accent="indigo" />
-        <MenuSection items={MENU_ITEMS} onAddToCart={handleAddToCart} />
+        <MenuSection items={displayItems} categories={serverCategories || []} onAddToCart={handleAddToCart} isVendorOwner={isVendorOwner} />
 
         {/* Footer */}
         <footer className="py-10 px-4 text-center border-t border-white/5">

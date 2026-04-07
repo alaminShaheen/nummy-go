@@ -1,8 +1,9 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { GradientButton, GlossButton, SectionLabel } from '@/components/ui';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Pencil } from 'lucide-react';
 
-export default function HeroBanner() {
+export default function HeroBanner({ isVendorOwner }: { isVendorOwner?: boolean }) {
   return (
     <section
       id="hero"
@@ -66,6 +67,21 @@ export default function HeroBanner() {
               >
                 About Us
               </GlossButton>
+              {isVendorOwner && (
+                <Link
+                  href="/tenant/editprofile"
+                  id="hero-cta-edit-profile"
+                  className="
+                    flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm
+                    border border-indigo-500/50 text-indigo-300
+                    bg-indigo-500/5 hover:bg-indigo-500/15 hover:border-indigo-400 hover:text-indigo-200
+                    transition-all duration-300 shadow-[0_0_15px_rgba(99,102,241,0.15)]
+                  "
+                >
+                  <Pencil size={16} aria-hidden="true" />
+                  Edit Profile
+                </Link>
+              )}
             </div>
 
             {/* Quick stats */}

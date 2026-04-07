@@ -27,6 +27,11 @@ export const checkTenantSlugSchema = z.object({
 	slug: registerTenantSchema.shape.slug,
 });
 
+export const searchTenantsSchema = z.object({
+  query: z.string().trim().min(1, 'Search query is required'),
+  limit: z.number().int().positive().max(50).optional(),
+});
+
 // ── Internal (query-facing) ────────────────────────────────────────────────
 
 export const createTenantRecordSchema = z.object({
@@ -46,4 +51,6 @@ export const createTenantRecordSchema = z.object({
 export type RegisterTenantDto = z.infer<typeof registerTenantSchema>;
 export type UpdateTenantDto = z.infer<typeof updateTenantSchema>;
 export type CheckTenantSlugDto = z.infer<typeof checkTenantSlugSchema>;
+export type SearchTenantsDto = z.infer<typeof searchTenantsSchema>;
 export type CreateTenantRecordDto = z.infer<typeof createTenantRecordSchema>;
+

@@ -18,3 +18,5 @@ export * from './scroll-area';
 export type { InputProps } from './Input';
 export { Separator } from './Separator';
 export { Skeleton } from './Skeleton';
+export { VendorCard } from './VendorCard';
+export type { VendorCardProps } from './VendorCard';

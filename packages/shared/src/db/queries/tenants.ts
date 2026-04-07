@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq , like, and} from 'drizzle-orm';
 import { getDb } from '../client';
 import { tenants } from '../schema';
 import type { CreateTenantRecordDto, Tenant, UpdateTenantDto } from '../../models';
@@ -50,4 +50,18 @@ export async function listTenants() {
 export async function updateTenantOrderAcceptance(id: string, acceptsOrders: boolean) {
 	const result = await getDb().update(tenants).set({ acceptsOrders }).where(eq(tenants.id, id)).returning();
 	return result[0];
+}
+
+export async function searchTenantsByName(query: string, limit = 50) {
+    return getDb()
+        .select({name: tenants.name, slug: tenants.slug, address: tenants.address})
+        .from(tenants)
+        .where(
+            and(
+                like(tenants.name, `%${query}%`),
+                eq(tenants.isActive, true),
+                eq(tenants.onboardingCompleted, true),
+            )
+        )
+        .limit(limit);
 }

@@ -38,6 +38,7 @@ export default function Navbar() {
   const firstSeg = pathname.split('/')[1] ?? '';
   const isSlugPage = !!firstSeg && !RESERVED.has(firstSeg);
   const isOnboarding = pathname === '/tenant/onboarding';
+  const isSearchPage = pathname === '/search';
   const { data: session, isPending } = authClient.useSession();
   const { data: tenant } = trpc.tenant.me.useQuery(undefined, {
     enabled: !!session?.user,
@@ -109,8 +110,8 @@ export default function Navbar() {
           <span className="text-xl font-black tracking-tight gradient-text">nummyGo</span>
         </Link>
 
-        {/* ── Desktop Center Search (hidden on landing) ── */}
-        {pathname !== '/' && (
+        {/* ── Desktop Center Search (hidden on landing + search page) ── */}
+        {pathname !== '/' && !isSearchPage && (
           <div className="hidden md:flex flex-1 max-w-md mx-6">
             <VendorSearchBar size="default" placeholder="Find restaurants..." className="w-full" />
           </div>
@@ -119,17 +120,6 @@ export default function Navbar() {
         {/* ── Right side ── */}
         <div className="flex items-center gap-3">
 
-          {/* Menu anchor — glowing, visible to everyone on /{slug} pages */}
-          {isSlugPage && (
-            <a href="#menu" id="nav-menu-anchor" aria-label="Jump to menu" className="auth-pill-link">
-              <span className="auth-pill-link__icon" aria-hidden="true">
-                {/* fork & knife emoji as icon */}
-                <span style={{ fontSize: 14 }}>🍽️</span>
-              </span>
-              <span>Menu</span>
-              <span className="auth-pill-link__bar" aria-hidden="true" />
-            </a>
-          )}
 
           {/* ══════════════════════════════════════════
               AUTHENTICATED  — auth cluster
@@ -310,8 +300,8 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* ── Mobile Search (hidden on landing) ── */}
-      {pathname !== '/' && (
+      {/* ── Mobile Search (hidden on landing + search page) ── */}
+      {pathname !== '/' && !isSearchPage && (
         <div className="md:hidden w-full px-4 pb-3">
           <VendorSearchBar size="default" placeholder="Find restaurants..." className="w-full" />
         </div>
