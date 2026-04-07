@@ -1,15 +1,15 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    // Output compiled JS + .d.ts into dist/
-    "outDir": "./dist",
-    "rootDir": "./src",
-    // Allow JSX for the UI components
-    "jsx": "react-jsx",
-    // Include Cloudflare Worker types so D1Database is recognised
-    "types": ["@cloudflare/workers-types"]
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		// Output compiled JS + .d.ts into dist/
+		"outDir": "./dist",
+		"rootDir": "./src",
+		// Allow JSX for the UI components
+		"jsx": "react-jsx",
+		// Include Cloudflare Worker types so D1Database is recognised
+		"types": ["@cloudflare/workers-types"]
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist"]
 }

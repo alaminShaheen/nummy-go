@@ -1,0 +1,93 @@
+'use client';
+
+import * as React from 'react';
+
+import { Clock } from 'lucide-react';
+import { Button, cn, Popover, PopoverContent, PopoverTrigger, ScrollArea, ScrollBar } from '@nummygo/shared/ui';
+import { clsx } from 'clsx';
+
+export type Time = {
+	hour: string;
+	minute: string;
+};
+
+type TimePickerProps = {
+	value?: Time | null;
+	onChange?: (time: Time) => void;
+};
+
+export function TimePicker(props: TimePickerProps) {
+	const { value, onChange } = props;
+	const [isOpen, setIsOpen] = React.useState(false);
+
+	const hours = Array.from({ length: 24 }, (_, i) => i);
+
+	const handleTimeChange = (type: 'hour' | 'minute', val: string) => {
+		const padded = val.padStart(2, '0');
+		const newTime = {
+			hour: value?.hour ?? '00',
+			minute: value?.minute ?? '00',
+			[type]: padded,
+		};
+		onChange?.(newTime);
+	};
+
+	return (
+		<Popover open={isOpen} onOpenChange={setIsOpen}>
+			<PopoverTrigger asChild>
+				<Button
+					variant="outline"
+					className={cn('w-full justify-start text-left font-normal', !value && 'text-muted-foreground')}
+				>
+					<Clock />
+					{value ? `${value.hour}:${value.minute}` : <span>hh:mm</span>}
+				</Button>
+			</PopoverTrigger>
+			<PopoverContent className="w-auto p-0 bg-black">
+				<div className="flex">
+					<div className="flex h-[300px] divide-x">
+						{/* HOURS */}
+						<ScrollArea className="h-full w-20">
+							<div className="flex flex-col p-2 gap-1">
+								{[...hours].reverse().map((hour) => (
+									<Button
+										key={hour}
+										size="sm"
+										variant={value && value.hour === hour.toString() ? 'default' : 'ghost'}
+										className={clsx('w-full shrink-0 hover:bg-slate-500 cursor-pointer', {
+											'bg-slate-500': value && value.hour === hour.toString(),
+										})}
+										onClick={() => handleTimeChange('hour', hour.toString())}
+									>
+										{hour.toString().padStart(2, '0')}
+									</Button>
+								))}
+							</div>
+							<ScrollBar orientation="horizontal" className="sm:hidden" />
+						</ScrollArea>
+
+						{/* MINUTES */}
+						<ScrollArea className="h-full w-20">
+							<div className="flex flex-col p-2 gap-1">
+								{Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => (
+									<Button
+										key={minute}
+										size="sm"
+										variant={value && value.minute === minute.toString() ? 'default' : 'ghost'}
+										className={clsx('w-full shrink-0 hover:bg-slate-500 cursor-pointer', {
+											'bg-slate-500': value && value.minute === minute.toString(),
+										})}
+										onClick={() => handleTimeChange('minute', minute.toString())}
+									>
+										{minute.toString().padStart(2, '0')}
+									</Button>
+								))}
+							</div>
+							<ScrollBar orientation="horizontal" className="sm:hidden" />
+						</ScrollArea>
+					</div>
+				</div>
+			</PopoverContent>
+		</Popover>
+	);
+}

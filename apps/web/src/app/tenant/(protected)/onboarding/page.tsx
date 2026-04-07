@@ -35,8 +35,6 @@ export default function OnboardingPage() {
 			email: '',
 			address: '',
 			businessHours: makeDefaultWeeklyHours(),
-			acceptsOrders: true,
-			closedUntil: null,
 		},
 		mode: 'onSubmit',
 		reValidateMode: 'onChange',
@@ -58,8 +56,6 @@ export default function OnboardingPage() {
 				email: tenant.email || session?.user.email || '',
 				address: tenant.address || '',
 				businessHours: tenant.businessHours || makeDefaultWeeklyHours(),
-				acceptsOrders: tenant.acceptsOrders ?? true,
-				closedUntil: tenant.closedUntil || null,
 			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps

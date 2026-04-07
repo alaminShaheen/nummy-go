@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Controller, type UseFormReturn, type Path, type PathValue } from 'react-hook-form';
+import { ReactNode, useEffect, useState } from 'react';
+import { Controller, type Path, type PathValue, type UseFormReturn } from 'react-hook-form';
 import { useDebounceCallback } from 'usehooks-ts';
 import { trpc } from '@/trpc/client';
 import StorefrontPreview from '@/components/StorefrontPreview';
@@ -12,6 +12,7 @@ import { type Day, DAY_LABELS, DAYS, makeDefaultWeeklyHours } from '@/constants/
 import { toSlug } from '@/utils/tenant';
 import { AlertCircle, Building2, CheckCircle2, ChevronRight, Clock, Loader2, Phone, Power } from 'lucide-react';
 import { clsx } from 'clsx';
+import { TimePicker } from '@/components/TimePicker';
 
 // ─── TenantProfileForm Props ──────────────────────────────────────────────────
 type TenantFormValues = RegisterTenantDto | UpdateTenantDto;
@@ -66,7 +67,10 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 	useEffect(() => {
 		if (mode === 'onboarding' && !slugManual) {
 			const newSlug = toSlug(nameValue || '');
-			setValue('slug' as Path<T>, newSlug as PathValue<T, Path<T>>, { shouldValidate: false, shouldTouch: false });
+			setValue('slug' as Path<T>, newSlug as PathValue<T, Path<T>>, {
+				shouldValidate: false,
+				shouldTouch: false,
+			});
 			if (newSlug && newSlug.length >= 2) {
 				checkSlugAvailability(newSlug);
 			}
@@ -92,7 +96,8 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 	}, [mode, checkSlugQuery.data, checkSlugQuery.fetchStatus, checkSlugQuery.dataUpdatedAt, setError, clearErrors]);
 
 	const setDayHours = (day: Day, field: keyof BusinessHours['monday'], value: string | boolean) => {
-		const currentHours = (watch('businessHours' as Path<T>) as BusinessHours | undefined) || makeDefaultWeeklyHours();
+		const currentHours =
+			(watch('businessHours' as Path<T>) as BusinessHours | undefined) || makeDefaultWeeklyHours();
 		setValue(
 			'businessHours' as Path<T>,
 			{
@@ -135,24 +140,32 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 				{/* ── Card: Basic Info ── */}
 				<FormCard icon={<Building2 size={15} />} title="Basic Info">
 					<Controller
-						name={"name" as Path<T>}
+						name={'name' as Path<T>}
 						control={control}
 						render={({ field }) => (
 							<FormField id="name" label="Restaurant Name" required error={(errors as any).name?.message}>
-								<BrandInput id="name" {...field} value={(field.value as string) ?? ''} placeholder="The Golden Fork" autoFocus />
+								<BrandInput
+									id="name"
+									{...field}
+									value={(field.value as string) ?? ''}
+									placeholder="The Golden Fork"
+									autoFocus
+								/>
 							</FormField>
 						)}
 					/>
 
 					<Controller
-						name={"slug" as Path<T>}
+						name={'slug' as Path<T>}
 						control={control}
 						render={({ field }) => (
 							<FormField
 								id="slug"
 								label="Your nummyGo URL"
 								required
-								hint={!(errors as any).slug ? 'Lowercase letters, numbers and hyphens only.' : undefined}
+								hint={
+									!(errors as any).slug ? 'Lowercase letters, numbers and hyphens only.' : undefined
+								}
 							>
 								<BrandInput
 									id="slug"
@@ -203,7 +216,7 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 				{/* ── Card: Contact ── */}
 				<FormCard icon={<Phone size={15} />} title="Contact">
 					<Controller
-						name={"phoneNumber" as Path<T>}
+						name={'phoneNumber' as Path<T>}
 						control={control}
 						render={({ field }) => (
 							<FormField
@@ -213,13 +226,19 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 								error={(errors as any).phoneNumber?.message}
 								hint="Customers will use this to call you."
 							>
-								<BrandInput id="phoneNumber" type="tel" {...field} value={(field.value as string) ?? ''} placeholder="+1 (416) 555-0100" />
+								<BrandInput
+									id="phoneNumber"
+									type="tel"
+									{...field}
+									value={(field.value as string) ?? ''}
+									placeholder="+1 (416) 555-0100"
+								/>
 							</FormField>
 						)}
 					/>
 
 					<Controller
-						name={"email" as Path<T>}
+						name={'email' as Path<T>}
 						control={control}
 						render={({ field }) => (
 							<FormField
@@ -228,13 +247,19 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 								error={(errors as any).email?.message}
 								hint="Optional — shown on your storefront for customer enquiries."
 							>
-								<BrandInput id="email" type="email" {...field} value={(field.value as string) ?? ''} placeholder="hello@yourrestaurant.com" />
+								<BrandInput
+									id="email"
+									type="email"
+									{...field}
+									value={(field.value as string) ?? ''}
+									placeholder="hello@yourrestaurant.com"
+								/>
 							</FormField>
 						)}
 					/>
 
 					<Controller
-						name={"address" as Path<T>}
+						name={'address' as Path<T>}
 						control={control}
 						render={({ field }) => (
 							<FormField
@@ -244,7 +269,12 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 								error={(errors as any).address?.message}
 								hint="Where customers can find you. This will open Google Maps when clicked."
 							>
-								<BrandInput id="address" {...field} value={(field.value as string) ?? ''} placeholder="123 Main St, New York, NY 10001" />
+								<BrandInput
+									id="address"
+									{...field}
+									value={(field.value as string) ?? ''}
+									placeholder="123 Main St, New York, NY 10001"
+								/>
 							</FormField>
 						)}
 					/>
@@ -254,7 +284,7 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 				{mode === 'edit' && (
 					<FormCard icon={<Power size={15} />} title="Availability">
 						<Controller
-							name={"acceptsOrders" as Path<T>}
+							name={'acceptsOrders' as Path<T>}
 							control={control}
 							render={({ field }) => (
 								<FormField
@@ -298,35 +328,40 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 							)}
 						/>
 
-						{!acceptsOrdersValue && (
-							<Controller
-								name={"closedUntil" as Path<T>}
-								control={control}
-								render={({ field }) => (
-									<FormField
-										id="closedUntil"
-										label="Reopen At"
-										hint="Optional — specify when you'll start accepting orders again."
-									>
-										<input
-											type="datetime-local"
-											value={field.value ? new Date(field.value as number).toISOString().slice(0, 16) : ''}
-											onChange={(e) => {
-												const value = e.target.value
-													? new Date(e.target.value).getTime()
-													: null;
-												field.onChange(value);
-											}}
-											className={clsx(
-												'w-full rounded-lg bg-white/[0.04] border',
-												'border-white/10 text-slate-200 text-sm px-3 py-2 focus:outline-none',
-												'focus:border-amber-400/60 transition-colors'
-											)}
-										/>
-									</FormField>
-								)}
-							/>
-						)}
+						{/* TODO: Add later */}
+						{/*{!acceptsOrdersValue && (*/}
+						{/*	<Controller*/}
+						{/*		name={'closedUntil' as Path<T>}*/}
+						{/*		control={control}*/}
+						{/*		render={({ field }) => (*/}
+						{/*			<FormField*/}
+						{/*				id="closedUntil"*/}
+						{/*				label="Reopen At"*/}
+						{/*				hint="Optional — specify when you'll start accepting orders again."*/}
+						{/*			>*/}
+						{/*				<input*/}
+						{/*					type="datetime-local"*/}
+						{/*					value={*/}
+						{/*						field.value*/}
+						{/*							? new Date(field.value as number).toISOString().slice(0, 16)*/}
+						{/*							: ''*/}
+						{/*					}*/}
+						{/*					onChange={(e) => {*/}
+						{/*						const value = e.target.value*/}
+						{/*							? new Date(e.target.value).getTime()*/}
+						{/*							: null;*/}
+						{/*						field.onChange(value);*/}
+						{/*					}}*/}
+						{/*					className={clsx(*/}
+						{/*						'w-full rounded-lg bg-white/[0.04] border',*/}
+						{/*						'border-white/10 text-slate-200 text-sm px-3 py-2 focus:outline-none',*/}
+						{/*						'focus:border-amber-400/60 transition-colors'*/}
+						{/*					)}*/}
+						{/*				/>*/}
+						{/*			</FormField>*/}
+						{/*		)}*/}
+						{/*	/>*/}
+						{/*)}*/}
 					</FormCard>
 				)}
 
@@ -380,20 +415,41 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 										<span className="text-xs text-slate-600 italic">Closed</span>
 									) : (
 										<div className="flex items-center gap-1.5 flex-1 min-w-0">
-											<input
-												type="time"
-												value={dh.open}
-												onChange={(e) => setDayHours(day, 'open', e.target.value)}
-												aria-label={`${day} opening time`}
-												className="flex-1 min-w-0 rounded-lg bg-white/[0.04] border border-white/10 text-slate-200 text-xs px-2 py-1 focus:outline-none focus:border-amber-400/60 transition-colors"
+											<Controller
+												name={`businessHours.${day}.open` as Path<T>}
+												control={control}
+												render={({ field }) => {
+													const [hour = '00', minute = '00'] =
+														(field.value as string | undefined)?.split(':') ?? [];
+
+													return (
+														<TimePicker
+															value={{ hour, minute }}
+															onChange={(time) => {
+																setDayHours(day, 'open', `${time.hour}:${time.minute}`);
+																// field.onChange(``);
+															}}
+														/>
+													);
+												}}
 											/>
 											<span className="text-slate-600 text-xs flex-shrink-0">–</span>
-											<input
-												type="time"
-												value={dh.close}
-												onChange={(e) => setDayHours(day, 'close', e.target.value)}
-												aria-label={`${day} closing time`}
-												className="flex-1 min-w-0 rounded-lg bg-white/[0.04] border border-white/10 text-slate-200 text-xs px-2 py-1 focus:outline-none focus:border-amber-400/60 transition-colors"
+											<Controller
+												name={`businessHours.${day}.close` as Path<T>}
+												control={control}
+												render={({ field }) => {
+													const [hour = '00', minute = '00'] =
+														(field.value as string | undefined)?.split(':') ?? [];
+
+													return (
+														<TimePicker
+															value={{ hour, minute }}
+															onChange={(time) => {
+																setDayHours(day, 'open', `${time.hour}:${time.minute}`);
+															}}
+														/>
+													);
+												}}
 											/>
 										</div>
 									)}
@@ -446,14 +502,13 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 			<div className="hidden md:flex flex-col gap-3 sticky top-24">
 				<p className="text-xs text-slate-500 uppercase tracking-widest font-medium text-center">Live Preview</p>
 				<StorefrontPreview
+					acceptsOrders={(formValues as UpdateTenantDto).acceptsOrders ?? true}
 					name={formValues.name}
 					slug={formValues.slug}
 					phoneNumber={formValues.phoneNumber}
 					email={formValues.email}
 					address={formValues.address}
 					businessHours={formValues.businessHours}
-					acceptsOrders={formValues.acceptsOrders}
-					closedUntil={formValues.closedUntil}
 				/>
 				<p className="text-[11px] text-slate-600 text-center leading-relaxed">
 					Fill in the form to see your storefront update in real-time.
@@ -464,7 +519,7 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 }
 
 // ─── FormCard sub-component ───────────────────────────────────────────────────
-function FormCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
+function FormCard({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
 	return (
 		<section
 			className="rounded-2xl p-6 flex flex-col gap-5 border border-white/8"

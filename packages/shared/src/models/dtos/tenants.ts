@@ -14,13 +14,12 @@ export const registerTenantSchema = z.object({
 	email: z.email('Invalid email address').optional().or(z.literal('')),
 	address: z.string().trim().min(1, 'Business address is required'),
 	businessHours: businessHoursSchema,
-	acceptsOrders: z.boolean().default(true),
-	closedUntil: timestampSchema.nullable().optional(),
 });
 
 export const updateTenantSchema = registerTenantSchema.partial().extend({
 	acceptsOrders: z.boolean().default(true).optional(),
-	closedUntil: timestampSchema.nullable().optional(),
+	// TODO: Add closed until later
+	// closedUntil: timestampSchema.nullable().optional(),
 	onboardingCompleted: z.boolean().optional(),
 });
 
