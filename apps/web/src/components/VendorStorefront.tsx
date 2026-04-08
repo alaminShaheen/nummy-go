@@ -1,6 +1,7 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 import Navbar from '@/components/Navbar';
 import HeroBanner from '@/components/HeroBanner';
@@ -14,6 +15,9 @@ import { Tenant } from '@nummygo/shared/models';
 import { getGoogleMapsUrl } from '@/utils/tenant';
 import { trpc } from '@/trpc/client';
 import { useCart } from '@/hooks/useCart';
+import { useModificationMode } from '@/hooks/useModificationMode';
+import { differenceInSeconds } from 'date-fns';
+import { Clock, Pencil, AlertTriangle, X } from 'lucide-react';
 
 /* ─── Fallback Mock Data ────────────────────────── */
 
@@ -51,26 +55,205 @@ const MENU_ITEMS: MenuItem[] = [
     image: '/images/sushi.png',
     badge: 'New',
   },
-  {
-    id: 'dessert-01',
-    name: 'Chocolate Lava Cake',
-    description: 'Warm dark chocolate fondant with molten centre, vanilla bean ice cream, salted caramel.',
-    price: 12.99,
-    image: '/images/dessert.png',
-  },
 ];
+
+/* ─── Countdown hook ────────────────────────────── */
+
+function useCountdown(createdAt: number, thresholdMinutes: number) {
+  const deadlineMs = createdAt + thresholdMinutes * 60 * 1000;
+  const [secs, setSecs] = useState(() => Math.max(0, differenceInSeconds(deadlineMs, Date.now())));
+
+  useEffect(() => {
+    if (secs <= 0) return;
+    const id = setInterval(() => setSecs(Math.max(0, differenceInSeconds(deadlineMs, Date.now()))), 1000);
+    return () => clearInterval(id);
+  }, [deadlineMs, secs]);
+
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return { label: `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`, expired: secs <= 0 };
+}
+
+/* ─── Cart Replace Confirmation Modal ───────────── */
+
+function CartReplaceModal({
+  vendorName,
+  onConfirm,
+  onCancel,
+}: {
+  vendorName: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onCancel} />
+      <div className="relative w-full max-w-sm bg-[#131920] border border-amber-500/20 rounded-2xl shadow-2xl p-6 space-y-4 animate-in zoom-in-95 duration-200">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-full bg-amber-500/10 border border-amber-500/20">
+            <AlertTriangle className="w-5 h-5 text-amber-400" />
+          </div>
+          <div>
+            <h3 className="font-bold text-white text-base">Replace cart items?</h3>
+            <p className="text-xs text-slate-400">You have items from {vendorName} already in your cart.</p>
+          </div>
+        </div>
+        <p className="text-sm text-slate-300 leading-relaxed">
+          Entering modification mode will <span className="text-amber-400 font-semibold">replace your current cart</span> with
+          the items from this existing order. Your other vendor carts won't be affected.
+        </p>
+        <div className="flex gap-3 pt-1">
+          <button
+            onClick={onCancel}
+            className="flex-1 py-2.5 rounded-xl border border-white/10 text-slate-300 hover:text-white text-sm font-semibold transition-colors"
+          >
+            Keep my cart
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-sm font-bold transition-colors"
+          >
+            Yes, replace it
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Modification Mode Banner ──────────────────── */
+
+function ModificationBanner({
+  orderId,
+  sessionId,
+  createdAt,
+  onCancel,
+}: {
+  orderId: string;
+  sessionId: string;
+  createdAt: number;
+  onCancel: () => void;
+}) {
+  const THRESHOLD = 30; // TODO: pull from tenant config
+  const { label, expired } = useCountdown(createdAt, THRESHOLD);
+
+  return (
+    <div className="sticky top-0 z-30 w-full border-b border-amber-500/30 bg-amber-950/80 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-1.5 rounded-lg bg-amber-500/20 border border-amber-500/30">
+            <Pencil className="w-4 h-4 text-amber-400" />
+          </div>
+          <div>
+            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Modification Mode</span>
+            <p className="text-sm text-slate-200 font-medium">
+              Editing Order <span className="font-mono">#{orderId.slice(-6).toUpperCase()}</span>
+              {' — '}adjust your items and submit when ready.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          {!expired && (
+            <div className="flex items-center gap-1.5 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-1.5">
+              <Clock className="w-3.5 h-3.5" />
+              <span className="font-mono font-bold">{label}</span>
+              <span className="text-amber-400/60 ml-0.5">left</span>
+            </div>
+          )}
+          {expired && (
+            <span className="text-xs text-rose-400 font-semibold bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-1.5">
+              Window expired
+            </span>
+          )}
+          <button
+            onClick={onCancel}
+            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
+          >
+            <X className="w-4 h-4" />
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* ─── Component ─────────────────────────────────── */
 
 export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
-  const params = useParams<{ slug: string }>();
-  const { addToCart } = useCart();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { addToCart, loadFromOrderItems, cart } = useCart();
+  const { activate, deactivate, mode, isActive } = useModificationMode();
+
+  // URL params from the modification flow
+  const modifyOrderId = searchParams.get('modify');
+  const sessionId     = searchParams.get('session');
+
+  const loaded = useRef(false);
+  const [showReplaceModal, setShowReplaceModal] = useState(false);
+  const [pendingOrderData, setPendingOrderData] = useState<{
+    items: Array<{ menuItemId: string; name: string; price: number; imageUrl: string | null; quantity: number }>;
+    createdAt: number;
+  } | null>(null);
 
   const { data: session } = authClient.useSession();
   const isVendorOwner = !!session?.user && session.user.id === tenant.userId;
 
-  const { data: serverMenuItems } = trpc.tenant.getStorefrontMenu.useQuery({ tenantId: tenant.id });
-  const { data: serverCategories } = trpc.tenant.getStorefrontCategories.useQuery({ tenantId: tenant.id });
+  const { data: serverMenuItems } = trpc.menu.getStorefrontMenu.useQuery({ tenantId: tenant.id });
+  const { data: serverCategories } = trpc.category.getStorefrontCategories.useQuery({ tenantId: tenant.id });
+
+  // Fetch order details only when ?modify is present
+  const { data: orderDetails } = trpc.order.getOrderDetails.useQuery(
+    { orderId: modifyOrderId! },
+    { enabled: !!modifyOrderId && !loaded.current }
+  );
+
+  // Once order details are loaded, decide whether to show confirm modal or load directly
+  useEffect(() => {
+    if (!orderDetails || loaded.current) return;
+    const existingVendorCart = cart.find((v) => v.tenantId === tenant.id);
+    const hasExistingItems = existingVendorCart && existingVendorCart.items.length > 0;
+
+    if (hasExistingItems) {
+      // Show confirmation modal — cart already has items for this vendor
+      setPendingOrderData({ items: orderDetails.items, createdAt: orderDetails.order.createdAt });
+      setShowReplaceModal(true);
+    } else {
+      // No conflict — load straight away
+      doLoadCart(orderDetails.items, orderDetails.order.createdAt);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderDetails]);
+
+  const doLoadCart = (
+    items: Array<{ menuItemId: string; name: string; price: number; imageUrl: string | null; quantity: number }>,
+    createdAt: number,
+  ) => {
+    loaded.current = true;
+    loadFromOrderItems(tenant.id, tenant.name, items);
+    if (modifyOrderId && sessionId) {
+      activate({ orderId: modifyOrderId, sessionId });
+    }
+  };
+
+  const handleConfirmReplace = () => {
+    setShowReplaceModal(false);
+    if (pendingOrderData) doLoadCart(pendingOrderData.items, pendingOrderData.createdAt);
+  };
+
+  const handleCancelModification = () => {
+    deactivate();
+    // Navigate back to the tracking page
+    if (mode?.sessionId) {
+      router.push(`/track/${mode.sessionId}`);
+    } else if (sessionId) {
+      router.push(`/track/${sessionId}`);
+    } else {
+      router.push('/');
+    }
+  };
+
   const displayItems: MenuItem[] = serverMenuItems && serverMenuItems.length > 0
     ? serverMenuItems.map(item => ({
       id: item.id,
@@ -87,18 +270,38 @@ export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
     addToCart(
       tenant.id,
       tenant.name,
-      {
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        image: item.image,
-      },
+      { id: item.id, name: item.name, price: item.price, image: item.image },
       qty
     );
   };
 
+  const inModMode = isActive && mode?.orderId === modifyOrderId;
+
   return (
     <>
+      {/* Cart Replace Confirmation Modal */}
+      {showReplaceModal && (
+        <CartReplaceModal
+          vendorName={tenant.name}
+          onConfirm={handleConfirmReplace}
+          onCancel={() => {
+            setShowReplaceModal(false);
+            // Stay on page, but don't activate mod mode
+            router.replace(`/${tenant.slug}`);
+          }}
+        />
+      )}
+
+      {/* Modification Banner */}
+      {inModMode && mode && (
+        <ModificationBanner
+          orderId={mode.orderId}
+          sessionId={mode.sessionId}
+          createdAt={orderDetails?.order.createdAt ?? 0}
+          onCancel={handleCancelModification}
+        />
+      )}
+
       <Navbar />
 
       <main>
@@ -124,7 +327,6 @@ export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
         <GradientDivider accent="indigo" />
         <MenuSection items={displayItems} categories={serverCategories || []} onAddToCart={handleAddToCart} isVendorOwner={isVendorOwner} />
 
-        {/* Footer */}
         <footer className="py-10 px-4 text-center border-t border-white/5">
           <p className="text-slate-600 text-sm">
             © {new Date().getFullYear()}&nbsp;

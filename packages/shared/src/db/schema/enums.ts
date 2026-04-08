@@ -13,3 +13,9 @@ export const PAYMENT_METHOD = [
   'card',
   'counter',
 ] as const;
+
+export const ORDER_MODIFICATION_STATUS = [
+  'pending',
+  'accepted',
+  'rejected',
+] as const;

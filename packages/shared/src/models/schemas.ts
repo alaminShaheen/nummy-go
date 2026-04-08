@@ -5,12 +5,13 @@ import { isValid } from 'ulidx';
  * Reusable Zod schemas for common data types
  */
 
-export const ulidSchema = z.string().refine(isValid, { message: 'Invalid ULID' });
+export const ulidSchema = z.string().trim().regex(/^[0-9A-HJKMNP-TV-Z]{26}$/i, 'Invalid ID format');
+export const userIdSchema = z.string().trim().min(5, 'Invalid User ID');
 
 export const timestampSchema = z
   .number()
   .int()
-  .nonnegative()
+  .positive()
   .refine((val) => !isNaN(new Date(val).getTime()), {
     message: "Invalid timestamp",
   });

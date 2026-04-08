@@ -1,4 +1,4 @@
-import { eq, and } from 'drizzle-orm';
+import { eq, and, inArray } from 'drizzle-orm';
 import { getDb } from '../client';
 import { menuItems } from '../schema/menu-items';
 import { menuItemCategories } from '../schema/menu-item-categories';
@@ -18,6 +18,14 @@ export async function createMenuItem(data: CreateMenuItemRecordDto) {
 export async function getMenuItemById(id: string) {
   const rows = await getDb().select().from(menuItems).where(eq(menuItems.id, id)).limit(1);
   return rows[0];
+}
+
+export async function getMenuItemsByIds(ids: string[]) {
+  if (ids.length === 0) return [];
+  return getDb()
+    .select({ id: menuItems.id, name: menuItems.name, price: menuItems.price, imageUrl: menuItems.imageUrl })
+    .from(menuItems)
+    .where(inArray(menuItems.id, ids));
 }
 
 export async function getMenuItemsByTenant(tenantId: string) {

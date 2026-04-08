@@ -328,6 +328,31 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 							)}
 						/>
 
+						<Controller
+							name={'orderModificationThreshold' as Path<T>}
+							control={control}
+							render={({ field }) => (
+								<FormField
+									id="orderModificationThreshold"
+									label="Order Modification Window (Minutes)"
+									hint="Customers can modify or cancel their order within this time limit."
+								>
+									<select
+										id="orderModificationThreshold"
+										// @ts-ignore - The value will map correctly locally
+										value={(field.value as number) || 30}
+										onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+										className="w-full rounded-lg bg-[#141A23] border border-white/10 text-slate-200 text-sm px-3 py-2.5 focus:outline-none focus:border-amber-400/60 transition-colors appearance-none"
+									>
+										<option value={15} className="bg-[#141A23]">15 minutes</option>
+										<option value={30} className="bg-[#141A23]">30 minutes</option>
+										<option value={45} className="bg-[#141A23]">45 minutes</option>
+										<option value={60} className="bg-[#141A23]">60 minutes</option>
+									</select>
+								</FormField>
+							)}
+						/>
+
 						{/* TODO: Add later */}
 						{/*{!acceptsOrdersValue && (*/}
 						{/*	<Controller*/}

@@ -3,7 +3,7 @@
 import { trpc } from '@/trpc/client';
 
 export function useOrders(userId: string | null) {
-  const query = trpc.customer.getOrders.useQuery(
+  const query = trpc.order.getCustomerOrders.useQuery(
     undefined,
     {
       enabled: !!userId,

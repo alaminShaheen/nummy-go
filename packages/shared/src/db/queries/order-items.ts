@@ -15,3 +15,11 @@ export async function getOrderItemsByOrder(orderId: string) {
 export async function getOrderItemsByTenant(tenantId: string) {
   return getDb().select().from(orderItems).where(eq(orderItems.tenantId, tenantId));
 }
+
+/**
+ * Deletes all items for a given order.
+ * Used when a modification is accepted and items are being replaced.
+ */
+export async function deleteOrderItemsByOrderId(orderId: string) {
+  return getDb().delete(orderItems).where(eq(orderItems.orderId, orderId));
+}

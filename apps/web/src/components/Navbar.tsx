@@ -44,6 +44,7 @@ export default function Navbar() {
   const { data: session, isPending } = authClient.useSession();
   const { data: tenant } = trpc.tenant.me.useQuery(undefined, {
     enabled: !!session?.user,
+    staleTime: Infinity,
   });
 
   const slug = tenant?.slug ?? '';

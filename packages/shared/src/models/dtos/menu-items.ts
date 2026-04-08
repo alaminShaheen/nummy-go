@@ -26,6 +26,10 @@ export const updateMenuItemSchema = z.object({
   badge:       z.string().nullable().optional(),
 });
 
+export const updateMenuItemRequestSchema = updateMenuItemSchema.extend({
+  id: ulidSchema,
+});
+
 export const deleteMenuItemSchema = z.object({
   id: ulidSchema,
 });
@@ -67,6 +71,7 @@ export const menuItemResponseSchema = z.object({
 
 export type CreateMenuItemDto               = z.infer<typeof createMenuItemSchema>;
 export type UpdateMenuItemDto               = z.infer<typeof updateMenuItemSchema>;
+export type UpdateMenuItemRequestDto        = z.infer<typeof updateMenuItemRequestSchema>;
 export type CreateMenuItemCategoryDto       = z.infer<typeof createMenuItemCategorySchema>;
 export type CreateMenuItemRecordDto         = z.infer<typeof createMenuItemRecordSchema>;
 export type CreateMenuItemCategoryRecordDto = z.infer<typeof createMenuItemCategoryRecordSchema>;

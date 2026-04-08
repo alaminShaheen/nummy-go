@@ -6,3 +6,4 @@ export * from './menu-item-categories';
 export * from './menu-items';
 export * from './orders';
 export * from './order-items';
+export * from './order-modifications';

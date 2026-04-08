@@ -13,9 +13,9 @@ export default function TenantMenuDashboard() {
   const [editingItem, setEditingItem] = useState<any>(null);
 
   const utils = trpc.useUtils();
-  const { data: menuItems, isLoading } = trpc.tenant.getMenuItems.useQuery();
-  const deleteMutation = trpc.tenant.deleteMenuItem.useMutation({
-    onSuccess: () => utils.tenant.getMenuItems.invalidate(),
+  const { data: menuItems, isLoading } = trpc.menu.getMenuItems.useQuery();
+  const deleteMutation = trpc.menu.deleteMenuItem.useMutation({
+    onSuccess: () => utils.menu.getMenuItems.invalidate(),
   });
 
   const handleEdit = (item: any) => {
@@ -121,7 +121,7 @@ export default function TenantMenuDashboard() {
             <div className="p-4 flex flex-col gap-1">
               <div className="flex justify-between items-start gap-2">
                 <h3 className="font-bold text-slate-200 line-clamp-1">{item.name}</h3>
-                <span className="text-amber-400 font-semibold">${(item.price / 100).toFixed(2)}</span>
+                <span className="text-amber-400 font-semibold">${item.price.toFixed(2)}</span>
               </div>
               <p className="text-slate-500 text-xs line-clamp-2">{item.description}</p>
             </div>

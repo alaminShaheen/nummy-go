@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { customerCheckoutSchema } from '@nummygo/shared/models/dtos';
 import type { CustomerCheckoutDto } from '@nummygo/shared/models/dtos';
@@ -11,7 +11,7 @@ import type { FulfillmentMethod, PaymentMethod } from '@nummygo/shared/models/en
 import { trpc } from '@/trpc/client';
 import { useCart } from '@/hooks/useCart';
 import { GlassCard, GradientButton, FormField, BrandInput, SectionLabel } from '@/components/ui';
-import { MapPin, User, Mail, Phone, CreditCard, Store, ShoppingBag, X, Loader2 } from 'lucide-react';
+import { MapPin, User, Mail, Phone, CreditCard, Store, ShoppingBag, X, Loader2, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Navbar from '@/components/Navbar';
 
@@ -37,7 +37,7 @@ function StripePaymentModal({
     setTimeout(() => {
       setIsProcessing(false);
       onSuccess();
-    }, 1500); // simulate 1.5s network request
+    }, 1500);
   };
 
   return (
@@ -51,7 +51,6 @@ function StripePaymentModal({
           <h3 className="text-xl font-bold text-white mb-1">Payment Details</h3>
           <p className="text-sm text-slate-400">Complete your online payment securely.</p>
         </div>
-
         <div className="space-y-4">
           <FormField id="card-info" label="Card Information">
             <div className="border border-white/10 rounded-lg overflow-hidden bg-black/40">
@@ -74,8 +73,7 @@ function StripePaymentModal({
               </div>
             </div>
           </FormField>
-          
-          <GradientButton 
+          <GradientButton
             className="w-full py-3.5 mt-2 shadow-lg shadow-indigo-500/20"
             onClick={handlePay}
             disabled={isProcessing}
@@ -114,8 +112,8 @@ function SegmentedControl<T extends string>({
             onClick={() => onChange(opt.value)}
             className={cn(
               "flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-md transition-all duration-200",
-              active 
-                ? "bg-slate-800 text-amber-400 shadow-sm border border-white/5" 
+              active
+                ? "bg-slate-800 text-amber-400 shadow-sm border border-white/5"
                 : "text-slate-400 hover:text-slate-200"
             )}
           >
@@ -128,17 +126,79 @@ function SegmentedControl<T extends string>({
   );
 }
 
+// ── Schedule Time Picker ────────────────────────────────────────────────────
+
+function ScheduleTimePicker({
+  value,
+  onChange,
+}: {
+  value: string | undefined;
+  onChange: (val: string | undefined) => void;
+}) {
+  const [isScheduled, setIsScheduled] = useState(!!value);
+
+  const handleToggle = (scheduled: boolean) => {
+    setIsScheduled(scheduled);
+    if (!scheduled) onChange(undefined);
+  };
+
+  // Build min datetime: now + 15 minutes, rounded to nearest 5
+  const minDateTime = () => {
+    const d = new Date(Date.now() + 15 * 60 * 1000);
+    d.setSeconds(0, 0);
+    const rounded = new Date(Math.ceil(d.getTime() / (5 * 60 * 1000)) * (5 * 60 * 1000));
+    // Format as local datetime string (YYYY-MM-DDTHH:MM)
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${rounded.getFullYear()}-${pad(rounded.getMonth() + 1)}-${pad(rounded.getDate())}T${pad(rounded.getHours())}:${pad(rounded.getMinutes())}`;
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 mb-1">
+        <Clock className="w-4 h-4 text-indigo-400" />
+        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Pickup / Ready Time</span>
+      </div>
+      <SegmentedControl
+        value={isScheduled ? 'scheduled' : 'asap'}
+        onChange={(v) => handleToggle(v === 'scheduled')}
+        options={[
+          { label: 'ASAP', value: 'asap' },
+          { label: 'Schedule', value: 'scheduled', icon: <Clock className="w-3.5 h-3.5" /> },
+        ]}
+      />
+      {isScheduled && (
+        <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+          <input
+            type="datetime-local"
+            min={minDateTime()}
+            value={value ?? ''}
+            onChange={(e) => onChange(e.target.value || undefined)}
+            className="w-full bg-black/40 border border-indigo-500/20 rounded-md px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/50 transition-all"
+          />
+          <p className="text-xs text-slate-500 mt-1.5">Must be within the vendor's business hours. Validated server-side.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main Page ───────────────────────────────────────────────────────────────
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { cart, megaTotal, clearAll } = useCart();
-  
-  // Track per-vendor state locally before merging into form submission payload
-  const [vendorSettings, setVendorSettings] = useState<Record<string, { fulfillmentMethod: FulfillmentMethod; paymentMethod: PaymentMethod; specialInstruction: string }>>({});
+
+  const [vendorSettings, setVendorSettings] = useState<
+    Record<string, {
+      fulfillmentMethod: FulfillmentMethod;
+      paymentMethod: PaymentMethod;
+      specialInstruction: string;
+      scheduledFor: string | undefined;
+    }>
+  >({});
   const [showStripeModal, setShowStripeModal] = useState(false);
 
-  const placeOrderMutation = trpc.customer.checkout.useMutation({
+  const placeOrderMutation = trpc.order.checkout.useMutation({
     onSuccess: (data) => {
       clearAll();
       router.push(`/track/${data.checkoutSessionId}`);
@@ -148,7 +208,6 @@ export default function CheckoutPage() {
     }
   });
 
-  // Initialize vendor settings from cart on mount
   useEffect(() => {
     if (cart.length > 0 && Object.keys(vendorSettings).length === 0) {
       const initial: typeof vendorSettings = {};
@@ -156,7 +215,8 @@ export default function CheckoutPage() {
         initial[v.tenantId] = {
           fulfillmentMethod: 'pickup',
           paymentMethod: 'counter',
-          specialInstruction: ''
+          specialInstruction: '',
+          scheduledFor: undefined,
         };
       });
       setVendorSettings(initial);
@@ -170,23 +230,16 @@ export default function CheckoutPage() {
     globalDeliveryAddress: z.string().trim().optional(),
   });
 
-  // Hook form for global details
-  const { register, handleSubmit, watch, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(checkoutFormSchema),
   });
 
-
   const needsDelivery = Object.values(vendorSettings).some(v => v.fulfillmentMethod === 'delivery');
   const needsStripe = Object.values(vendorSettings).some(v => v.paymentMethod === 'card');
-
-  // Total items calculation
   const totalItems = cart.reduce((acc, v) => acc + v.items.reduce((sum, item) => sum + item.quantity, 0), 0);
-
-  // We capture the form data on "Place Order" click, but might need to pause for Stripe
   const [pendingFormData, setPendingFormData] = useState<any>(null);
 
   const onValidSubmit = (data: any) => {
-    // Merge vendor settings into final payload
     const finalCart = cart.flatMap(v => {
       const settings = vendorSettings[v.tenantId];
       if (!settings) return [];
@@ -196,6 +249,7 @@ export default function CheckoutPage() {
         specialInstruction: settings.specialInstruction || undefined,
         paymentMethod: settings.paymentMethod,
         fulfillmentMethod: settings.fulfillmentMethod,
+        scheduledFor: settings.scheduledFor,
       }];
     });
 
@@ -205,7 +259,6 @@ export default function CheckoutPage() {
       cart: finalCart,
     };
 
-    // Client-side validation: if delivery selected, enforce address
     if (needsDelivery && !payload.globalDeliveryAddress) {
       alert("A delivery address is required for delivery orders.");
       return;
@@ -241,7 +294,7 @@ export default function CheckoutPage() {
       <div className="min-h-screen pt-24 pb-12" style={{ background: 'var(--color-brand-bg)' }}>
         <div className="max-w-[1100px] w-full mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
+
             {/* ── Left Column: Checkout Details ── */}
             <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
               <div className="mb-2">
@@ -257,23 +310,19 @@ export default function CheckoutPage() {
                     <User className="w-5 h-5" />
                     <h3 className="font-bold uppercase tracking-wider text-sm">Customer Contact</h3>
                   </div>
-                  
                   <div className="space-y-4 mt-5">
                     <FormField id="checkout-name" label="Full Name" error={errors.customerName?.message}>
                       <BrandInput {...register('customerName')} placeholder="Alex Rivera" />
                     </FormField>
-                    
                     <FormField id="checkout-email" label="Email Address" error={errors.customerEmail?.message}>
                       <BrandInput {...register('customerEmail')} type="email" placeholder="alex@example.com" />
                     </FormField>
-
                     <FormField id="checkout-phone" label="Phone Number" error={errors.customerPhone?.message}>
                       <BrandInput {...register('customerPhone')} placeholder="10-digit number" />
                     </FormField>
                   </div>
                 </GlassCard>
 
-                {/* Delivery Address Box - Only highlight if needed */}
                 <GlassCard className={cn(
                   "p-6 border transition-colors",
                   needsDelivery ? "border-amber-500/30 bg-amber-950/10" : "border-white/5 opacity-80"
@@ -286,9 +335,9 @@ export default function CheckoutPage() {
                     <p className="text-xs text-amber-500/80 mt-1 mb-3">Required for delivery orders.</p>
                   )}
                   <div className="mt-4">
-                    <BrandInput 
-                      {...register('globalDeliveryAddress')} 
-                      placeholder="e.g. 123 Artisan Ave, Apt 4B, New York, NY" 
+                    <BrandInput
+                      {...register('globalDeliveryAddress')}
+                      placeholder="e.g. 123 Artisan Ave, Apt 4B, New York, NY"
                     />
                   </div>
                 </GlassCard>
@@ -305,12 +354,19 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Vendor Cards */}
               <div className="space-y-6">
                 {cart.map((vendor) => {
                   const vendorSubtotal = vendor.items.reduce((s, i) => s + i.price * i.quantity, 0);
                   const settings = vendorSettings[vendor.tenantId];
                   if (!settings) return null;
+
+                  const updateSetting = (patch: Partial<typeof settings>) => {
+                    setVendorSettings(prev => {
+                      const existing = prev[vendor.tenantId];
+                      if (!existing) return prev;
+                      return { ...prev, [vendor.tenantId]: { ...existing, ...patch } };
+                    });
+                  };
 
                   return (
                     <div key={vendor.tenantId} className="rounded-2xl border border-white/5 overflow-hidden" style={{ background: 'var(--color-brand-card)' }}>
@@ -320,7 +376,7 @@ export default function CheckoutPage() {
                           {vendor.tenantName}
                         </h3>
                       </div>
-                      
+
                       {/* Compact Item List */}
                       <div className="px-5 py-4 space-y-3">
                         {vendor.items.map((item) => (
@@ -334,40 +390,27 @@ export default function CheckoutPage() {
                         ))}
                       </div>
 
-                      {/* Settings Block beneath items */}
+                      {/* Settings Block */}
                       <div className="px-5 pb-5 pt-3 border-t border-white/5 bg-black/20">
                         <div className="text-xs font-medium text-slate-500 mb-3 uppercase tracking-wider">Order Preferences</div>
-                        
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-1.5">
                             <span className="text-xs text-slate-400">Method</span>
                             <SegmentedControl
                               value={settings.fulfillmentMethod}
-                              onChange={(v) => {
-                                setVendorSettings(prev => {
-                                  const existing = prev[vendor.tenantId];
-                                  if (!existing) return prev;
-                                  return { ...prev, [vendor.tenantId]: { ...existing, fulfillmentMethod: v } };
-                                });
-                              }}
+                              onChange={(v) => updateSetting({ fulfillmentMethod: v })}
                               options={[
                                 { label: 'Pickup', value: 'pickup', icon: <ShoppingBag className="w-3.5 h-3.5" /> },
                                 { label: 'Delivery', value: 'delivery', icon: <MapPin className="w-3.5 h-3.5" /> }
                               ]}
                             />
                           </div>
-                          
                           <div className="space-y-1.5">
-                             <span className="text-xs text-slate-400">Payment</span>
+                            <span className="text-xs text-slate-400">Payment</span>
                             <SegmentedControl
                               value={settings.paymentMethod}
-                              onChange={(v) => {
-                                setVendorSettings(prev => {
-                                  const existing = prev[vendor.tenantId];
-                                  if (!existing) return prev;
-                                  return { ...prev, [vendor.tenantId]: { ...existing, paymentMethod: v } };
-                                });
-                              }}
+                              onChange={(v) => updateSetting({ paymentMethod: v })}
                               options={[
                                 { label: 'Pay at Store', value: 'counter', icon: <Store className="w-3.5 h-3.5" /> },
                                 { label: 'Pay Online', value: 'card', icon: <CreditCard className="w-3.5 h-3.5" /> }
@@ -376,19 +419,20 @@ export default function CheckoutPage() {
                           </div>
                         </div>
 
+                        {/* Scheduling widget */}
+                        <div className="mt-4 pt-4 border-t border-white/5">
+                          <ScheduleTimePicker
+                            value={settings.scheduledFor}
+                            onChange={(v) => updateSetting({ scheduledFor: v })}
+                          />
+                        </div>
+
                         <div className="mt-4">
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             placeholder="Notes for vendor (e.g. Allergies, special requests)"
                             value={settings.specialInstruction}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setVendorSettings(prev => {
-                                const existing = prev[vendor.tenantId];
-                                if (!existing) return prev;
-                                return { ...prev, [vendor.tenantId]: { ...existing, specialInstruction: val } };
-                              });
-                            }}
+                            onChange={(e) => updateSetting({ specialInstruction: e.target.value })}
                             className="w-full bg-black/40 border border-white/5 rounded-md px-3 py-2 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/30 transition-colors"
                           />
                         </div>
@@ -408,27 +452,27 @@ export default function CheckoutPage() {
                     </span>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-slate-500">Taxes & fees calculated<br/>by vendor</p>
+                    <p className="text-xs text-slate-500">Taxes & fees calculated<br />by vendor</p>
                   </div>
                 </div>
 
-                <GradientButton 
-                  type="submit" 
+                <GradientButton
+                  type="submit"
                   form="checkout-form"
                   disabled={placeOrderMutation.isPending}
                   className="w-full py-4 text-base font-bold shadow-lg shadow-amber-900/20 group"
                 >
                   {placeOrderMutation.isPending ? (
-                    <><Loader2 className="w-5 h-5 animate-spin inline mr-2"/> Processing...</>
+                    <><Loader2 className="w-5 h-5 animate-spin inline mr-2" />Processing...</>
                   ) : (
-                    <>PLACE ORDER <span className="opacity-70 font-normal ml-1"> ${megaTotal.toFixed(2)}</span></>
+                    <>PLACE ORDER <span className="opacity-70 font-normal ml-1">${megaTotal.toFixed(2)}</span></>
                   )}
                 </GradientButton>
                 {needsStripe && (
-                   <p className="text-center text-xs text-slate-500 mt-3 flex items-center justify-center gap-1">
-                     <CreditCard className="w-3.5 h-3.5 opacity-60" /> Secure online payment required for some items
-                   </p>
-                 )}
+                  <p className="text-center text-xs text-slate-500 mt-3 flex items-center justify-center gap-1">
+                    <CreditCard className="w-3.5 h-3.5 opacity-60" /> Secure online payment required for some items
+                  </p>
+                )}
               </GlassCard>
             </div>
 
@@ -436,9 +480,9 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      <StripePaymentModal 
+      <StripePaymentModal
         isOpen={showStripeModal}
-        amount={megaTotal} // For simplicity, showing grand total. In real life we'd sum only the vendors with `paymentMethod=card`
+        amount={megaTotal}
         onClose={() => setShowStripeModal(false)}
         onSuccess={handleStripeSuccess}
       />
