@@ -26,15 +26,15 @@ export default function MenuItemEditor({ initialData, onClose }: { initialData: 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Category state
-  const { data: menuCategories, isLoading: categoriesLoading } = trpc.tenant.getMenuCategories.useQuery();
+  const { data: menuCategories, isLoading: categoriesLoading } = trpc.category.getMenuCategories.useQuery();
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
 
   const isEditing = !!initialData;
 
-  const createCategoryMutation = trpc.tenant.createMenuCategory.useMutation({
+  const createCategoryMutation = trpc.category.createMenuCategory.useMutation({
     onSuccess: (data) => {
-      utils.tenant.getMenuCategories.invalidate();
+      utils.category.getMenuCategories.invalidate();
       setIsCreatingCategory(false);
       setNewCategoryName('');
       handleChange('categoryId', data.id);
@@ -42,17 +42,17 @@ export default function MenuItemEditor({ initialData, onClose }: { initialData: 
     onError: (err) => setErrorMsg(err.message),
   });
 
-  const createMutation = trpc.tenant.createMenuItem.useMutation({
+  const createMutation = trpc.menu.createMenuItem.useMutation({
     onSuccess: () => {
-      utils.tenant.getMenuItems.invalidate();
+      utils.menu.getMenuItems.invalidate();
       onClose();
     },
     onError: (err) => setErrorMsg(err.message),
   });
 
-  const updateMutation = trpc.tenant.updateMenuItem.useMutation({
+  const updateMutation = trpc.menu.updateMenuItem.useMutation({
     onSuccess: () => {
-      utils.tenant.getMenuItems.invalidate();
+      utils.menu.getMenuItems.invalidate();
       onClose();
     },
     onError: (err) => setErrorMsg(err.message),
@@ -64,7 +64,7 @@ export default function MenuItemEditor({ initialData, onClose }: { initialData: 
     name: initialData?.name || '',
     description: initialData?.description || '',
     imageUrl: initialData?.imageUrl || '',
-    price: initialData?.price ? Number(initialData.price) / 100 : 0,
+    price: initialData?.price ? Number(initialData.price) : 0,
     categoryId: initialData?.categoryId || '',
     isAvailable: initialData?.isAvailable ?? true,
     badge: initialData?.badge || '',

@@ -18,7 +18,7 @@ export default function CustomerPage() {
 
   const { orders: initialOrders, isLoading } = useOrders(DEMO_USER_ID);
 
-  const checkoutMutation = trpc.customer.checkout.useMutation({
+  const checkoutMutation = trpc.order.checkout.useMutation({
     onSuccess: (result) => {
       // The new checkout returns { checkoutSessionId }, not an Order directly.
       // For this demo page we'll just log it.

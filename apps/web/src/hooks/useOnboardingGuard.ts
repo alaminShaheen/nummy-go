@@ -38,7 +38,7 @@ export function useOnboardingGuard({
   // Only query tenant profile when the user is actually logged in
   const { data: tenant, isLoading: isTenantLoading } = trpc.tenant.me.useQuery(
     undefined,
-    { enabled: isLoggedIn },
+    { enabled: isLoggedIn, staleTime: Infinity },
   );
 
   // For public pages: if user isn't logged in, the guard doesn't apply —

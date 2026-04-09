@@ -1,7 +1,7 @@
 import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
 import { users } from './users';
 import { tenants } from './tenants';
-import { ORDER_STATUS, PAYMENT_METHOD } from './enums';
+import { ORDER_STATUS, PAYMENT_METHOD, ORDER_MODIFICATION_STATUS } from './enums';
 
 export const orders = sqliteTable('orders', {
   id: text('id').primaryKey(),
@@ -24,6 +24,13 @@ export const orders = sqliteTable('orders', {
   totalAmount: integer('total_amount').notNull(),
   specialInstruction: text('special_instruction'),
   rejectionReason: text('rejection_reason'),
+
+  // Scheduling
+  scheduledFor: integer('scheduled_for', { mode: 'number' }), // nullable unix timestamp
+
+  // Modification requests
+  modificationStatus: text('modification_status', { enum: ORDER_MODIFICATION_STATUS }),
+
   createdAt: integer('created_at', { mode: 'number' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'number' }),
   completedAt: integer('completed_at', { mode: 'number' }),
@@ -33,4 +40,6 @@ export const orders = sqliteTable('orders', {
   sessionIdx: index('orders_session_idx').on(table.checkoutSessionId),
   statusIdx: index('orders_status_idx').on(table.status),
   tenantCreatedIdx: index('orders_tenant_created_idx').on(table.tenantId, table.createdAt),
+  modStatusIdx: index('orders_modification_status_idx').on(table.modificationStatus),
 }));
+

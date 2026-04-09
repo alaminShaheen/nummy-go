@@ -16,7 +16,7 @@ import { authClient } from '@/lib/auth-client';
 export default function OnboardingPage() {
 	const router = useRouter();
 	const { data: session, isPending } = authClient.useSession();
-	const { data: tenant, isLoading } = trpc.tenant.me.useQuery();
+	const { data: tenant, isLoading } = trpc.tenant.me.useQuery(undefined, { staleTime: Infinity });
 	const hasPopulatedForm = useRef(false);
 
 	const onboard = trpc.tenant.onboard.useMutation({

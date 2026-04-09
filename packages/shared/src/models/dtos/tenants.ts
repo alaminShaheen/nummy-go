@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { timestampSchema, ulidSchema } from '../schemas';
+import { timestampSchema, ulidSchema, userIdSchema } from '../schemas';
 import { businessHoursSchema } from '../types';
 
 // ── API-facing ─────────────────────────────────────────────────────────────
@@ -21,6 +21,13 @@ export const updateTenantSchema = registerTenantSchema.partial().extend({
 	// TODO: Add closed until later
 	// closedUntil: timestampSchema.nullable().optional(),
 	onboardingCompleted: z.boolean().optional(),
+	/** Minutes within which customers can request modifications: 15 | 30 | 45 | 60 */
+	orderModificationThreshold: z.union([
+		z.literal(15),
+		z.literal(30),
+		z.literal(45),
+		z.literal(60),
+	]).optional(),
 });
 
 export const checkTenantSlugSchema = z.object({
@@ -36,7 +43,7 @@ export const searchTenantsSchema = z.object({
 
 export const createTenantRecordSchema = z.object({
 	id: ulidSchema,
-	userId: ulidSchema,
+	userId: userIdSchema,
 	slug: z.string(),
 	name: z.string(),
 	phoneNumber: z.string(),

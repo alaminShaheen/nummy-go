@@ -14,13 +14,17 @@
  */
 
 import { router, publicProcedure } from '../init';
-import { customerRouter } from './customerRouter';
 import { tenantRouter }   from './tenantRouter';
+import { menuRouter } from './menuRouter';
+import { categoryRouter } from './categoryRouter';
+import { orderRouter } from './orderRouter';
 
 export const appRouter = router({
   health:   publicProcedure.query(() => ({ status: 'ok' })),
-  customer: customerRouter,
   tenant:   tenantRouter,
+  menu:     menuRouter,
+  category: categoryRouter,
+  order:    orderRouter,
 });
 
 /** The inferred type of the full router – used by frontend tRPC clients. */

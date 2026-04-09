@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { orderStatusEnum, paymentMethodEnum, fulfillmentMethodEnum } from '../enums';
+import { orderStatusEnum, paymentMethodEnum, fulfillmentMethodEnum, orderModificationStatusEnum } from '../enums';
 import type { OrderStatus } from '../enums';
-import {ulidSchema, timestampSchema, priceSchema, outputPriceSchema} from '../schemas';
+import {ulidSchema, timestampSchema, priceSchema, outputPriceSchema, userIdSchema} from '../schemas';
 
 // ── API-facing ─────────────────────────────────────────────────────────────
 
@@ -16,6 +16,12 @@ const vendorCartSchema = z.object({
   specialInstruction: z.string().max(500).optional(),
   paymentMethod:      paymentMethodEnum.default('counter'),
   fulfillmentMethod:  fulfillmentMethodEnum.default('pickup'),
+  /**
+   * Optional scheduled time for the order (ISO-8601 datetime string, e.g. "2026-04-08T14:30:00").
+   * Must fall within the tenant's business hours — validated server-side.
+   * Null / omitted = ASAP.
+   */
+  scheduledFor: z.string().datetime({ local: true }).optional(),
 });
 
 export const customerCheckoutSchema = z.object({
@@ -70,18 +76,43 @@ export const getOrdersByTenantSchema = z.object({
 });
 
 export const getOrdersByUserSchema = z.object({
-  userId: ulidSchema,
+  userId: userIdSchema,
 });
 
 export const getOrderGroupSchema = z.object({
   checkoutSessionId: ulidSchema,
 });
 
+// ── Order Modification ─────────────────────────────────────────────────────
+
+/**
+ * Customer-facing: request changes to an existing order within the threshold window.
+ * Items not listed = keep unchanged.
+ */
+export const requestOrderModificationSchema = z.object({
+  orderId: ulidSchema,
+  /** New desired item list (replaces the full order items on acceptance). */
+  items: z.array(orderLineSchema).min(1, 'Must have at least one item'),
+  specialInstruction: z.string().max(500).optional(),
+});
+
+/** Tenant-facing: accept or reject a pending modification request. */
+export const reviewModificationSchema = z.object({
+  modificationId: ulidSchema,
+  action: z.enum(['accepted', 'rejected']),
+  tenantNote: z.string().optional(),
+});
+
+export const cancelOrderRequestSchema = z.object({
+  orderId: ulidSchema,
+  reason: z.string().optional(),
+});
+
 // ── Internal (query-facing) ────────────────────────────────────────────────
 
 export const createOrderRecordSchema = z.object({
   id:                 ulidSchema,
-  userId:             ulidSchema.nullable().optional(),
+  userId:             userIdSchema.nullable().optional(),
   checkoutSessionId:  ulidSchema.optional(),
   tenantId:           ulidSchema,
   customerName:       z.string().nullable().optional(),
@@ -93,7 +124,9 @@ export const createOrderRecordSchema = z.object({
   deliveryAddress:    z.string().nullable().optional(),
   isPosOrder:         z.boolean().default(false),
   specialInstruction: z.string().nullable().optional(),
-  rejectionReason: z.string().nullable().optional(),
+  rejectionReason:    z.string().nullable().optional(),
+  scheduledFor:       timestampSchema.nullable().optional(),
+  modificationStatus: orderModificationStatusEnum.nullable().optional(),
   createdAt:          timestampSchema,
   updatedAt:          timestampSchema,
 });
@@ -108,9 +141,20 @@ export const createOrderItemRecordSchema = z.object({
   createdAt:  timestampSchema,
 });
 
+export const createOrderModificationRecordSchema = z.object({
+  id:               ulidSchema,
+  orderId:          ulidSchema,
+  tenantId:         ulidSchema,
+  requestedChanges: z.string(), // JSON string
+  status:           orderModificationStatusEnum.default('pending'),
+  tenantNote:       z.string().nullable().optional(),
+  createdAt:        timestampSchema,
+  reviewedAt:       timestampSchema.nullable().optional(),
+});
+
 export const orderResponseSchema = z.object({
   id:                 ulidSchema,
-  userId:             ulidSchema.nullable(),
+  userId:             userIdSchema.nullable(),
   checkoutSessionId:  ulidSchema.nullable(),
   tenantId:           ulidSchema,
   customerName:       z.string().nullable(),
@@ -124,17 +168,72 @@ export const orderResponseSchema = z.object({
   isPosOrder:         z.boolean(),
   specialInstruction: z.string().nullable(),
   rejectionReason:    z.string().nullable(),
+  scheduledFor:       timestampSchema.nullable(),
+  modificationStatus: orderModificationStatusEnum.nullable(),
   createdAt:          timestampSchema,
   updatedAt:          timestampSchema.nullable(),
   completedAt:        timestampSchema.nullable(),
 });
 
-export type CustomerCheckoutDto      = z.infer<typeof customerCheckoutSchema>;
-export type PosCheckoutDto           = z.infer<typeof posCheckoutSchema>;
-export type UpdateOrderStatusDto     = z.infer<typeof updateOrderStatusSchema>;
-export type GetOrdersByTenantDto     = z.infer<typeof getOrdersByTenantSchema>;
-export type GetOrdersByUserDto       = z.infer<typeof getOrdersByUserSchema>;
-export type CreateOrderRecordDto     = z.infer<typeof createOrderRecordSchema>;
-export type CreateOrderItemRecordDto = z.infer<typeof createOrderItemRecordSchema>;
-export type GetOrderGroupDto         = z.infer<typeof getOrderGroupSchema>;
-export type OrderResponseDto         = z.infer<typeof orderResponseSchema>;
+export const checkoutGroupResponseSchema = z.object({
+  orders: z.array(orderResponseSchema),
+  tenantModificationThreshold: z.number().int().nonnegative(),
+});
+
+export const orderModificationResponseSchema = z.object({
+  id:               ulidSchema,
+  orderId:          ulidSchema,
+  tenantId:         ulidSchema,
+  requestedChanges: z.string(),
+  status:           orderModificationStatusEnum,
+  tenantNote:       z.string().nullable(),
+  createdAt:        timestampSchema,
+  reviewedAt:       timestampSchema.nullable(),
+});
+
+export const modificationDetailsResponseSchema = z.object({
+  modificationId: z.string(),
+  tenantNote: z.string().nullable(),
+  specialInstruction: z.string().nullable(),
+  currentItems: z.array(z.object({
+    menuItemId: z.string(),
+    name: z.string(),
+    price: z.number(),
+    imageUrl: z.string().nullable(),
+    quantity: z.number().int().positive(),
+  })),
+  requestedItems: z.array(z.object({
+    menuItemId: z.string(),
+    name: z.string(),
+    price: z.number(),
+    imageUrl: z.string().nullable(),
+    quantity: z.number().int().positive(),
+  })),
+  diff: z.array(z.object({
+    menuItemId: z.string(),
+    name: z.string(),
+    price: z.number(),
+    imageUrl: z.string().nullable(),
+    currentQty: z.number().int().min(0),
+    requestedQty: z.number().int().min(0),
+    delta: z.number().int(),
+    change: z.enum(['added', 'removed', 'increased', 'decreased']),
+  })),
+});
+
+export type CustomerCheckoutDto                  = z.infer<typeof customerCheckoutSchema>;
+export type PosCheckoutDto                       = z.infer<typeof posCheckoutSchema>;
+export type UpdateOrderStatusDto                 = z.infer<typeof updateOrderStatusSchema>;
+export type GetOrdersByTenantDto                 = z.infer<typeof getOrdersByTenantSchema>;
+export type GetOrdersByUserDto                   = z.infer<typeof getOrdersByUserSchema>;
+export type CreateOrderRecordDto                 = z.infer<typeof createOrderRecordSchema>;
+export type CreateOrderItemRecordDto             = z.infer<typeof createOrderItemRecordSchema>;
+export type CreateOrderModificationRecordDto     = z.infer<typeof createOrderModificationRecordSchema>;
+export type GetOrderGroupDto                     = z.infer<typeof getOrderGroupSchema>;
+export type OrderResponseDto                     = z.infer<typeof orderResponseSchema>;
+export type CheckoutGroupResponseDto             = z.infer<typeof checkoutGroupResponseSchema>;
+export type OrderModificationResponseDto         = z.infer<typeof orderModificationResponseSchema>;
+export type RequestOrderModificationDto          = z.infer<typeof requestOrderModificationSchema>;
+export type ReviewModificationDto                = z.infer<typeof reviewModificationSchema>;
+export type CancelOrderRequestDto                = z.infer<typeof cancelOrderRequestSchema>;
+export type ModificationDetailsResponseDto       = z.infer<typeof modificationDetailsResponseSchema>;

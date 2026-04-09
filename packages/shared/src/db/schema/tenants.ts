@@ -15,6 +15,8 @@ export const tenants = sqliteTable('tenants', {
   closedUntil: integer('closed_until', { mode: 'number' }),
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
   onboardingCompleted: integer('onboarding_completed', { mode: 'boolean' }).notNull().default(false),
+  /** Minutes after order creation the customer may request modifications: 15 | 30 | 45 | 60 */
+  orderModificationThreshold: integer('order_modification_threshold').notNull().default(30),
   createdAt: integer('created_at', { mode: 'number' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'number' }).notNull(),
 }, (table) => ({

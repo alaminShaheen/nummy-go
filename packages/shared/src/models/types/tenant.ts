@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { timestampSchema, ulidSchema } from '../schemas';
+import { ORDER_MODIFICATION_THRESHOLD_OPTIONS } from '../enums';
 
 const dayHoursSchema = z.object({
 	open: z.iso.time(), // e.g. "09:00"
@@ -30,6 +31,13 @@ export const tenantSchema = z.object({
 	closedUntil: timestampSchema.nullable(),
 	isActive: z.boolean(),
 	onboardingCompleted: z.boolean(),
+	/** Minutes after order creation within which customers can request modifications (15|30|45|60). */
+	orderModificationThreshold: z.union([
+		z.literal(15),
+		z.literal(30),
+		z.literal(45),
+		z.literal(60),
+	]).default(30),
 	createdAt: timestampSchema,
 	updatedAt: timestampSchema.nullable(),
 });

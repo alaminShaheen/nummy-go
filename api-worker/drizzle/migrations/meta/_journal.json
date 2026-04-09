@@ -57,6 +57,13 @@
       "when": 1775592177855,
       "tag": "0007_regular_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1775665831923,
+      "tag": "0008_omniscient_obadiah_stane",
+      "breakpoints": true
     }
   ]
 }

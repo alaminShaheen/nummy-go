@@ -14,7 +14,7 @@
     }
   },
   "scripts": {
-    "dev": "wrangler dev --port 8787 --env local",
+    "dev": "pnpm run cf-typegen && wrangler dev --port 8787 --env local",
     "deploy:staging": "wrangler deploy --env staging",
     "deploy:prod": "wrangler deploy --env production",
     "cf-typegen": "wrangler types --env-interface Env",
@@ -30,6 +30,7 @@
     "@nummygo/shared": "workspace:*",
     "@trpc/server": "^11.0.0",
     "better-auth": "^1.5.6",
+    "date-fns": "^4.1.0",
     "drizzle-orm": "^0.41.0",
     "ulidx": "^2.4.1",
     "zod": "^4.0.0"

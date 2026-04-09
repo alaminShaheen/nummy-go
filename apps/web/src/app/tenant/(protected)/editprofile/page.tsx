@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { useQueryClient } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { trpc } from '@/trpc/client';
 import Navbar from '@/components/Navbar';
@@ -15,12 +16,14 @@ import { ArrowLeft } from 'lucide-react';
 // ─── Edit Profile Page ────────────────────────────────────────────────────────
 export default function EditProfilePage() {
 	const router = useRouter();
+	const queryClient = useQueryClient();
 	const { data: session, isPending } = authClient.useSession();
-	const { data: tenant, isLoading } = trpc.tenant.me.useQuery();
+	const { data: tenant, isLoading } = trpc.tenant.me.useQuery(undefined, { staleTime: Infinity });
 	const hasPopulatedForm = useRef(false);
 
 	const updateProfile = trpc.tenant.updateTenant.useMutation({
 		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: [['tenant', 'me']] });
 			router.push(`/${tenant?.slug}`);
 		},
 		onError: (error: any) => {
@@ -47,6 +50,7 @@ export default function EditProfilePage() {
 				address: tenant.address || undefined,
 				businessHours: tenant.businessHours || undefined,
 				acceptsOrders: tenant.acceptsOrders ?? undefined,
+				orderModificationThreshold: tenant.orderModificationThreshold ?? 30,
 			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps

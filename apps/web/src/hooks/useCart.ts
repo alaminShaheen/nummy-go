@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 export interface CartItem {
   id: string; // menuItemId
   name: string;
-  price: number; // Stored in dollars
+  price: number; // stored in dollars
   quantity: number;
   image?: string;
 }
@@ -25,7 +25,6 @@ export function useCart() {
         const vendorIndex = cloned.findIndex((v) => v.tenantId === tenantId);
 
         if (vendorIndex >= 0) {
-          // Vendor exists, append/update item
           const vendorCart = cloned[vendorIndex]!;
           const itemIndex = vendorCart.items.findIndex((i) => i.id === item.id);
 
@@ -35,7 +34,6 @@ export function useCart() {
             vendorCart.items.push({ ...item, quantity: qty });
           }
         } else {
-          // New vendor in cart
           cloned.push({
             tenantId,
             tenantName,
@@ -60,9 +58,7 @@ export function useCart() {
 
           if (itemIndex >= 0) {
             if (qty <= 0) {
-              // Remove item
               vendorCart.items.splice(itemIndex, 1);
-              // Remove vendor if empty
               if (vendorCart.items.length === 0) {
                 cloned.splice(vendorIndex, 1);
               }
@@ -88,6 +84,37 @@ export function useCart() {
     setCart([]);
   }, [setCart]);
 
+  /**
+   * Replaces the cart slot for a given vendor with items from an existing order.
+   * Used by the modification-mode UX to pre-populate the cart when the customer
+   * returns to the menu page to edit their order.
+   *
+   * ⚠️ This REPLACES the vendor's existing cart entry (not merges).
+   * Other vendor carts are untouched.
+   */
+  const loadFromOrderItems = useCallback(
+    (
+      tenantId: string,
+      tenantName: string,
+      orderItems: Array<{ menuItemId: string; name: string; price: number; imageUrl: string | null; quantity: number }>,
+    ) => {
+      const items: CartItem[] = orderItems.map((i) => ({
+        id: i.menuItemId,
+        name: i.name,
+        price: i.price,
+        quantity: i.quantity,
+        image: i.imageUrl ?? undefined,
+      }));
+
+      setCart((prev) => {
+        const cloned = prev.filter((v) => v.tenantId !== tenantId);
+        cloned.push({ tenantId, tenantName, items });
+        return cloned;
+      });
+    },
+    [setCart]
+  );
+
   const totalItems = cart.reduce(
     (sum, vendor) => sum + vendor.items.reduce((acc, item) => acc + item.quantity, 0),
     0
@@ -104,6 +131,7 @@ export function useCart() {
     updateItemQuantity,
     removeVendorCart,
     clearAll,
+    loadFromOrderItems,
     totalItems,
     megaTotal,
   };

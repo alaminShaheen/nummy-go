@@ -26,7 +26,7 @@ export function useDashboardOrders(
   tenantId: string | null,
   options: UseDashboardOrdersOptions = {}
 ) {
-  const query = trpc.tenant.getDashboardOrders.useQuery(
+  const query = trpc.order.getDashboardOrders.useQuery(
     {
       tenantId:  tenantId ?? '',
       status:    options.status,

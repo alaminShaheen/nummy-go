@@ -18,9 +18,9 @@ export function OrderActions({ orderId, status }: OrderActionsProps) {
 
   const utils = trpc.useUtils();
   
-  const updateStatusMutation = trpc.tenant.updateOrderStatus.useMutation({
+  const updateStatusMutation = trpc.order.updateOrderStatus.useMutation({
     onSuccess: () => {
-      utils.tenant.getDashboardOrders.invalidate();
+      utils.order.getDashboardOrders.invalidate();
       setRejecting(false);
       setRejectionReason('');
     },
