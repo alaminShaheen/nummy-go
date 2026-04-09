@@ -5,7 +5,8 @@ import { useEffect, useRef, useState, Suspense } from 'react';
 
 import Navbar from '@/components/Navbar';
 import HeroBanner from '@/components/HeroBanner';
-import VendorInfo from '@/components/VendorInfo';
+import VendorProfileHeader from '@/components/VendorProfileHeader';
+import VendorMapDivider from '@/components/VendorMapDivider';
 import MenuSection from '@/components/MenuSection';
 import CartFab from '@/components/CartFab';
 import type { MenuItem } from '@/components/MenuItemCard';
@@ -306,16 +307,20 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
 
       <main>
         <HeroBanner
-          isVendorOwner={isVendorOwner}
-          tenantName={tenant.name}
-          acceptsOrders={tenant.acceptsOrders ?? true}
           promotionalHeading={tenant.promotionalHeading}
-          description={tenant.description}
-          tags={tenant.tags}
           heroImageUrl={tenant.heroImageUrl}
         />
-        <GradientDivider accent="amber" />
-        <VendorInfo
+        
+        <VendorProfileHeader 
+          name={tenant.name}
+          description={tenant.description}
+          tags={tenant.tags}
+          logoUrl={tenant.logoUrl}
+          acceptsOrders={tenant.acceptsOrders ?? true}
+          isVendorOwner={isVendorOwner}
+        />
+
+        <VendorMapDivider
           name={tenant.name}
           address={tenant.address || ''}
           latitude={tenant.latitude ?? undefined}
@@ -332,9 +337,7 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
             { day: 'Sat', time: tenant.businessHours.saturday.closed ? 'Closed' : `${tenant.businessHours.saturday.open} – ${tenant.businessHours.saturday.close}` },
             { day: 'Sun', time: tenant.businessHours.sunday.closed ? 'Closed' : `${tenant.businessHours.sunday.open} – ${tenant.businessHours.sunday.close}` },
           ] : VENDOR.hours}
-          tags={VENDOR.tags}
         />
-        <GradientDivider accent="indigo" />
         <MenuSection items={displayItems} categories={serverCategories || []} onAddToCart={handleAddToCart} isVendorOwner={isVendorOwner} />
 
         <footer className="py-10 px-4 text-center border-t border-white/5">

@@ -17,12 +17,12 @@ interface MenuSectionProps {
 export default function MenuSection({ items, categories = [], onAddToCart, isVendorOwner }: MenuSectionProps) {
   const [activeCategory, setActiveCategory] = useState<string | 'ALL'>('ALL');
 
-  const filteredItems = activeCategory === 'ALL' 
-    ? items 
+  const filteredItems = activeCategory === 'ALL'
+    ? items
     : items.filter((item) => item.categoryId === activeCategory);
 
   return (
-    <section id="menu" className="relative py-20 px-4 sm:px-6 lg:px-8">
+    <section id="menu" className="relative pt-0 py-10 px-4 sm:px-6 lg:px-8">
       {/* Ambient glow */}
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full pointer-events-none"
@@ -96,7 +96,7 @@ export default function MenuSection({ items, categories = [], onAddToCart, isVen
             <MenuItemCard key={item.id} item={item} onAddToCart={onAddToCart} />
           ))}
         </div>
-        
+
         {filteredItems.length === 0 && (
           <div className="py-12 text-center text-slate-500">
             No items found in this category.

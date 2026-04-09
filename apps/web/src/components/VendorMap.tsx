@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -16,6 +16,18 @@ const customIcon = L.icon({
 	shadowSize: [41, 41]
 });
 
+function MapOffset() {
+	const map = useMap();
+	useEffect(() => {
+		// Shift the center dynamically so the pin lands perfectly into the right viewport half
+		const offset = window.innerWidth > 768 ? -window.innerWidth / 5 : 0;
+		if (offset !== 0) {
+			map.panBy([offset, 0], { animate: false });
+		}
+	}, [map]);
+	return null;
+}
+
 interface VendorMapProps {
 	latitude: number;
 	longitude: number;
@@ -24,7 +36,7 @@ interface VendorMapProps {
 	mapUrl: string;
 }
 
-export default function VendorMap({ latitude, longitude, name, address, mapUrl }: VendorMapProps) {
+export default function VendorMap({ latitude, longitude, name, address }: VendorMapProps) {
 	// Simple fix to align the Amber color filter directly over the default blue marker
 	useEffect(() => {
 		const applyFilters = () => {
@@ -40,37 +52,26 @@ export default function VendorMap({ latitude, longitude, name, address, mapUrl }
 	}, [latitude, longitude]);
 
 	return (
-		<div className="w-full h-[400px] flex flex-col gap-3">
-			<div className="flex-grow w-full rounded-xl overflow-hidden shadow-2xl border border-white/10" style={{ isolation: 'isolate' }}>
-				<MapContainer 
-					center={[latitude, longitude]} 
-					zoom={18} 
-					style={{ height: '100%', width: '100%', background: '#0D1117' }}
-					attributionControl={false}
-				>
-					{/* Dark Matter CartoDB Free Tile layer */}
-					<TileLayer
-						url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-					/>
-					<Marker position={[latitude, longitude]} icon={customIcon}>
-						<Popup>
-							<div className="font-semibold text-slate-900">{name}</div>
-							{address && <div className="text-xs text-slate-600 mt-1">{address}</div>}
-						</Popup>
-					</Marker>
-				</MapContainer>
-			</div>
-			
-			<div className="flex justify-end">
-				<a 
-					href={mapUrl}
-					target="_blank"
-					rel="noopener noreferrer"
-					className="text-xs font-semibold text-amber-500 hover:text-amber-400 transition-colors flex items-center gap-1.5"
-				>
-					Open in Maps <span>&rarr;</span>
-				</a>
-			</div>
+		<div className="w-full h-full" style={{ isolation: 'isolate', zIndex: 0 }}>
+			<MapContainer 
+				center={[latitude, longitude]} 
+				zoom={18} 
+				style={{ height: '100%', width: '100%', background: '#0D1117' }}
+				attributionControl={false}
+				zoomControl={false}
+			>
+				<MapOffset />
+				{/* Dark Matter CartoDB Free Tile layer */}
+				<TileLayer
+					url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+				/>
+				<Marker position={[latitude, longitude]} icon={customIcon}>
+					<Popup>
+						<div className="font-semibold text-slate-900">{name}</div>
+						{address && <div className="text-xs text-slate-600 mt-1">{address}</div>}
+					</Popup>
+				</Marker>
+			</MapContainer>
 		</div>
 	);
 }
