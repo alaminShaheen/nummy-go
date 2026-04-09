@@ -13,6 +13,7 @@ export const createMenuItemSchema = z.object({
   isAvailable: z.boolean().default(true),
   isFeatured:  z.boolean().default(false),
   badge:       z.string().nullable().optional(),
+  calories:    z.number().int().positive().optional().nullable(),
 });
 
 export const updateMenuItemSchema = z.object({
@@ -24,6 +25,7 @@ export const updateMenuItemSchema = z.object({
   isAvailable: z.boolean().optional(),
   isFeatured:  z.boolean().optional(),
   badge:       z.string().nullable().optional(),
+  calories:    z.number().int().positive().optional().nullable(),
 });
 
 export const updateMenuItemRequestSchema = updateMenuItemSchema.extend({
@@ -65,6 +67,7 @@ export const menuItemResponseSchema = z.object({
   isAvailable: z.boolean(),
   isFeatured:  z.boolean(),
   badge:       z.string().nullable(),
+  calories:    z.number().int().positive().nullable().optional(),
   createdAt:   timestampSchema,
   updatedAt:   timestampSchema.nullable(),
 });

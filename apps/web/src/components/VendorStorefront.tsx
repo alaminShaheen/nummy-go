@@ -264,6 +264,7 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
       image: item.imageUrl || '',
       badge: item.badge || undefined,
       categoryId: item.categoryId || null,
+      calories: item.calories || null,
     }))
     : MENU_ITEMS;
 

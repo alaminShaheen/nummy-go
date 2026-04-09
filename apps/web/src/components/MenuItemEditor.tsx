@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { z } from 'zod';
 import { trpc } from '@/trpc/client';
 import { X, Loader2, UploadCloud, Trash2, Check } from 'lucide-react';
-import { GradientButton, GlossButton } from '@/components/ui';
+import { GradientButton, GlossButton, BrandInput, BrandSwitch, FormField } from '@/components/ui';
 import Image from 'next/image';
 
 const formSchema = z.object({
@@ -12,6 +12,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   imageUrl: z.string().optional().or(z.literal('')),
   price: z.number().min(0, "Price must be positive"),
+  calories: z.number().int().positive().nullable().optional(),
   categoryId: z.string().optional(),
   isAvailable: z.boolean().default(true),
   badge: z.string().optional(),
@@ -65,6 +66,7 @@ export default function MenuItemEditor({ initialData, onClose }: { initialData: 
     description: initialData?.description || '',
     imageUrl: initialData?.imageUrl || '',
     price: initialData?.price ? Number(initialData.price) : 0,
+    calories: initialData?.calories || null,
     categoryId: initialData?.categoryId || '',
     isAvailable: initialData?.isAvailable ?? true,
     badge: initialData?.badge || '',
@@ -180,11 +182,10 @@ export default function MenuItemEditor({ initialData, onClose }: { initialData: 
             </div>
           )}
 
-          <div className="space-y-5 flex-1">
+          <div className="space-y-6 flex-1">
             
             {/* Image Dropzone */}
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Dish Image</label>
+            <FormField id="dishImage" label="Dish Image" hint="Recommended square or 4:3 (e.g. 800x600)">
               {formData.imageUrl ? (
                 <div className="relative w-full h-48 rounded-xl overflow-hidden group">
                   <Image src={formData.imageUrl} alt="Preview" fill className="object-cover" />
@@ -205,7 +206,7 @@ export default function MenuItemEditor({ initialData, onClose }: { initialData: 
                   onDrop={handleFileUpload}
                   onClick={() => fileInputRef.current?.click()}
                   className={`w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all ${
-                    isDragging ? 'border-amber-500 bg-amber-500/10 text-amber-500 scale-[1.02]' : 'border-white/10 hover:border-white/20 bg-black/20 text-slate-500 hover:text-slate-300'
+                    isDragging ? 'border-amber-500 bg-amber-500/10 text-amber-500 scale-[1.02]' : 'border-white/10 hover:border-white/20 bg-white/[0.02] text-slate-500 hover:text-slate-300'
                   }`}
                 >
                   <UploadCloud className={`size-8 mb-2 ${isDragging ? 'animate-bounce' : ''}`} />
@@ -219,93 +220,104 @@ export default function MenuItemEditor({ initialData, onClose }: { initialData: 
                   />
                 </div>
               )}
-            </div>
+            </FormField>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Dish Name *</label>
-              <input
-                type="text"
+            <FormField id="dishName" label="Dish Name" required>
+              <BrandInput
+                id="dishName"
                 autoFocus
                 value={formData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
+                onValueChange={(val) => handleChange('name', val)}
                 placeholder="e.g. Smash Burger & Fries"
-                className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
               />
-            </div>
+            </FormField>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Description</label>
+            <FormField id="description" label="Description" hint="Briefly describe the ingredients and preparation...">
               <textarea
+                id="description"
                 value={formData.description}
                 onChange={(e) => handleChange('description', e.target.value)}
-                placeholder="Briefly describe the ingredients and preparation..."
+                placeholder="Best burger in town..."
                 rows={3}
-                className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none"
+                className="w-full rounded-xl bg-white/[0.04] border border-white/10 transition-colors duration-200 focus:border-amber-400/60 focus:bg-white/[0.06] focus:outline-none focus:ring-0 text-slate-100 placeholder:text-slate-600 px-4 py-2.5 resize-none"
               />
-            </div>
+            </FormField>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Price ($) *</label>
-                <input
+            <div className="grid grid-cols-3 gap-4">
+              <FormField id="price" label="Price ($)" required>
+                <BrandInput
+                  id="price"
                   type="number"
                   step="0.01"
                   min="0"
                   value={formData.price}
                   onChange={(e) => handleChange('price', parseFloat(e.target.value))}
-                  className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  placeholder="14.99"
                 />
-              </div>
+              </FormField>
               
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Highlight Badge</label>
+              <FormField id="calories" label="Calories" hint="Optional">
+                <BrandInput
+                  id="calories"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={formData.calories ?? ''}
+                  onChange={(e) => handleChange('calories', e.target.value ? parseInt(e.target.value, 10) : null)}
+                  placeholder="450"
+                  suffix={<span className="text-xs font-semibold text-slate-500 mr-1">cal</span>}
+                />
+              </FormField>
+              
+              <FormField id="highlightBadge" label="Highlight Badge">
                 <select
+                  id="highlightBadge"
                   value={formData.badge}
                   onChange={(e) => handleChange('badge', e.target.value)}
-                  className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full rounded-xl bg-[#141A23] border border-white/10 text-slate-200 text-sm px-4 py-[11px] focus:outline-none focus:border-amber-400/60 transition-colors appearance-none"
                 >
-                  <option value="">None</option>
-                  <option value="Popular">Popular</option>
-                  <option value="Chef's Pick">Chef's Pick</option>
-                  <option value="New">New</option>
-                  <option value="Spicy">Spicy</option>
-                  <option value="Vegan">Vegan</option>
-                  <option value="Gluten-Free">Gluten-Free</option>
+                  <option value="" className="bg-[#141A23]">None</option>
+                  <option value="Popular" className="bg-[#141A23]">Popular</option>
+                  <option value="Chef's Pick" className="bg-[#141A23]">Chef's Pick</option>
+                  <option value="New" className="bg-[#141A23]">New</option>
+                  <option value="Spicy" className="bg-[#141A23]">Spicy</option>
+                  <option value="Vegan" className="bg-[#141A23]">Vegan</option>
+                  <option value="Gluten-Free" className="bg-[#141A23]">Gluten-Free</option>
                 </select>
-              </div>
+              </FormField>
             </div>
 
             {/* Menu Category Selection */}
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Menu Category</label>
+            <FormField id="menuCategory" label="Menu Category">
               {isCreatingCategory ? (
                 <div className="flex items-center gap-2">
-                  <input
+                  <BrandInput
+                    id="newCategory"
                     type="text"
                     value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    onValueChange={(val) => setNewCategoryName(val)}
                     placeholder="New Category Name..."
-                    className="flex-1 px-4 py-2 bg-black/20 border border-indigo-500/50 rounded-lg text-slate-200 focus:outline-none focus:border-indigo-500"
                     autoFocus
                   />
                   <button 
                     type="button"
                     onClick={handleCreateCategory}
                     disabled={createCategoryMutation.isPending}
-                    className="p-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-lg transition-colors flex-shrink-0"
+                    className="p-[10px] bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl transition-colors flex-shrink-0"
                   >
                     {createCategoryMutation.isPending ? <Loader2 className="size-5 animate-spin" /> : <Check className="size-5" />}
                   </button>
                   <button 
                     type="button" 
                     onClick={() => setIsCreatingCategory(false)}
-                    className="p-2 bg-white/10 hover:bg-white/20 text-slate-300 rounded-lg transition-colors flex-shrink-0"
+                    className="p-[10px] bg-white/10 hover:bg-white/20 text-slate-300 rounded-xl transition-colors flex-shrink-0"
                   >
                     <X className="size-5" />
                   </button>
                 </div>
               ) : (
                 <select
+                  id="menuCategory"
                   value={formData.categoryId}
                   onChange={(e) => {
                     if (e.target.value === 'ADD_NEW') {
@@ -314,44 +326,33 @@ export default function MenuItemEditor({ initialData, onClose }: { initialData: 
                       handleChange('categoryId', e.target.value);
                     }
                   }}
-                  className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full rounded-xl bg-[#141A23] border border-white/10 text-slate-200 text-sm px-4 py-[11px] focus:outline-none focus:border-amber-400/60 transition-colors appearance-none"
                   disabled={categoriesLoading}
                 >
-                  <option value="">Ungrouped</option>
+                  <option value="" className="bg-[#141A23]">Ungrouped</option>
                   {menuCategories?.map((cat) => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    <option key={cat.id} value={cat.id} className="bg-[#141A23]">{cat.name}</option>
                   ))}
-                  <option value="ADD_NEW" className="font-semibold text-indigo-400">+ Create New Category...</option>
+                  <option value="ADD_NEW" className="font-semibold text-indigo-400 bg-[#141A23]">+ Create New Category...</option>
                 </select>
               )}
-            </div>
+            </FormField>
 
             {/* Custom Interactive Switch */}
-            <div className="pt-2 flex items-center justify-between bg-black/20 p-4 rounded-xl border border-white/5">
-              <div>
-                <p className="text-sm font-medium text-slate-200">Available on Menu</p>
-                <p className="text-xs text-slate-500 mt-0.5">Toggle off to hide item from customers</p>
+            <FormField id="availability" label="Available on Menu" hint="Toggle off to hide item from customers">
+              <div className="flex items-center gap-3 py-2">
+			          <BrandSwitch
+			            ariaLabel="Toggle availability"
+			            checked={formData.isAvailable}
+			            onChange={(c) => handleChange('isAvailable', c)}
+			          />
+			          <span
+			            className={`text-sm font-medium ${formData.isAvailable ? 'text-amber-400' : 'text-slate-400'}`}
+			          >
+			            {formData.isAvailable ? 'Item is Live' : 'Hidden / Sold Out'}
+			          </span>
               </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={formData.isAvailable}
-                onClick={() => handleChange('isAvailable', !formData.isAvailable)}
-                className={`
-                  relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:ring-offset-2 focus:ring-offset-[#0D1117]
-                  ${formData.isAvailable ? 'bg-amber-500' : 'bg-slate-700'}
-                `}
-              >
-                <span className="sr-only">Menu availability state</span>
-                <span
-                  aria-hidden="true"
-                  className={`
-                    pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out
-                    ${formData.isAvailable ? 'translate-x-5' : 'translate-x-0'}
-                  `}
-                />
-              </button>
-            </div>
+            </FormField>
           </div>
 
           <div className="pt-6 border-t border-white/5 mt-auto flex gap-3">

@@ -6,6 +6,7 @@ import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { trpc } from '@/trpc/client';
 import { GradientButton } from '@/components/ui';
 import MenuItemEditor from '@/components/MenuItemEditor';
+import MenuItemCard from '@/components/MenuItemCard';
 import Navbar from '@/components/Navbar';
 
 export default function TenantMenuDashboard() {
@@ -14,6 +15,7 @@ export default function TenantMenuDashboard() {
 
   const utils = trpc.useUtils();
   const { data: menuItems, isLoading } = trpc.menu.getMenuItems.useQuery();
+  const { data: menuCategories } = trpc.category.getMenuCategories.useQuery();
   const deleteMutation = trpc.menu.deleteMenuItem.useMutation({
     onSuccess: () => utils.menu.getMenuItems.invalidate(),
   });
@@ -72,61 +74,24 @@ export default function TenantMenuDashboard() {
         </button>
 
         {/* EXISTING ITEMS */}
-        {menuItems?.map((item) => (
-          <article
-            key={item.id}
-            className={`
-              relative flex flex-col overflow-hidden rounded-2xl border transition-all duration-300 group
-              ${item.isAvailable ? 'border-indigo-500/20 bg-[#1a2130]' : 'border-rose-500/20 bg-rose-950/20 opacity-75'}
-            `}
-          >
-            {/* Hover Actions */}
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex items-center justify-center gap-4 backdrop-blur-sm">
-              <button
-                onClick={() => handleEdit(item)}
-                className="p-3 rounded-full bg-amber-500 text-black hover:bg-amber-400 transition-colors shadow-lg"
-                title="Edit Item"
-              >
-                <Edit2 className="size-5" />
-              </button>
-              <button
-                onClick={() => handleDelete(item.id)}
-                className="p-3 rounded-full bg-rose-500 text-white hover:bg-rose-400 transition-colors shadow-lg"
-                title="Delete Item"
-              >
-                <Trash2 className="size-5" />
-              </button>
-            </div>
-
-            {/* Thumbnail */}
-            <div className="relative w-full h-40 bg-black/50">
-              {item.imageUrl ? (
-                <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-600">No Image</div>
-              )}
-              {item.badge && (
-                <span className="absolute top-2 left-2 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-black bg-amber-400 rounded">
-                  {item.badge}
-                </span>
-              )}
-              {!item.isAvailable && (
-                <span className="absolute top-2 right-2 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white bg-rose-500 rounded">
-                  Sold Out
-                </span>
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="p-4 flex flex-col gap-1">
-              <div className="flex justify-between items-start gap-2">
-                <h3 className="font-bold text-slate-200 line-clamp-1">{item.name}</h3>
-                <span className="text-amber-400 font-semibold">${item.price.toFixed(2)}</span>
-              </div>
-              <p className="text-slate-500 text-xs line-clamp-2">{item.description}</p>
-            </div>
-          </article>
-        ))}
+        {menuItems?.map((item) => {
+          const categoryName = menuCategories?.find((c) => c.id === item.categoryId)?.name;
+          const mappedItem = {
+            ...item,
+            image: item.imageUrl || '',
+            description: item.description || ''
+          };
+          return (
+            <MenuItemCard 
+              key={item.id} 
+              item={mappedItem as any} 
+              categoryName={categoryName}
+              mode="builder"
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          );
+        })}
       </div>
 
       {/* Slide-over Editor Modal */}

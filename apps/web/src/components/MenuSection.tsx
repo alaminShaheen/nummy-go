@@ -92,9 +92,10 @@ export default function MenuSection({ items, categories = [], onAddToCart, isVen
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {filteredItems.map((item) => (
-            <MenuItemCard key={item.id} item={item} onAddToCart={onAddToCart} />
-          ))}
+          {filteredItems.map((item) => {
+            const categoryName = categories.find((c) => c.id === item.categoryId)?.name;
+            return <MenuItemCard key={item.id} item={item} onAddToCart={onAddToCart} categoryName={categoryName} />;
+          })}
         </div>
 
         {filteredItems.length === 0 && (
