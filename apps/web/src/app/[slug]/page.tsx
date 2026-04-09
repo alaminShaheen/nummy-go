@@ -21,8 +21,7 @@ export const dynamicParams = true;
 // Pre-generate pages for existing vendors at build time
 export async function generateStaticParams() {
     try {
-        const slugs = await serverTRPC.tenant.allTenantSlugs.query()
-        console.log({slugs})
+        const slugs = await serverTRPC.tenant.allTenantSlugs.query();
         return slugs;
     } catch (error) {
         console.error('Error in generateStaticParams:', (error as any)?.data);

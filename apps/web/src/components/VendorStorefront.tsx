@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Suspense } from 'react';
 
 import Navbar from '@/components/Navbar';
 import HeroBanner from '@/components/HeroBanner';
@@ -180,7 +180,7 @@ function ModificationBanner({
 
 /* ─── Component ─────────────────────────────────── */
 
-export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
+function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { addToCart, loadFromOrderItems, cart } = useCart();
@@ -338,5 +338,19 @@ export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
 
       <CartFab />
     </>
+  );
+}
+
+export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="w-6 h-6 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
+        </div>
+      }
+    >
+      <VendorStorefrontContent tenant={tenant} />
+    </Suspense>
   );
 }
