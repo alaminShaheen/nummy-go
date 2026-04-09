@@ -188,7 +188,7 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
 
   // URL params from the modification flow
   const modifyOrderId = searchParams.get('modify');
-  const sessionId     = searchParams.get('session');
+  const sessionId = searchParams.get('session');
 
   const loaded = useRef(false);
   const [showReplaceModal, setShowReplaceModal] = useState(false);
@@ -223,7 +223,7 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
       // No conflict — load straight away
       doLoadCart(orderDetails.items, orderDetails.order.createdAt);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderDetails]);
 
   const doLoadCart = (
@@ -305,11 +305,21 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
       <Navbar />
 
       <main>
-        <HeroBanner isVendorOwner={isVendorOwner} />
+        <HeroBanner
+          isVendorOwner={isVendorOwner}
+          tenantName={tenant.name}
+          acceptsOrders={tenant.acceptsOrders ?? true}
+          promotionalHeading={tenant.promotionalHeading}
+          description={tenant.description}
+          tags={tenant.tags}
+          heroImageUrl={tenant.heroImageUrl}
+        />
         <GradientDivider accent="amber" />
         <VendorInfo
           name={tenant.name}
           address={tenant.address || ''}
+          latitude={tenant.latitude ?? undefined}
+          longitude={tenant.longitude ?? undefined}
           mapUrl={getGoogleMapsUrl(tenant.address || '')}
           phone={tenant.phoneNumber}
           email={tenant.email || ''}

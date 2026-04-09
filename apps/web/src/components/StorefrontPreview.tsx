@@ -23,6 +23,13 @@ export interface StorefrontPreviewProps {
 	address?: string;
 	businessHours?: BusinessHours;
 	acceptsOrders?: boolean;
+	promotionalHeading?: string | null;
+	description?: string | null;
+	tags?: string[] | null;
+	heroImageUrl?: string | null;
+	logoUrl?: string | null;
+	acceptsDownpayment?: boolean;
+	downpaymentPercentage?: number | null;
 	// TODO: Add it later
 	// closedUntil?: number | null;
 }
@@ -35,6 +42,13 @@ export default function StorefrontPreview({
 	address,
 	businessHours,
 	acceptsOrders = true,
+	promotionalHeading,
+	description,
+	tags,
+	heroImageUrl,
+	logoUrl,
+	acceptsDownpayment,
+	downpaymentPercentage,
 	// TODO: Add it later
 	// closedUntil,
 }: StorefrontPreviewProps) {
@@ -63,11 +77,22 @@ export default function StorefrontPreview({
 
 			{/* ── Scrollable storefront content ── */}
 			<div className="overflow-y-auto" style={{ maxHeight: 560 }}>
-				{/* Hero */}
-				<div
-					className="relative flex flex-col items-start justify-end px-5 py-5 min-h-[130px]"
-					style={{ background: 'linear-gradient(160deg, #1a1f2e 0%, #0D1117 100%)' }}
+				{/* Hero Banner Area */}
+				<div 
+					className="relative min-h-[14rem] bg-[#0a0d14] rounded-xl overflow-hidden mb-4 shrink-0 shadow-inner group"
+					style={{
+						backgroundImage: heroImageUrl ? `url(${heroImageUrl})` : undefined,
+						backgroundSize: 'cover',
+						backgroundPosition: 'center',
+					}}
 				>
+					{/* Dark overlay mesh ensuring crisp text rendering */}
+					{heroImageUrl && <div className="absolute inset-0 bg-[#0D1117]/80 group-hover:bg-[#0D1117]/70 transition-colors" />}
+
+					{/* Banner pattern layer if no image */}
+					{!heroImageUrl && (
+						<div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
+					)}
 					<div
 						className="absolute inset-0 pointer-events-none opacity-40"
 						style={{
@@ -75,35 +100,64 @@ export default function StorefrontPreview({
 						}}
 						aria-hidden="true"
 					/>
-					<div className="relative z-10">
+					<div className="relative z-10 h-full p-4 flex flex-col justify-end">
 						{acceptsOrders ? (
-							<div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-400/10 border border-green-400/20 text-green-400 text-[10px] font-semibold uppercase tracking-wider mb-2">
-								<span
-									className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"
-									aria-hidden="true"
-								/>
+							<div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-400 text-[10px] font-semibold uppercase tracking-wider mb-2">
+								<span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" aria-hidden="true" />
 								Now Taking Orders
 							</div>
 						) : (
-							<div className="">
-								<div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-rose-400/10 border border-rose-400/20 text-rose-400 text-[10px] font-semibold uppercase tracking-wider mb-2">
-									<span className="w-1.5 h-1.5 rounded-full bg-rose-400" aria-hidden="true" />
-									Temporarily Closed
-								</div>
-								{/* TODO: Add later */}
-								{/*{reopenDate && (*/}
-								{/*	<p className="text-[10px] text-slate-500 mt-1 ml-1">*/}
-								{/*		Reopening {reopenDate.toLocaleDateString()} at{' '}*/}
-								{/*		{reopenDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}*/}
-								{/*	</p>*/}
-								{/*)}*/}
+							<div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-semibold uppercase tracking-wider mb-2">
+								<span className="w-1.5 h-1.5 rounded-full bg-red-500" aria-hidden="true" />
+								Temporarily Closed
 							</div>
 						)}
-						<h2 className="text-xl font-black text-slate-100 leading-tight mt-2">
-							{name || <span className="text-slate-600 italic font-normal">Your Restaurant Name</span>}
-						</h2>
+
+						{/* Overtone Restaurant Name */}
+						<span className="block font-semibold uppercase text-indigo-400 tracking-[0.2em] text-[9px] mt-1 shadow-sm">
+							{name || 'YOUR RESTAURANT'}
+						</span>
+
+						{/* Headline */}
+						{promotionalHeading ? (
+							<h2 className="text-xl font-black text-slate-100 leading-tight mt-1 tracking-tight">
+								{promotionalHeading.split(' ').map((word, i, arr) => {
+									const targetIndex = arr.length > 2 ? Math.floor(arr.length / 2) : 1;
+									if (i === targetIndex && arr.length > 1) {
+										return (
+											<span key={i}>
+												<span className="gradient-text">{word}</span>{' '}
+											</span>
+										);
+									}
+									return (
+										<span key={i}>
+											{word}{i !== arr.length - 1 ? ' ' : ''}
+										</span>
+									);
+								})}
+							</h2>
+						) : (
+							<h2 className="text-xl font-black text-slate-100 leading-tight mt-1 tracking-tight">
+								Your{' '}
+								<span className="gradient-text">Neighbourhood</span>
+								<br />
+								Flavours
+							</h2>
+						)}
+
+						{/* Sub-text */}
+						{description ? (
+							<p className="text-[10px] text-slate-300 mt-2 border-l-[1.5px] border-indigo-500/60 pl-2 leading-relaxed">
+								{description}
+							</p>
+						) : (
+							<p className="text-[10px] text-slate-400 mt-2 leading-relaxed">
+								Freshly prepared meals crafted with love.
+							</p>
+						)}
 						<div className="flex gap-2 mt-2 flex-wrap">
-							{['🍔 Burgers', '🍝 Pasta'].map((t) => (
+							{(tags?.length ? tags : ['🍔 Burgers', '🍝 Pasta']).map((t) => (
 								<span
 									key={t}
 									className="px-2 py-0.5 rounded-full text-[10px] bg-white/5 border border-white/10 text-slate-400"

@@ -51,6 +51,13 @@ export default function EditProfilePage() {
 				businessHours: tenant.businessHours || undefined,
 				acceptsOrders: tenant.acceptsOrders ?? undefined,
 				orderModificationThreshold: tenant.orderModificationThreshold ?? 30,
+				promotionalHeading: tenant.promotionalHeading || undefined,
+				description: tenant.description || undefined,
+				tags: tenant.tags || undefined,
+				logoUrl: tenant.logoUrl || undefined,
+				heroImageUrl: tenant.heroImageUrl || undefined,
+				acceptsDownpayment: tenant.acceptsDownpayment ?? false,
+				downpaymentPercentage: tenant.downpaymentPercentage || undefined,
 			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps

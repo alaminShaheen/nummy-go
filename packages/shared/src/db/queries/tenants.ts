@@ -65,6 +65,7 @@ export async function searchTenantsByName(query: string, limit = 50) {
             address: tenants.address,
             acceptsOrders: tenants.acceptsOrders,
             closedUntil: tenants.closedUntil,
+            logoUrl: tenants.logoUrl,
         })
         .from(tenants)
         .where(

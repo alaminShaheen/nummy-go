@@ -112,6 +112,7 @@ function SearchResults() {
                   name={vendor.name}
                   slug={vendor.slug}
                   address={vendor.address}
+                  logoUrl={vendor.logoUrl}
                   className="animate-stagger-fade"
                   style={{ animationDelay: `${index * 80}ms` }}
                   onClick={() => router.push(`/${vendor.slug}`)}

@@ -13,7 +13,11 @@ export const registerTenantSchema = z.object({
 	phoneNumber: z.string().length(10, 'Valid phone number required'),
 	email: z.email('Invalid email address').optional().or(z.literal('')),
 	address: z.string().trim().min(1, 'Business address is required'),
+	latitude: z.number().optional().nullable(),
+	longitude: z.number().optional().nullable(),
 	businessHours: businessHoursSchema,
+	promotionalHeading: z.string().optional().or(z.literal('')),
+	description: z.string().optional().or(z.literal('')),
 });
 
 export const updateTenantSchema = registerTenantSchema.partial().extend({
@@ -21,6 +25,11 @@ export const updateTenantSchema = registerTenantSchema.partial().extend({
 	// TODO: Add closed until later
 	// closedUntil: timestampSchema.nullable().optional(),
 	onboardingCompleted: z.boolean().optional(),
+	tags: z.array(z.string()).optional(),
+	logoUrl: z.string().optional().or(z.literal('')),
+	heroImageUrl: z.string().optional().or(z.literal('')),
+	acceptsDownpayment: z.boolean().optional(),
+	downpaymentPercentage: z.number().int().min(1).max(100).optional().nullable(),
 	/** Minutes within which customers can request modifications: 15 | 30 | 45 | 60 */
 	orderModificationThreshold: z.union([
 		z.literal(15),
@@ -49,6 +58,15 @@ export const createTenantRecordSchema = z.object({
 	phoneNumber: z.string(),
 	email: z.string().optional(),
 	address: z.string().optional(),
+	latitude: z.number().optional().nullable(),
+	longitude: z.number().optional().nullable(),
+	promotionalHeading: z.string().optional(),
+	description: z.string().optional(),
+	tags: z.array(z.string()).optional(),
+	logoUrl: z.string().optional().or(z.literal('')),
+	heroImageUrl: z.string().optional().or(z.literal('')),
+	acceptsDownpayment: z.boolean().default(false),
+	downpaymentPercentage: z.number().optional(),
 	businessHours: businessHoursSchema.optional(), // serialized JSON string for DB
 	onboardingCompleted: z.boolean(),
 	createdAt: timestampSchema,

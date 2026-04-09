@@ -5,12 +5,12 @@ import { Controller, type Path, type PathValue, type UseFormReturn } from 'react
 import { useDebounceCallback } from 'usehooks-ts';
 import { trpc } from '@/trpc/client';
 import StorefrontPreview from '@/components/StorefrontPreview';
-import { BrandInput, Button, FormField } from '@/components/ui';
+import { BrandInput, Button, FormField, FormCard, ImageDropzone, TagsInput, BrandSwitch, AddressAutocomplete } from '@/components/ui';
 import type { BusinessHours } from '@nummygo/shared/models/types';
 import type { RegisterTenantDto, UpdateTenantDto } from '@nummygo/shared/models/dtos';
 import { type Day, DAY_LABELS, DAYS, makeDefaultWeeklyHours } from '@/constants/tenant';
 import { toSlug } from '@/utils/tenant';
-import { AlertCircle, Building2, CheckCircle2, ChevronRight, Clock, Loader2, Phone, Power } from 'lucide-react';
+import { AlertCircle, Building2, CheckCircle2, ChevronRight, Clock, Loader2, Phone, Power, Wallet, Image as ImageIcon } from 'lucide-react';
 import { clsx } from 'clsx';
 import { TimePicker } from '@/components/TimePicker';
 
@@ -211,10 +211,99 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 							</FormField>
 						)}
 					/>
+
+					<Controller
+						name={'promotionalHeading' as Path<T>}
+						control={control}
+						render={({ field }) => (
+							<FormField id="promotionalHeading" label="Promotional Heading" error={(errors as any).promotionalHeading?.message} hint="Optional — replaces your restaurant name in the hero banner.">
+								<BrandInput
+									id="promotionalHeading"
+									{...field}
+									value={(field.value as string) ?? ''}
+									placeholder="Award winning Pizza!"
+								/>
+							</FormField>
+						)}
+					/>
+
+					<Controller
+						name={'description' as Path<T>}
+						control={control}
+						render={({ field }) => (
+							<FormField id="description" label="Description" error={(errors as any).description?.message} hint="Optional — a short tagline beneath the hero banner.">
+								<BrandInput
+									id="description"
+									{...field}
+									value={(field.value as string) ?? ''}
+									placeholder="Best pizza in town baked in a wood-fired oven."
+								/>
+							</FormField>
+						)}
+					/>
+
+					<Controller
+						name={'tags' as Path<T>}
+						control={control}
+						render={({ field }) => (
+							<FormField
+								id="tags"
+								label="Restaurant Tags"
+								error={(errors as any).tags?.message}
+								hint="Optional — Enter category tags separated by commas."
+							>
+								<TagsInput
+									id="tags"
+									value={field.value as string[] | undefined}
+									onChange={field.onChange}
+									placeholder="🍔 Burgers, 🍝 Pasta, Halal"
+								/>
+							</FormField>
+						)}
+					/>
+				</FormCard>
+
+				{/* ── Card: Branding & Artwork ── */}
+				<FormCard icon={<ImageIcon size={15} />} title="Branding & Artwork">
+					<div className="flex flex-col md:flex-row gap-6 items-start">
+						{/* Logo Upload */}
+						<div className="shrink-0">
+							<Controller
+								name={'logoUrl' as Path<T>}
+								control={control}
+								render={({ field }) => (
+									<ImageDropzone
+										label="Brand Logo"
+										hint="Recommended square (e.g. 512x512)"
+										isAvatar={true}
+										value={field.value as string | undefined}
+										onChange={field.onChange}
+									/>
+								)}
+							/>
+						</div>
+
+						{/* Hero Banner Upload */}
+						<div className="flex-1 w-full">
+							<Controller
+								name={'heroImageUrl' as Path<T>}
+								control={control}
+								render={({ field }) => (
+									<ImageDropzone
+										label="Hero Banner Background"
+										hint="Recommended wide format (e.g. 1600x400)"
+										isAvatar={false}
+										value={field.value as string | undefined}
+										onChange={field.onChange}
+									/>
+								)}
+							/>
+						</div>
+					</div>
 				</FormCard>
 
 				{/* ── Card: Contact ── */}
-				<FormCard icon={<Phone size={15} />} title="Contact">
+				<FormCard icon={<Phone size={15} />} title="Contact" className="z-50">
 					<Controller
 						name={'phoneNumber' as Path<T>}
 						control={control}
@@ -269,15 +358,83 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 								error={(errors as any).address?.message}
 								hint="Where customers can find you. This will open Google Maps when clicked."
 							>
-								<BrandInput
+								<AddressAutocomplete
 									id="address"
-									{...field}
 									value={(field.value as string) ?? ''}
 									placeholder="123 Main St, New York, NY 10001"
+									error={!!(errors as any).address?.message}
+									onChange={(addr, lat, lng) => {
+										field.onChange(addr);
+										if (lat !== undefined && lng !== undefined) {
+											(form.setValue as any)('latitude', lat, { shouldDirty: true });
+											(form.setValue as any)('longitude', lng, { shouldDirty: true });
+										} else {
+											(form.setValue as any)('latitude', null, { shouldDirty: true });
+											(form.setValue as any)('longitude', null, { shouldDirty: true });
+										}
+									}}
 								/>
 							</FormField>
 						)}
 					/>
+				</FormCard>
+
+				{/* ── Card: Payment Processing ── */}
+				<FormCard icon={<Wallet size={15} />} title="Payment Processing">
+					<Controller
+						name={'acceptsDownpayment' as Path<T>}
+						control={control}
+						render={({ field }) => (
+							<FormField
+								id="acceptsDownpayment"
+								label="Require Downpayment"
+								hint="Toggle to require a partial payment upfront for orders."
+							>
+								<div className="flex items-center gap-3 py-2">
+									<BrandSwitch
+										checked={field.value as boolean}
+										onChange={field.onChange}
+										ariaLabel={`Toggle downpayment ${field.value ? 'off' : 'on'}`}
+									/>
+									<span
+										className={clsx('text-sm font-medium', {
+											'text-amber-400': field.value,
+											'text-slate-400': !field.value,
+										})}
+									>
+										{field.value ? 'Downpayment Required' : 'Full Payment on Pickup'}
+									</span>
+								</div>
+							</FormField>
+						)}
+					/>
+
+					{watch('acceptsDownpayment' as Path<T>) && (
+						<Controller
+							name={'downpaymentPercentage' as Path<T>}
+							control={control}
+							render={({ field }) => (
+								<FormField
+									id="downpaymentPercentage"
+									label="Downpayment Percentage (%)"
+									required
+									error={(errors as any).downpaymentPercentage?.message}
+									hint="Percentage of the total order value required upfront."
+								>
+									<BrandInput
+										id="downpaymentPercentage"
+										type="number"
+										min={1}
+										max={100}
+										{...field}
+										value={(field.value as number) ?? ''}
+										onChange={(e) => field.onChange(parseInt(e.target.value, 10) || undefined)}
+										placeholder="20"
+									/>
+								</FormField>
+							)}
+						/>
+					)}
 				</FormCard>
 
 				{/* ── Card: Availability ── */}
@@ -292,32 +449,15 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 									label="Accepting Orders"
 									hint="Toggle this to pause or resume accepting orders from customers."
 								>
-									<div className="flex items-center gap-3">
-										<button
-											type="button"
-											onClick={() => field.onChange(!field.value)}
-											aria-label={`Toggle accepting orders ${field.value ? 'off' : 'on'}`}
-											className={clsx(
-												'relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0',
-												{
-													'bg-green-500': field.value,
-													'bg-slate-600': !field.value,
-												}
-											)}
-										>
-											<span
-												className={clsx(
-													'absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200',
-													{
-														'left-5': field.value,
-														'left-0.5': !field.value,
-													}
-												)}
-											/>
-										</button>
+									<div className="flex items-center gap-3 py-2">
+										<BrandSwitch
+											checked={field.value as boolean}
+											onChange={field.onChange}
+											ariaLabel={`Toggle accepting orders ${field.value ? 'off' : 'on'}`}
+										/>
 										<span
 											className={clsx('text-sm font-medium', {
-												'text-green-400': field.value,
+												'text-amber-400': field.value,
 												'text-slate-400': !field.value,
 											})}
 										>
@@ -413,28 +553,11 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 									</span>
 
 									{/* Open/closed toggle */}
-									<button
-										type="button"
-										onClick={() => setDayHours(day, 'closed', !dh.closed)}
-										aria-label={`Toggle ${day} ${dh.closed ? 'open' : 'closed'}`}
-										className={clsx(
-											'relative w-8 h-4 rounded-full transition-colors duration-200 flex-shrink-0',
-											{
-												'bg-white/10': dh.closed,
-												'bg-amber-500': !dh.closed,
-											}
-										)}
-									>
-										<span
-											className={clsx(
-												'absolute top-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform duration-200',
-												{
-													'left-0.5': dh.closed,
-													'left-4': !dh.closed,
-												}
-											)}
-										/>
-									</button>
+									<BrandSwitch
+										checked={!dh.closed}
+										onChange={(c) => setDayHours(day, 'closed', !c)}
+										ariaLabel={`Toggle ${day} ${dh.closed ? 'open' : 'closed'}`}
+									/>
 
 									{dh.closed ? (
 										<span className="text-xs text-slate-600 italic">Closed</span>
@@ -534,29 +657,16 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 					email={formValues.email}
 					address={formValues.address}
 					businessHours={formValues.businessHours}
+					promotionalHeading={(formValues as UpdateTenantDto).promotionalHeading}
+					description={(formValues as UpdateTenantDto).description}
+					tags={(formValues as UpdateTenantDto).tags}
+					acceptsDownpayment={(formValues as UpdateTenantDto).acceptsDownpayment}
+					downpaymentPercentage={(formValues as UpdateTenantDto).downpaymentPercentage}
 				/>
 				<p className="text-[11px] text-slate-600 text-center leading-relaxed">
 					Fill in the form to see your storefront update in real-time.
 				</p>
 			</div>
 		</div>
-	);
-}
-
-// ─── FormCard sub-component ───────────────────────────────────────────────────
-function FormCard({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
-	return (
-		<section
-			className="rounded-2xl p-6 flex flex-col gap-5 border border-white/8"
-			style={{ background: 'rgba(19,25,31,0.85)', backdropFilter: 'blur(16px)' }}
-		>
-			<div className="flex items-center gap-2.5 mb-1">
-				<span className="w-8 h-8 rounded-xl bg-amber-400/10 border border-amber-400/20 text-amber-400 flex items-center justify-center flex-shrink-0">
-					{icon}
-				</span>
-				<h2 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">{title}</h2>
-			</div>
-			{children}
-		</section>
 	);
 }

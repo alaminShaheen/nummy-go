@@ -3,12 +3,39 @@ import Link from 'next/link';
 import { GradientButton, GlossButton } from '@/components/ui';
 import { ArrowRight, Pencil } from 'lucide-react';
 
-export default function HeroBanner({ isVendorOwner }: { isVendorOwner?: boolean }) {
+interface HeroBannerProps {
+  tenantName: string;
+  acceptsOrders: boolean;
+  promotionalHeading?: string | null;
+  description?: string | null;
+  tags?: string[] | null;
+  heroImageUrl?: string | null;
+  isVendorOwner?: boolean;
+}
+
+export default function HeroBanner({
+  tenantName,
+  acceptsOrders,
+  promotionalHeading,
+  description,
+  tags,
+  heroImageUrl,
+  isVendorOwner
+}: HeroBannerProps) {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center overflow-hidden"
+      className="relative min-h-screen flex items-center overflow-hidden bg-[#0D1117] transition-all duration-300"
+      style={{
+				backgroundImage: heroImageUrl ? `url(${heroImageUrl})` : undefined,
+				backgroundSize: 'cover',
+				backgroundPosition: 'center',
+			}}
     >
+      {/* Background layer mesh locking high fidelity overlay */}
+      {heroImageUrl && (
+         <div className="absolute inset-0 z-0 bg-[#0D1117]/85" />
+      )}
       {/* Ambient glow blobs */}
       <div className="glow-amber" style={{ top: '-10%', left: '-5%' }} aria-hidden="true" />
       <div className="glow-indigo" style={{ bottom: '5%', right: '-5%' }} aria-hidden="true" />
@@ -31,26 +58,74 @@ export default function HeroBanner({ isVendorOwner }: { isVendorOwner?: boolean 
           {/* Left: Copy */}
           <div className="flex flex-col gap-6">
             {/* Badge */}
-            <div className="inline-flex w-fit items-center gap-2 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-semibold uppercase tracking-widest">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" aria-hidden="true" />
-              Now Taking Orders
+            <div className={`inline-flex w-fit items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold uppercase tracking-widest ${
+              acceptsOrders 
+                ? 'bg-amber-400/10 border-amber-400/20 text-amber-400' 
+                : 'bg-red-500/10 border-red-500/20 text-red-500'
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${acceptsOrders ? 'bg-amber-400 animate-pulse' : 'bg-red-500'}`} aria-hidden="true" />
+              {acceptsOrders ? 'Now Taking Orders' : 'Temporarily Closed'}
             </div>
 
+            {/* Overtone Restaurant Name */}
+            <span className="block font-semibold uppercase text-indigo-400 tracking-[0.2em] text-sm mt-2">
+              {tenantName}
+            </span>
+
             {/* Headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight">
-              Your{' '}
-              <span className="gradient-text">Neighbourhood</span>
-              <br />
-              Flavours,
-              <br />
-              <span className="text-slate-200">Delivered Fast.</span>
-            </h1>
+            {promotionalHeading ? (
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight text-white mb-2">
+                {promotionalHeading.split(' ').map((word, i, arr) => {
+                  // Highlight the middle word (or one of the middle words)
+                  const targetIndex = arr.length > 2 ? Math.floor(arr.length / 2) : 1;
+                  if (i === targetIndex && arr.length > 1) {
+                    return (
+                      <span key={i}>
+                        <span className="gradient-text">{word}</span>{' '}
+                      </span>
+                    );
+                  }
+                  return (
+                    <span key={i}>
+                      {word}{i !== arr.length - 1 ? ' ' : ''}
+                    </span>
+                  );
+                })}
+              </h1>
+            ) : (
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight mb-2">
+                Your{' '}
+                <span className="gradient-text">Neighbourhood</span>
+                <br />
+                Flavours,
+                <br />
+                <span className="text-slate-200">Delivered Fast.</span>
+              </h1>
+            )}
 
             {/* Sub-text */}
-            <p className="text-slate-400 text-lg max-w-md leading-relaxed">
-              Freshly prepared meals crafted with love by local chefs. Order online,
-              pick up in minutes or get it delivered right to your door.
-            </p>
+            {description ? (
+              <p className="text-slate-300 text-lg max-w-md leading-relaxed border-l-2 border-indigo-500/60 pl-4 py-1">
+                {description}
+              </p>
+            ) : (
+              <p className="text-slate-400 text-lg max-w-md leading-relaxed">
+                Freshly prepared meals crafted with love by local chefs. Order online,
+                pick up in minutes or get it delivered right to your door.
+              </p>
+            )}
+
+            {/* Tags (if any exist or default to some) */}
+            <div className="flex gap-2 flex-wrap pb-1">
+               {(tags?.length ? tags : ['🍔 Burgers', '🍝 Pasta', '🍣 Sushi']).map((t) => (
+                  <span
+                    key={t}
+                    className="px-3 py-1 rounded-full text-[12px] bg-white/5 border border-white/10 text-slate-300 backdrop-blur-sm shadow-xl"
+                  >
+                     {t}
+                  </span>
+               ))}
+            </div>
 
             {/* CTA row */}
             <div className="flex flex-wrap gap-4 pt-2">

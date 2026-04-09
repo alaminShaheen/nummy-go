@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, index, real } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 import { users } from './users';
 
@@ -10,6 +10,15 @@ export const tenants = sqliteTable('tenants', {
   phoneNumber: text('phone_number').notNull(),
   email: text('email'),
   address: text('address'),
+  latitude: real('latitude'),
+  longitude: real('longitude'),
+  promotionalHeading: text('promotional_heading'),
+  description: text('description'),
+  tags: text('tags', { mode: 'json' }).$type<string[]>(),
+  logoUrl: text('logo_url'),
+  heroImageUrl: text('hero_image_url'),
+  acceptsDownpayment: integer('accepts_downpayment', { mode: 'boolean' }).notNull().default(false),
+  downpaymentPercentage: integer('downpayment_percentage'),
   businessHours: text('business_hours', { mode: 'json' }),
   acceptsOrders: integer('accepts_orders', { mode: 'boolean' }).notNull().default(true),
   closedUntil: integer('closed_until', { mode: 'number' }),

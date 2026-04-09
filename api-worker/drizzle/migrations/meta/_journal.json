@@ -64,6 +64,34 @@
       "when": 1775665831923,
       "tag": "0008_omniscient_obadiah_stane",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1775697655646,
+      "tag": "0009_perfect_photon",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1775699459018,
+      "tag": "0010_small_wilson_fisk",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1775700211919,
+      "tag": "0011_chunky_harrier",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1775702269268,
+      "tag": "0012_spicy_prima",
+      "breakpoints": true
     }
   ]
 }
