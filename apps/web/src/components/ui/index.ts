@@ -43,6 +43,7 @@ export { NummyGoBadge } from './NummyGoBadge';
 export type { NummyGoBadgeProps } from './NummyGoBadge';
 
 export { StatusBadge } from './StatusBadge';
+export * from './InlineEditableField';
 export type { StatusBadgeProps, OrderStatus } from './StatusBadge';
 
 export { SectionLabel } from './SectionLabel';
