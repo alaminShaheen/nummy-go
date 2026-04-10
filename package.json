@@ -11,7 +11,20 @@
     "dev:email": "pnpm --filter email-preview dev",
     "deploy": "pnpm build:shared && pnpm --filter web --filter api-worker deploy --parallel",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
-    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\""
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    
+
+    "build:web:prod": "pnpm run build:shared && pnpm --filter web run build:cf:prod",
+    "build:web:staging": "pnpm run build:shared && pnpm --filter web run build:cf:staging",
+
+    "build:api:prod": "pnpm run build:shared && pnpm --filter api-worker run build",
+    "build:api:staging": "pnpm run build:shared && pnpm --filter api-worker run build",
+
+    "deploy:web:prod": "pnpm --filter web run deploy:cf:prod",
+    "deploy:web:staging": "pnpm --filter web run deploy:cf:staging",
+
+    "deploy:api:prod": "pnpm --filter api-worker run deploy:prod",
+    "deploy:api:staging": "pnpm --filter api-worker run deploy:staging"
   },
   "devDependencies": {
     "@types/node": "^22.15.19",

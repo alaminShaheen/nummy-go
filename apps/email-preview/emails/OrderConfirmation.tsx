@@ -4,18 +4,21 @@ export default function Preview() {
   return EmailTemplates.OrderConfirmationEmail(PreviewProps);
 }
 
-// Preview props — these populate the template in the browser preview
+// ── Realistic sample data ─────────────────────────────────────────────────
 export const PreviewProps = {
-  tenantName: "Burger Palace",
+  tenantName: "Dhaka Kitchen",
   orderId: "01HWXZQPF9K3Y7M2N8VT6SCBE4",
   createdAt: Date.now(),
-  totalCents: 2450,
-  customerName: "Alex Johnson",
-  customerEmail: "alex@example.com",
-  customerPhone: "+1 (555) 234-5678",
+  totalCents: 5247,
+  customerName: "Jane Smith",
+  customerEmail: "jane.smith@email.com",
+  customerPhone: "+1 (415) 555-1234",
+  fulfillmentMethod: "pickup" as const,
+  paymentMethod: "Mastercard",
+  trackingUrl: "https://nummygo.ca/track/01HWXZQPF9K3Y7M2N8VT6SCBE4",
   items: [
-    { name: "Smash Burger Deluxe", quantity: 2, priceCents: 1200 },
-    { name: "Sweet Potato Fries", quantity: 1, priceCents: 500 },
-    { name: "Lemonade", quantity: 1, priceCents: 350 },
+    { name: "Chicken Biryani", quantity: 2, priceCents: 2600 },
+    { name: "Beef Tehari", quantity: 1, priceCents: 1500 },
+    { name: "Borhani", quantity: 2, priceCents: 800 },
   ],
 };

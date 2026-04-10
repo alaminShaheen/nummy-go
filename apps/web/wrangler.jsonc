@@ -13,9 +13,12 @@
   ],
   "env": {
 	"staging": {
-	  "name": "nummygo-web-stage",
+	  "name": "staging-nummy-go-web",
+	  "routes": [
+        { "pattern": "staging.nummygo.ca", "custom_domain": true }
+      ],
 	  "vars": {
-		"API_WORKER_URL": "https://nummygo-api-staging.nummygo.workers.dev"
+		"API_WORKER_URL": "https://api-staging.nummygo.ca"
 	  },
 	  "assets": {
 		"directory": ".open-next/assets",
@@ -25,7 +28,27 @@
 		{
 		  "binding": "WORKER_SELF_REFERENCE",
 		  // The service should match the "name" of your worker
-		  "service": "nummygo-web-stage"
+		  "service": "staging-nummy-go-web"
+		}
+	  ]
+	},
+	"production": {
+	  "name": "production-nummy-go-web",
+	  "routes": [
+        { "pattern": "nummygo.ca", "custom_domain": true }
+      ],
+	  "vars": {
+		"API_WORKER_URL": "https://api.nummygo.ca"
+	  },
+	  "assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	  },
+	  "services": [
+		{
+		  "binding": "WORKER_SELF_REFERENCE",
+		  // The service should match the "name" of your worker
+		  "service": "production-nummy-go-web"
 		}
 	  ]
 	}
