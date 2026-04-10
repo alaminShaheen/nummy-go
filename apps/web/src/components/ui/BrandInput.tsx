@@ -23,8 +23,8 @@ export interface BrandInputProps
   onValueChange?: (value: string) => void;
   /** HTML onChange — still supported for raw event access */
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  /** Inline text prefix rendered inside the input (e.g. "nummygo.com/") */
-  prefix?: string;
+  /** Inline prefix rendered inside the input (text string or icon ReactNode) */
+  prefix?: React.ReactNode;
   /** Optional right-side slot — useful for availability indicators */
   suffix?: React.ReactNode;
 }

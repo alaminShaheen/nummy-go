@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { timestampSchema, ulidSchema, userIdSchema } from '../schemas';
-import { businessHoursSchema } from '../types';
+import { businessHoursSchema, socialLinksSchema } from '../types';
 
 // ── API-facing ─────────────────────────────────────────────────────────────
 
@@ -28,6 +28,7 @@ export const updateTenantSchema = registerTenantSchema.partial().extend({
 	tags: z.array(z.string()).optional(),
 	logoUrl: z.string().optional().or(z.literal('')),
 	heroImageUrl: z.string().optional().or(z.literal('')),
+	socialLinks: socialLinksSchema.optional(),
 	/** Minutes within which customers can request modifications: 15 | 30 | 45 | 60 */
 	orderModificationThreshold: z.union([
 		z.literal(15),

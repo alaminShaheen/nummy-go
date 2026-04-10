@@ -54,6 +54,7 @@ export default function EditProfilePage() {
 				tags: tenant.tags || undefined,
 				logoUrl: tenant.logoUrl || undefined,
 				heroImageUrl: tenant.heroImageUrl || undefined,
+				socialLinks: tenant.socialLinks || undefined,
 			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps

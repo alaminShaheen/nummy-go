@@ -1,5 +1,7 @@
 import Image from 'next/image';
 import { GradientDivider } from '@/components/ui';
+import type { SocialLinks } from '@nummygo/shared/models/types';
+import SocialLinksRow from '@/components/SocialLinksRow';
 
 interface VendorProfileHeaderProps {
   name: string;
@@ -7,6 +9,7 @@ interface VendorProfileHeaderProps {
   tags?: string[] | null;
   logoUrl?: string | null;
   acceptsOrders: boolean;
+  socialLinks?: SocialLinks | null;
 }
 
 export default function VendorProfileHeader({
@@ -15,6 +18,7 @@ export default function VendorProfileHeader({
   tags,
   logoUrl,
   acceptsOrders,
+  socialLinks,
 }: VendorProfileHeaderProps) {
   return (
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-20">
@@ -79,6 +83,9 @@ export default function VendorProfileHeader({
                   </span>
                ))}
              </div>
+
+             {/* Social Links — after tags */}
+             {socialLinks && <SocialLinksRow links={socialLinks} size="md" />}
           </div>
         </div>
 

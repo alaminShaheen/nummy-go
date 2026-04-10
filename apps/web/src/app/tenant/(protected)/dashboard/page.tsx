@@ -70,7 +70,7 @@ export default function TenantDashboardPage() {
   });
 
   // ── Sorted orders ───────────────────────────────────────────────────────────
-  const STATUS_WEIGHT: Record<string, number> = { pending: 1, accepted: 2, preparing: 3, ready: 4, completed: 5, cancelled: 6 };
+  const STATUS_WEIGHT: Record<string, number> = { accepted: 1, preparing: 2, ready: 3, completed: 4, cancelled: 5 };
 
   const sortedOrders = useMemo(() => {
     if (!orders) return [];
@@ -88,8 +88,7 @@ export default function TenantDashboardPage() {
   // ── Tab counts ──────────────────────────────────────────────────────────────
   const counts = useMemo(() => ({
     all:           sortedOrders.length,
-    pending:       sortedOrders.filter(o => o.status === 'pending').length,
-    accepted:      sortedOrders.filter(o => o.status === 'accepted').length,
+    active:        sortedOrders.filter(o => o.status === 'accepted' || o.status === 'preparing').length,
     preparing:     sortedOrders.filter(o => o.status === 'preparing').length,
     ready:         sortedOrders.filter(o => o.status === 'ready').length,
     modifications: sortedOrders.filter(o => o.modificationStatus === 'pending').length,
@@ -99,6 +98,7 @@ export default function TenantDashboardPage() {
   const filteredOrders = useMemo(() => {
     if (activeTab === 'all') return sortedOrders;
     if (activeTab === 'modifications') return sortedOrders.filter(o => o.modificationStatus === 'pending');
+    if (activeTab === 'active') return sortedOrders.filter(o => o.status === 'accepted' || o.status === 'preparing');
     return sortedOrders.filter(o => o.status === activeTab);
   }, [activeTab, sortedOrders]);
 

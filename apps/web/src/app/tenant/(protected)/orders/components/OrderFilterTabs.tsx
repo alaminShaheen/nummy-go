@@ -7,8 +7,7 @@ import { cn } from '@/lib/utils';
 
 export type OrderTab =
   | 'all'
-  | 'pending'
-  | 'accepted'
+  | 'active'
   | 'preparing'
   | 'ready'
   | 'modifications';
@@ -22,9 +21,8 @@ interface TabConfig {
 
 const TABS: TabConfig[] = [
   { id: 'all',           label: 'All Orders',    countKey: 'all' },
-  { id: 'pending',       label: 'Pending',        countKey: 'pending' },
-  { id: 'accepted',      label: 'Accepted',       countKey: 'accepted' },
-  { id: 'preparing',     label: 'Active',         countKey: 'preparing' },
+  { id: 'active',        label: 'Active',         countKey: 'active' },
+  { id: 'preparing',     label: 'In Kitchen',     countKey: 'preparing' },
   { id: 'ready',         label: 'Ready',          countKey: 'ready' },
   { id: 'modifications', label: 'Modifications',  countKey: 'modifications', alertVariant: true },
 ];

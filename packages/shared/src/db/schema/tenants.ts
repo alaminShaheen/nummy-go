@@ -17,6 +17,13 @@ export const tenants = sqliteTable('tenants', {
   tags: text('tags', { mode: 'json' }).$type<string[]>(),
   logoUrl: text('logo_url'),
   heroImageUrl: text('hero_image_url'),
+  socialLinks: text('social_links', { mode: 'json' }).$type<{
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    tiktok?: string;
+    website?: string;
+  }>(),
   businessHours: text('business_hours', { mode: 'json' }),
   acceptsOrders: integer('accepts_orders', { mode: 'boolean' }).notNull().default(true),
   closedUntil: integer('closed_until', { mode: 'number' }),
