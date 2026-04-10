@@ -92,6 +92,7 @@ export function buildColumns({
   return [
     {
       id: 'expander',
+      enableHiding: false,
       header: () => null,
       cell: ({ row }) => (
         <div className="px-2">
@@ -185,6 +186,7 @@ export function buildColumns({
     },
     {
       id: 'actions',
+      enableHiding: false,
       header: () => <span className="text-xs font-bold uppercase tracking-wider text-slate-400 text-right w-full block">Actions</span>,
       cell: ({ row }) => {
         const order = row.original;

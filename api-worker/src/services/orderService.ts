@@ -21,6 +21,7 @@ import {
   getPendingModificationForOrder,
   getModificationById,
   updateModificationStatus,
+  getUserById,
 } from '@nummygo/shared/db/queries';
 import { orderResponseSchema, orderModificationResponseSchema } from '@nummygo/shared/models/dtos';
 import { VALID_STATUS_TRANSITIONS } from '@nummygo/shared/models/dtos';
@@ -42,6 +43,7 @@ import type {
 } from '@nummygo/shared/models/dtos';
 import type { BusinessHours } from '@nummygo/shared/models/types';
 import type { Env } from '../index';
+import { EmailService } from './emailService';
 
 // ── DB init ────────────────────────────────────────────────────────────────
 
@@ -220,6 +222,29 @@ export async function placeCheckoutOrder(
       type: 'ORDER_CREATED',
       order,
     });
+
+    const emailService = new EmailService(env);
+
+    // ── Customer confirmation email
+    console.log('[Email] customerEmail =', order.customerEmail);
+    if (order.customerEmail) {
+      const result = await emailService.sendOrderConfirmation(order, order.customerEmail);
+      console.log('[Email] sendOrderConfirmation result =', JSON.stringify(result));
+    } else {
+      console.log('[Email] SKIPPED confirmation — no customerEmail on order');
+    }
+
+    // ── Tenant notification email
+    const tenant = tenantMap.get(vendorCart.tenantId);
+    const user = tenant ? await getUserById(tenant.userId) : null;
+    const resolvedTenantEmail = tenant?.email || user?.email;
+    console.log('[Email] tenant.email =', tenant?.email, '| user.email =', user?.email, '| resolved =', resolvedTenantEmail);
+    if (resolvedTenantEmail && tenant) {
+      const result = await emailService.sendTenantNewOrder(order, tenant.name, resolvedTenantEmail);
+      console.log('[Email] sendTenantNewOrder result =', JSON.stringify(result));
+    } else {
+      console.log('[Email] SKIPPED tenant email — no resolved tenant email');
+    }
   }
 
   // Broadcast to the session DO (for customer tracking page)
@@ -456,6 +481,14 @@ export async function cancelOrderAsCustomer(
       type: 'ORDER_UPDATED',
       order: broadcastOrder,
     });
+  }
+
+  // Fire tenant notification email
+  const emailService = new EmailService(env);
+  const user = await getUserById(tenant.userId);
+  const resolvedTenantEmail = tenant.email || user?.email;
+  if (resolvedTenantEmail) {
+    await emailService.sendTenantOrderCancelled(broadcastOrder, tenant.name, resolvedTenantEmail);
   }
 
   return broadcastOrder;

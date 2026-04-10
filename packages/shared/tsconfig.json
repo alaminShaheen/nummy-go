@@ -8,6 +8,8 @@
 		// Allow JSX for the UI components
 		"jsx": "react-jsx",
 		// Include Cloudflare Worker types so D1Database is recognised
+		// Also include DOM types for browser-side UI components (e.g. Sidebar)
+		"lib": ["es2020", "dom", "dom.iterable"],
 		"types": ["@cloudflare/workers-types"]
 	},
 	"include": ["src/**/*"],

@@ -48,7 +48,7 @@ export default function Navbar() {
   });
 
   const slug = tenant?.slug ?? '';
-  const ordersHref = '/tenant/orders';
+  const ordersHref = '/tenant/dashboard';
   const profileHref = slug ? `/${slug}` : '/';
 
   const [scrolled, setScrolled] = useState(false);
@@ -182,7 +182,7 @@ export default function Navbar() {
                   >
                     {!isOnboarding && (
                       <>
-                        <PillLink href={ordersHref} id="nav-orders" icon={<ClipboardList size={15} />} label="Orders" />
+                        <PillLink href={ordersHref} id="nav-vendor-portal" icon={<ClipboardList size={15} />} label="Vendor Portal" />
                         <PillDivider />
                         <PillLink href={profileHref} id="nav-edit-profile" icon={<CookingPot size={15} />} label="Profile" />
                         <PillDivider />
@@ -292,9 +292,9 @@ export default function Navbar() {
                     </div>
                     {!isOnboarding && (
                       <div className="py-1">
-                        <Link href={ordersHref} role="menuitem" id="nav-mobile-orders" onClick={() => setMobileMenuOpen(false)}
+                        <Link href={ordersHref} role="menuitem" id="nav-mobile-vendor-portal" onClick={() => setMobileMenuOpen(false)}
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-amber-400 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/5">
-                          <ClipboardList size={15} aria-hidden="true" className="text-slate-500" /> Orders
+                          <ClipboardList size={15} aria-hidden="true" className="text-slate-500" /> Vendor Portal
                         </Link>
                         <Link href={profileHref} role="menuitem" id="nav-mobile-profile" onClick={() => setMobileMenuOpen(false)}
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-amber-400 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/5">

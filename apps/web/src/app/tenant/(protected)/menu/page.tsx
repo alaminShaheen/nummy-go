@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { trpc } from '@/trpc/client';
 import MenuItemCard from '@/components/MenuItemCard';
-import Navbar from '@/components/Navbar';
 
 export default function TenantMenuDashboard() {
   const [draftForms, setDraftForms] = useState<Record<string, boolean>>({});
@@ -91,8 +90,7 @@ export default function TenantMenuDashboard() {
 
   return (
     <>
-      <Navbar />
-      <div className="pt-24 sm:pt-28 p-4 sm:p-8 max-w-[1400px] mx-auto space-y-12 animate-fade-in relative min-h-screen">
+      <div className="p-4 sm:p-8 max-w-[1400px] mx-auto space-y-12 animate-fade-in relative min-h-screen">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-8">
           <div>
             <h1 className="text-3xl font-black gradient-text">Inline Canvas</h1>

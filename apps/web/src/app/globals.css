@@ -30,6 +30,11 @@
 
 html { scroll-behavior: smooth; }
 
+/* Dashboard layout: sidebar width token */
+:root {
+  --sidebar-w: 256px;
+}
+
 body {
   background-color: var(--color-brand-bg);
   color: var(--color-text-primary);
@@ -385,7 +390,7 @@ button:hover .auth-avatar-ring {
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(0.18 0 0);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
@@ -396,7 +401,7 @@ button:hover .auth-avatar-ring {
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
+  --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.87 0 0);
@@ -404,14 +409,20 @@ button:hover .auth-avatar-ring {
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+
+  /* ── NummyGo Sidebar tokens ────────────────────────────────────────────── */
+  /* Background: brand-surface (#111820) */
+  --sidebar: #111820;
+  --sidebar-foreground: #f1f5f9;
+  /* Primary: amber for active states */
+  --sidebar-primary: #f59e0b;
+  --sidebar-primary-foreground: #0d1117;
+  /* Accent: subtle hover background */
+  --sidebar-accent: rgba(255, 255, 255, 0.05);
+  --sidebar-accent-foreground: #f1f5f9;
+  /* Border: very faint white */
+  --sidebar-border: rgba(255, 255, 255, 0.07);
+  --sidebar-ring: rgba(245, 158, 11, 0.5);
 }
 
 @layer base {

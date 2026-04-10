@@ -6,12 +6,10 @@ import { useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { trpc } from '@/trpc/client';
-import Navbar from '@/components/Navbar';
 import TenantProfileForm from '@/components/TenantProfileForm';
 import type { UpdateTenantDto } from '@nummygo/shared/models/dtos';
 import { updateTenantSchema } from '@nummygo/shared/models/dtos';
 import { authClient } from '@/lib/auth-client';
-import { ArrowLeft } from 'lucide-react';
 
 // ─── Edit Profile Page ────────────────────────────────────────────────────────
 export default function EditProfilePage() {
@@ -81,9 +79,7 @@ export default function EditProfilePage() {
 
 	return (
 		<>
-			<Navbar />
-
-			<div className="min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8" style={{ background: '#0D1117' }}>
+			<div className="min-h-screen pb-16 px-4 sm:px-6 lg:px-8" style={{ background: '#0D1117' }}>
 				{/* Ambient glows */}
 				<div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
 					<div
@@ -115,14 +111,6 @@ export default function EditProfilePage() {
 				<div className="relative z-10 max-w-6xl mx-auto">
 					{/* Page header */}
 					<div className="mb-10">
-						<button
-							onClick={() => router.push(`/${tenant?.slug}`)}
-							className="inline-flex items-center gap-2 text-slate-400 hover:text-slate-300 text-sm mb-6 transition-colors"
-						>
-							<ArrowLeft size={16} />
-							Back to Storefront
-						</button>
-
 						<div className="text-center">
 							<div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-semibold uppercase tracking-widest mb-4">
 								Edit Your Profile
