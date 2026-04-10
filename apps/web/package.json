@@ -11,10 +11,10 @@
     "build:manual:prod": "dotenv -e .env.production -- opennextjs-cloudflare build",
     "deploy:manual:prod": "pnpm build:manual:prod && opennextjs-cloudflare deploy --env production",
     
-    "build:cf:staging": "opennextjs-cloudflare build",
+    "build:cf:staging": "dotenv -e .env.staging -- opennextjs-cloudflare build",
     "deploy:cf:staging": "opennextjs-cloudflare deploy --env staging",
     
-    "build:cf:prod": "opennextjs-cloudflare build",
+    "build:cf:prod": "dotenv -e .env.production -- opennextjs-cloudflare build",
     "deploy:cf:prod": "opennextjs-cloudflare deploy --env production",
     
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
