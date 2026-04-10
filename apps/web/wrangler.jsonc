@@ -3,24 +3,27 @@
   "main": ".open-next/worker.js",
   "name": "nummygo-web-stage",
   "assets": {
-    "directory": ".open-next/assets",
-    "binding": "ASSETS"
+	"directory": ".open-next/assets",
+	"binding": "ASSETS"
   },
   "compatibility_date": "2025-04-01",
   "compatibility_flags": [
-    // Enable Node.js API
-    // see https://developers.cloudflare.com/workers/configuration/compatibility-flags/#nodejs-compatibility-flag
-    "nodejs_compat",
-    // Allow to fetch URLs in your app
-    // see https://developers.cloudflare.com/workers/configuration/compatibility-flags/#global-fetch-strictly-public
-    "global_fetch_strictly_public"
+	// Enable Node.js API
+	// see https://developers.cloudflare.com/workers/configuration/compatibility-flags/#nodejs-compatibility-flag
+	"nodejs_compat",
+	// Allow to fetch URLs in your app
+	// see https://developers.cloudflare.com/workers/configuration/compatibility-flags/#global-fetch-strictly-public
+	"global_fetch_strictly_public"
   ],
   "env": {
 	"staging": {
 	  "name": "staging-nummy-go-web",
 	  "routes": [
-        { "pattern": "staging.nummygo.ca", "custom_domain": true }
-      ],
+		{
+		  "pattern": "staging.nummygo.ca",
+		  "custom_domain": true
+		}
+	  ],
 	  "vars": {
 		"API_WORKER_URL": "https://api-staging.nummygo.ca"
 	  },
@@ -39,8 +42,11 @@
 	"production": {
 	  "name": "production-nummy-go-web",
 	  "routes": [
-        { "pattern": "nummygo.ca", "custom_domain": true }
-      ],
+		{
+		  "pattern": "nummygo.ca",
+		  "custom_domain": true
+		}
+	  ],
 	  "vars": {
 		"API_WORKER_URL": "https://api.nummygo.ca"
 	  },
