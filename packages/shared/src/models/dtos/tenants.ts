@@ -28,8 +28,6 @@ export const updateTenantSchema = registerTenantSchema.partial().extend({
 	tags: z.array(z.string()).optional(),
 	logoUrl: z.string().optional().or(z.literal('')),
 	heroImageUrl: z.string().optional().or(z.literal('')),
-	acceptsDownpayment: z.boolean().optional(),
-	downpaymentPercentage: z.number().int().min(1).max(100).optional().nullable(),
 	/** Minutes within which customers can request modifications: 15 | 30 | 45 | 60 */
 	orderModificationThreshold: z.union([
 		z.literal(15),
@@ -65,8 +63,6 @@ export const createTenantRecordSchema = z.object({
 	tags: z.array(z.string()).optional(),
 	logoUrl: z.string().optional().or(z.literal('')),
 	heroImageUrl: z.string().optional().or(z.literal('')),
-	acceptsDownpayment: z.boolean().default(false),
-	downpaymentPercentage: z.number().optional(),
 	businessHours: businessHoursSchema.optional(), // serialized JSON string for DB
 	onboardingCompleted: z.boolean(),
 	createdAt: timestampSchema,

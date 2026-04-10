@@ -167,7 +167,7 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
 
                 {/* ── DESKTOP (sm+) ── */}
-                <div className="hidden sm:flex items-center gap-2" role="navigation" aria-label="Vendor actions">
+                <div className="hidden sm:flex items-center gap-2" role="navigation" aria-label="Partner actions">
 
                   {/* Gradient-border pill */}
                   <div
@@ -275,7 +275,7 @@ export default function Navbar() {
                       role="menu"
                       aria-label="Account options"
                       onKeyDown={handleMobileKeyDown}
-                      className="absolute right-0 top-full mt-2 w-56 rounded-2xl overflow-hidden border border-white/8 shadow-xl shadow-black/40 animate-slide-up py-2"
+                      className="absolute right-0 top-full mt-2 z-50 w-56 rounded-2xl overflow-hidden border border-white/8 shadow-xl shadow-black/40 animate-slide-up py-2"
                       style={{ background: 'rgba(19,25,31,0.95)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
                     >
                       <div className="px-4 py-3 border-b border-white/8">
@@ -294,7 +294,7 @@ export default function Navbar() {
                         <div className="py-1">
                           <Link href={ordersHref} role="menuitem" id="nav-mobile-vendor-portal" onClick={() => setMobileMenuOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-amber-400 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/5">
-                            <ClipboardList size={15} aria-hidden="true" className="text-slate-500" /> Vendor Portal
+                            <ClipboardList size={15} aria-hidden="true" className="text-slate-500" /> Partner Portal
                           </Link>
                           <Link href={profileHref} role="menuitem" id="nav-mobile-profile" onClick={() => setMobileMenuOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-amber-400 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/5">
@@ -324,7 +324,7 @@ export default function Navbar() {
                 <Link href="/tenant/login" id="nav-vendor-login">
                   <GradientButton className="px-5 py-2.5 text-sm shadow-orange-900/30">
                     <LogIn size={16} aria-hidden="true" />
-                    Vendor Login
+                    Partner Login
                   </GradientButton>
                 </Link>
               </div>

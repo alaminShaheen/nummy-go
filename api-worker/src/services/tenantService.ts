@@ -21,7 +21,6 @@ export async function createTenantForUser(userId: string) {
 		name: '',
 		phoneNumber: '',
 		onboardingCompleted: false,
-		acceptsDownpayment: false,
 		createdAt: Date.now(),
 		updatedAt: Date.now(),
 	});

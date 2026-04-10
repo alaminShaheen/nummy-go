@@ -28,16 +28,16 @@ The platform must deviate from standard, flat SAAS designs and embrace a highly 
 
 ### Customer Facing
 1. **Platform Landing Page:** A high-conversion homepage highlighting benefits. Features a prominent, glowing vendor/restaurant search bar.
-2. **Vendor Storefront (`/[slug]`):** 
+2. **Partner Storefront (`/[slug]`):** 
    - A sticky, frosted-glass top navbar and a sticky floating cart action button.
    - A full-viewport stunning hero banner displaying the restaurant brand.
    - A minimalist vendor info section (business hours, availability).
    - A menu grid composed of glossy gradient-border cards with local quantity selectors (`−`/`+`).
-3. **Multi-Vendor Cart Drawer:** A slide-out panel that intelligently groups items by `tenantId`. Allows the user to select fulfillment methods (pickup/delivery) and payment methods (pay at counter/card) independently for each restaurant.
+3. **Multi-Partner Cart Drawer:** A slide-out panel that intelligently groups items by `tenantId`. Allows the user to select fulfillment methods (pickup/delivery) and payment methods (pay at counter/card) independently for each restaurant.
 4. **Universal Checkout Page:** A pristine, schema-driven order summary page with dynamic payment integrations (triggering card modals only when required).
 5. **Real-time Order Tracker (`/track/[sessionId]`):** A beautiful tracking dashboard showcasing an animated, glowing progress bar moving through `Pending → Preparing → Ready → Completed` as it listens to live WebSocket events. 
 
-### Vendor/Tenant Facing
+### Partner/Tenant Facing
 1. **B2B Authentication & Onboarding:** A premium login portal utilizing Google OAuth followed by a smooth vendor onboarding flow (setting up slugs, business hours).
 2. **Kitchen Dashboard (POS / KDS):** A highly functional yet sleek dashboard that receives incoming orders automatically. Features easy-to-tap status buttons (`Accept`, `Mark Ready`, `Cancel`) with large, readable fonts tailored for tablets and touchscreens in busy kitchens. 
 3. **Storefront Configuration Suite:** Settings interface for the vendor to update banners, branding, payment thresholds, and cancellation rules. Includes a real-time browser-chrome preview mockup of their resulting storefront.
@@ -54,12 +54,12 @@ The platform must deviate from standard, flat SAAS designs and embrace a highly 
 > 
 > **Screens requested:**
 > 
-> 1. **Customer Vendor Storefront (Mobile & Desktop):** 
+> 1. **Customer Partner Storefront (Mobile & Desktop):** 
 >    - A stunning full-width hero banner at the top for the restaurant.
 >    - A sticky, frosted-glass header with a floating cart icon that has a glowing notification badge.
 >    - A grid of beautiful menu item cards. Each card must have a glossy, thin gradient border, an appetizing high-quality photo of the food, title, price, and intuitive `+` and `-` quantity selectors.
 > 
-> 2. **Multi-Vendor Slide-Out Cart:**
+> 2. **Multi-Partner Slide-Out Cart:**
 >    - A side drawer (with a blurred backdrop obscuring the main page) displaying grouped items by restaurant.
 >    - Sleek toggles for each restaurant group showing "Pickup vs Delivery" and "Pay at Store vs Card". 
 >    - A bold, glowing "Proceed to Checkout" button anchored at the bottom.

@@ -134,7 +134,7 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 			<form
 				onSubmit={rhfHandleSubmit(handleFormSubmit)}
 				noValidate
-				className="flex flex-col gap-5"
+				className="flex flex-col gap-5 min-w-0 w-full"
 				aria-label={mode === 'onboarding' ? 'Restaurant onboarding form' : 'Edit restaurant profile'}
 			>
 				{/* ── Card: Basic Info ── */}
@@ -379,63 +379,7 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 					/>
 				</FormCard>
 
-				{/* ── Card: Payment Processing ── */}
-				<FormCard icon={<Wallet size={15} />} title="Payment Processing">
-					<Controller
-						name={'acceptsDownpayment' as Path<T>}
-						control={control}
-						render={({ field }) => (
-							<FormField
-								id="acceptsDownpayment"
-								label="Require Downpayment"
-								hint="Toggle to require a partial payment upfront for orders."
-							>
-								<div className="flex items-center gap-3 py-2">
-									<BrandSwitch
-										checked={field.value as boolean}
-										onChange={field.onChange}
-										ariaLabel={`Toggle downpayment ${field.value ? 'off' : 'on'}`}
-									/>
-									<span
-										className={clsx('text-sm font-medium', {
-											'text-amber-400': field.value,
-											'text-slate-400': !field.value,
-										})}
-									>
-										{field.value ? 'Downpayment Required' : 'Full Payment on Pickup'}
-									</span>
-								</div>
-							</FormField>
-						)}
-					/>
 
-					{watch('acceptsDownpayment' as Path<T>) && (
-						<Controller
-							name={'downpaymentPercentage' as Path<T>}
-							control={control}
-							render={({ field }) => (
-								<FormField
-									id="downpaymentPercentage"
-									label="Downpayment Percentage (%)"
-									required
-									error={(errors as any).downpaymentPercentage?.message}
-									hint="Percentage of the total order value required upfront."
-								>
-									<BrandInput
-										id="downpaymentPercentage"
-										type="number"
-										min={1}
-										max={100}
-										{...field}
-										value={(field.value as number) ?? ''}
-										onChange={(e) => field.onChange(parseInt(e.target.value, 10) || undefined)}
-										placeholder="20"
-									/>
-								</FormField>
-							)}
-						/>
-					)}
-				</FormCard>
 
 				{/* ── Card: Availability ── */}
 				{mode === 'edit' && (
@@ -562,7 +506,7 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 									{dh.closed ? (
 										<span className="text-xs text-slate-600 italic">Closed</span>
 									) : (
-										<div className="flex items-center gap-1.5 flex-1 min-w-0">
+										<div className="flex flex-col min-[450px]:flex-row items-stretch min-[450px]:items-center gap-1.5 flex-1 min-w-0">
 											<Controller
 												name={`businessHours.${day}.open` as Path<T>}
 												control={control}
@@ -581,7 +525,7 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 													);
 												}}
 											/>
-											<span className="text-slate-600 text-xs flex-shrink-0">–</span>
+											<span className="text-slate-600 text-xs flex-shrink-0 hidden min-[450px]:inline-block text-center">–</span>
 											<Controller
 												name={`businessHours.${day}.close` as Path<T>}
 												control={control}
@@ -660,8 +604,8 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 					promotionalHeading={(formValues as UpdateTenantDto).promotionalHeading}
 					description={(formValues as UpdateTenantDto).description}
 					tags={(formValues as UpdateTenantDto).tags}
-					acceptsDownpayment={(formValues as UpdateTenantDto).acceptsDownpayment}
-					downpaymentPercentage={(formValues as UpdateTenantDto).downpaymentPercentage}
+					logoUrl={(formValues as UpdateTenantDto).logoUrl}
+					heroImageUrl={(formValues as UpdateTenantDto).heroImageUrl}
 				/>
 				<p className="text-[11px] text-slate-600 text-center leading-relaxed">
 					Fill in the form to see your storefront update in real-time.

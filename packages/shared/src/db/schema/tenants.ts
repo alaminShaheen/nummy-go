@@ -17,8 +17,6 @@ export const tenants = sqliteTable('tenants', {
   tags: text('tags', { mode: 'json' }).$type<string[]>(),
   logoUrl: text('logo_url'),
   heroImageUrl: text('hero_image_url'),
-  acceptsDownpayment: integer('accepts_downpayment', { mode: 'boolean' }).notNull().default(false),
-  downpaymentPercentage: integer('downpayment_percentage'),
   businessHours: text('business_hours', { mode: 'json' }),
   acceptsOrders: integer('accepts_orders', { mode: 'boolean' }).notNull().default(true),
   closedUntil: integer('closed_until', { mode: 'number' }),

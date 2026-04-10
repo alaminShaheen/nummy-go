@@ -28,10 +28,10 @@ type OrderStatus = 'pending' | 'accepted' | 'preparing' | 'ready' | 'completed' 
 type ModStatus = 'pending' | 'accepted' | 'rejected' | null;
 
 const STATUS_STAGES: { status: OrderStatus; label: string; icon: React.ReactNode; color: string }[] = [
-  { status: 'pending',   label: 'Received',        icon: <ReceiptText className="w-4 h-4" />,  color: 'bg-slate-500' },
-  { status: 'accepted',  label: 'Accepted',         icon: <CheckCircle2 className="w-4 h-4" />, color: 'bg-indigo-500' },
-  { status: 'preparing', label: 'Preparing',        icon: <ChefHat className="w-4 h-4" />,       color: 'bg-amber-500' },
-  { status: 'ready',     label: 'Ready for Pickup', icon: <PackageCheck className="w-4 h-4" />, color: 'bg-emerald-500' },
+  { status: 'pending', label: 'Received', icon: <ReceiptText className="w-4 h-4" />, color: 'bg-slate-500' },
+  { status: 'accepted', label: 'Accepted', icon: <CheckCircle2 className="w-4 h-4" />, color: 'bg-indigo-500' },
+  { status: 'preparing', label: 'Preparing', icon: <ChefHat className="w-4 h-4" />, color: 'bg-amber-500' },
+  { status: 'ready', label: 'Ready for Pickup', icon: <PackageCheck className="w-4 h-4" />, color: 'bg-emerald-500' },
 ];
 
 // ── Modification Status Banner ─────────────────────────────────────────────
@@ -49,7 +49,7 @@ function ModificationBanner({ status, note }: { status: ModStatus; note?: string
       {c.icon}
       <div>
         <p className={`text-sm font-semibold ${c.text}`}>{c.label}</p>
-        {note && <p className="text-xs text-slate-400 mt-0.5">Vendor note: "{note}"</p>}
+        {note && <p className="text-xs text-slate-400 mt-0.5">Partner note: "{note}"</p>}
       </div>
     </div>
   );
@@ -335,8 +335,8 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
                             <div key={stage.status} className="flex flex-col items-center gap-3 z-10 w-20">
                               <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all duration-500
                                 ${isCurrent ? `${stage.color} border-[#131920] ring-4 ring-offset-0`
-                                : isPast ? 'bg-indigo-500 border-[#131920]'
-                                : 'bg-slate-800 border-[#131920] text-slate-500'}`}
+                                  : isPast ? 'bg-indigo-500 border-[#131920]'
+                                    : 'bg-slate-800 border-[#131920] text-slate-500'}`}
                               >
                                 {isPast ? <CheckCircle2 className="w-5 h-5 text-white" /> : <div className={isCurrent ? 'text-white' : ''}>{stage.icon}</div>}
                               </div>

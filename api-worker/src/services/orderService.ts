@@ -109,7 +109,7 @@ function assertScheduledTimeIsValid(scheduledFor: string, businessHours: Busines
   }
 
   // Build full Date objects for open/close on the same calendar day
-  const openTime  = parse(dayConfig.open,  'HH:mm', date);
+  const openTime = parse(dayConfig.open, 'HH:mm', date);
   const closeTime = parse(dayConfig.close, 'HH:mm', date);
 
   if (!isWithinInterval(date, { start: openTime, end: closeTime })) {
@@ -141,7 +141,7 @@ export async function placeCheckoutOrder(
   for (const vendorCart of input.cart) {
     const tenant = tenantMap.get(vendorCart.tenantId);
     if (!tenant) {
-      throw new Error(`Vendor ${vendorCart.tenantId} not found`);
+      throw new Error(`Partner ${vendorCart.tenantId} not found`);
     }
     if (!tenant.acceptsOrders) {
       throw new Error(`${tenant.name} is not accepting orders right now`);
@@ -355,7 +355,7 @@ export async function fetchCheckoutSession(env: Env, input: GetOrderGroupDto) {
   initDb(env);
   const rows = await getOrdersByCheckoutSession(input.checkoutSessionId);
   const orders = rows.map(rowToOrder);
-  
+
   let tenantModificationThreshold = 30;
   if (orders && orders.length > 0) {
     const tenantId = orders[0]?.tenantId;
@@ -462,7 +462,7 @@ export async function cancelOrderAsCustomer(
   };
 
   const cancelledOrder = await updateOrderStatus(inputDto.orderId, inputDto.status, inputDto.rejectionReason);
-  
+
   // Broadcast
   const tags = [`tenant:${existing.tenantId}`];
   if (existing.checkoutSessionId) {
@@ -818,7 +818,7 @@ export async function fetchModificationDetails(
   // 5. Build requested items (enriched)
   const enrichedRequested: EnrichedItem[] = requestedItems.map(r => {
     const fromCurrent = currentMap.get(r.menuItemId);
-    const fromExtra   = extraMap.get(r.menuItemId);
+    const fromExtra = extraMap.get(r.menuItemId);
     return {
       menuItemId: r.menuItemId,
       name: fromCurrent?.name ?? fromExtra?.name ?? 'Unknown Item',
@@ -834,20 +834,20 @@ export async function fetchModificationDetails(
 
   const diff: DiffEntry[] = [];
   for (const id of allIds) {
-    const currentQty   = currentMap.get(id)?.quantity ?? 0;
+    const currentQty = currentMap.get(id)?.quantity ?? 0;
     const requestedQty = requestedMap.get(id) ?? 0;
     if (currentQty === requestedQty) continue; // unchanged
 
     let change: DiffEntry['change'];
-    if (currentQty === 0)        change = 'added';
+    if (currentQty === 0) change = 'added';
     else if (requestedQty === 0) change = 'removed';
     else if (requestedQty > currentQty) change = 'increased';
     else change = 'decreased';
 
     const fromCurrent = currentMap.get(id);
-    const fromExtra   = extraMap.get(id);
-    const name     = fromCurrent?.name     ?? fromExtra?.name     ?? 'Unknown Item';
-    const price    = fromCurrent?.price    ?? fromExtra?.price    ?? 0;
+    const fromExtra = extraMap.get(id);
+    const name = fromCurrent?.name ?? fromExtra?.name ?? 'Unknown Item';
+    const price = fromCurrent?.price ?? fromExtra?.price ?? 0;
     const imageUrl = fromCurrent?.imageUrl ?? fromExtra?.imageUrl ?? null;
 
     diff.push({ menuItemId: id, name, price, imageUrl, currentQty, requestedQty, delta: requestedQty - currentQty, change });
@@ -855,9 +855,9 @@ export async function fetchModificationDetails(
 
   return {
     modificationId: mod.id,
-    tenantNote:     mod.tenantNote ?? null,
+    tenantNote: mod.tenantNote ?? null,
     specialInstruction: parsed.specialInstruction ?? null,
-    currentItems:  orderWithItems.items as EnrichedItem[],
+    currentItems: orderWithItems.items as EnrichedItem[],
     requestedItems: enrichedRequested,
     diff,
   };

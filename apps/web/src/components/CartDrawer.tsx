@@ -13,9 +13,10 @@ import { toast } from 'sonner';
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  anchor?: 'top' | 'bottom';
 }
 
-export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
+export default function CartDrawer({ isOpen, onClose, anchor = 'top' }: CartDrawerProps) {
   const router = useRouter();
   const { cart, updateItemQuantity, removeVendorCart, megaTotal, totalItems } = useCart();
   const { mode, isActive, deactivate } = useModificationMode();
@@ -23,8 +24,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   // Find the vendor cart that corresponds to the order being modified (if any)
   const modVendorCart = isActive && mode
     ? cart.find((v) => {
-        // We don't store tenantId on mode — cart has exactly one vendor in mod mode
-        // Just use the first vendor that has items (safest heuristic)
         return v.items.length > 0;
       })
     : null;
@@ -52,198 +51,208 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Responsive Backdrop - Clickaway */}
       <div
         className={cn(
-          'fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity duration-300',
+          'fixed inset-0 z-[80] transition-opacity duration-300',
+          'bg-black/70 backdrop-blur-sm sm:bg-transparent sm:backdrop-blur-none',
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
         onClick={onClose}
       />
 
-      {/* Drawer */}
+      {/* Unified Cart Container (Mobile: Bottom Sheet | Desktop: Floating Bento Popover) */}
       <div
         className={cn(
-          'fixed top-0 right-0 h-full w-full sm:w-[420px] z-50 flex flex-col transition-transform duration-300 ease-in-out',
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+          'fixed z-[90] flex flex-col transition-all duration-500 overflow-hidden',
+          // Mobile styling: Bottom sheet
+          'inset-x-0 bottom-0 h-[85vh] rounded-t-[2.5rem]',
+          // Desktop styling: Hovering Popover
+          'sm:w-[420px] sm:h-auto sm:max-h-[85vh]',
+          anchor === 'bottom' ? 'sm:bottom-24 sm:right-6 sm:top-auto sm:left-auto' : 'sm:top-20 sm:right-6 sm:bottom-auto sm:left-auto',
+          'sm:rounded-[2rem] sm:border sm:border-amber-500/20 shadow-[0_0_80px_rgba(0,0,0,0.6)] sm:shadow-[0_20px_80px_rgba(245,158,11,0.15)] glow-bento',
+          // Animation state scaling
+          isOpen 
+            ? 'translate-y-0 sm:translate-y-0 sm:scale-100 opacity-100 pointer-events-auto' 
+            : 'translate-y-full sm:translate-y-0 sm:scale-95 opacity-0 pointer-events-none'
         )}
-        style={{ background: 'var(--color-brand-bg)' }}
+        style={{ background: 'rgba(15,20,30,0.95)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)' }}
       >
+        {/* Mobile Pull Indicator */}
+        <div className="flex sm:hidden justify-center pt-3 pb-1 shrink-0">
+          <div className="w-12 h-1.5 rounded-full bg-white/20" />
+        </div>
+
         {/* ── Header ── */}
-        <div
-          className="flex items-center justify-between px-6 py-5 shrink-0 border-b border-white/5"
-          style={{ background: 'var(--color-brand-surface)' }}
-        >
+        <div className="flex items-center justify-between px-6 py-4 shrink-0 border-b border-white/[0.04] relative z-10 w-full" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%)' }}>
           <div className="flex items-center gap-3">
             {isActive ? (
               <>
                 <Pencil className="w-5 h-5 text-amber-400" />
-                <h2 className="text-lg font-bold text-amber-300">Modified Cart</h2>
+                <h2 className="text-lg font-bold text-amber-300">Editing Order</h2>
               </>
             ) : (
               <>
-                <span className="text-xl" aria-hidden="true">🛒</span>
-                <h2 className="text-lg font-bold text-slate-100">Your Cart</h2>
+                <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
+                  <ShoppingCart className="w-4 h-4 text-amber-400" />
+                </div>
+                <h2 className="text-sm font-bold text-slate-100 tracking-wide uppercase">My Cart</h2>
               </>
             )}
             {totalItems > 0 && (
               <span className={cn(
-                "px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white",
-                isActive
-                  ? "bg-gradient-to-r from-amber-500 to-orange-400"
-                  : "bg-gradient-to-r from-amber-500 to-orange-600"
+                "px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-widest uppercase text-white shadow-sm shadow-orange-500/30",
+                isActive ? "bg-gradient-to-r from-amber-500 to-orange-400" : "bg-gradient-to-r from-amber-500 to-orange-600"
               )}>
-                {totalItems}
+                {totalItems} items
               </span>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full border border-white/10 hover:border-amber-400/30 hover:text-amber-400 text-slate-500 transition-all duration-200"
+            className="p-1.5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors duration-200"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Modification mode hint */}
         {isActive && (
-          <div className="px-5 py-2.5 bg-amber-500/5 border-b border-amber-500/10 text-xs text-amber-400/80">
-            <Pencil className="w-3 h-3 inline mr-1" />
-            Adding or removing items from this cart will request a modification on your existing order.
+          <div className="px-5 py-2.5 bg-amber-500/10 border-b border-amber-500/10 text-xs font-semibold text-amber-400/90 tracking-wide flex items-center gap-2">
+            <span className="relative flex h-2 w-2 shadow-[0_0_8px_rgba(245,158,11,0.8)]"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span></span>
+            Modification Request Active
           </div>
         )}
 
-        {/* ── Body ── */}
+        {/* ── Scrollable Body ── */}
         {cart.length === 0 ? (
-          <div className="flex flex-col items-center justify-center flex-1 gap-4 px-6">
-            <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ background: 'var(--color-brand-card)' }}>
+          <div className="flex flex-col items-center justify-center flex-1 gap-4 px-6 text-center">
+            <div className="w-24 h-24 rounded-full flex items-center justify-center border-2 border-dashed border-white/10 bg-white/[0.02]">
               <ShoppingCart className="w-8 h-8 text-slate-600" />
             </div>
-            <p className="text-slate-500 text-sm font-medium">Your cart is empty</p>
-            <p className="text-slate-600 text-xs text-center">Browse vendors and add items to get started</p>
+            <div>
+              <p className="text-slate-300 text-sm font-bold mb-1">Your cart is empty</p>
+              <p className="text-slate-500 text-xs text-center max-w-[200px]">Looks like you haven't added any delicious items yet.</p>
+            </div>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+          <div className="flex-1 overflow-y-auto w-full custom-minimal-scrollbar px-4 py-4 space-y-4">
             {cart.map((vendor, idx) => {
-              const vendorSubtotal = vendor.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-
               return (
-                <React.Fragment key={vendor.tenantId}>
-                  <GlassCard className="overflow-hidden" style={{ background: 'var(--color-brand-card)' }}>
-                    {/* Vendor Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
-                      <div className="flex items-center gap-2">
-                        <span className="text-base" aria-hidden="true">🍽️</span>
-                        <h3 className="font-semibold text-sm text-amber-400">{vendor.tenantName}</h3>
-                      </div>
-                      {!isActive && (
-                        <button
-                          onClick={() => removeVendorCart(vendor.tenantId)}
-                          title={`Remove all items from ${vendor.tenantName}`}
-                          className="p-1.5 rounded-full text-slate-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all duration-200"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
+                <div key={vendor.tenantId} className="w-full">
+                  {/* Minimized Vendor Header */}
+                  <div className="flex items-center justify-between mb-2 px-1">
+                    <h3 className="font-bold text-xs text-amber-400 uppercase tracking-widest">{vendor.tenantName}</h3>
+                    {!isActive && (
+                      <button
+                        onClick={() => removeVendorCart(vendor.tenantId)}
+                        className="text-[10px] uppercase font-bold tracking-widest text-slate-500 hover:text-rose-400 transition-colors"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
 
-                    {/* Items */}
-                    <div className="divide-y divide-white/5">
-                      {vendor.items.map((item) => (
-                        <div key={item.id} className="flex items-center gap-3 px-4 py-3">
-                          {item.image && (
-                            <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-white/5">
-                              <Image
-                                src={item.image}
-                                alt={item.name}
-                                width={48}
-                                height={48}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
+                  {/* Aesthetic List Items */}
+                  <div className="space-y-2 mb-2">
+                    {vendor.items.map((item) => (
+                      <div key={item.id} className="group flex items-center gap-3 p-2.5 rounded-xl border border-white/[0.03] bg-white/[0.02] hover:bg-white/[0.04] transition-colors relative overflow-hidden">
+                        
+                        {/* Thumbnail */}
+                        <div className="w-12 h-12 rounded-lg bg-black/50 overflow-hidden shrink-0 border border-white/5 relative flex items-center justify-center shadow-lg">
+                          {item.image ? (
+                            <Image src={item.image} alt={item.name} fill sizes="48px" className="object-cover" />
+                          ) : (
+                            <ShoppingCart className="w-4 h-4 text-white/20" />
                           )}
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-slate-200 text-sm font-medium truncate">{item.name}</h4>
-                            <p className="text-amber-400/80 text-xs mt-0.5 font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
-                          </div>
-                          <div className="flex items-center gap-1 rounded-full border border-white/10 p-0.5" style={{ background: 'var(--color-brand-surface)' }}>
-                            <button
-                              onClick={() => updateItemQuantity(vendor.tenantId, item.id, item.quantity - 1)}
-                              className="w-6 h-6 flex items-center justify-center rounded-full text-slate-500 hover:text-slate-200 hover:bg-white/10 transition-colors"
-                            >
-                              <Minus className="w-3 h-3" />
-                            </button>
-                            <span className="w-5 text-center text-xs font-semibold text-slate-200 tabular-nums select-none">
-                              {item.quantity}
-                            </span>
-                            <button
-                              onClick={() => updateItemQuantity(vendor.tenantId, item.id, item.quantity + 1)}
-                              className="w-6 h-6 flex items-center justify-center rounded-full text-slate-500 hover:text-slate-200 hover:bg-white/10 transition-colors"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </button>
-                          </div>
                         </div>
-                      ))}
-                    </div>
 
-                    {/* Vendor Subtotal */}
-                    <div className="flex items-center justify-between px-4 py-3 border-t border-white/5" style={{ background: 'rgba(19,25,31,0.5)' }}>
-                      <span className="text-xs text-slate-500 font-medium">Subtotal</span>
-                      <span className="text-sm font-bold text-slate-200">${vendorSubtotal.toFixed(2)}</span>
-                    </div>
-                  </GlassCard>
+                        {/* Title/Price */}
+                        <div className="flex-1 min-w-0 pr-1">
+                          <h4 className="text-slate-200 text-sm font-bold truncate leading-tight">{item.name}</h4>
+                          <p className="text-slate-400 text-xs mt-0.5 truncate">${item.price.toFixed(2)}</p>
+                        </div>
 
-                  {idx < cart.length - 1 && <GradientDivider accent="indigo" />}
-                </React.Fragment>
+                        {/* Quantity Stepper */}
+                        <div className="flex items-center gap-2 rounded-full bg-black/40 border border-white/5 p-1 backdrop-blur-sm self-start shadow-inner">
+                          <button
+                            onClick={() => updateItemQuantity(vendor.tenantId, item.id, item.quantity - 1)}
+                            className="w-6 h-6 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                          >
+                            <Minus size={12} strokeWidth={3} />
+                          </button>
+                          <span className="w-4 text-center text-xs font-black text-white tabular-nums select-none pt-[1px]">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateItemQuantity(vendor.tenantId, item.id, item.quantity + 1)}
+                            className="w-6 h-6 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                          >
+                            <Plus size={12} strokeWidth={3} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {idx < cart.length - 1 && <div className="h-px bg-white/[0.05] mt-4 mb-2 mx-2" />}
+                </div>
               );
             })}
-            <div className="h-36" aria-hidden="true" />
+            <div className="h-4" aria-hidden="true" />
           </div>
         )}
 
         {/* ── Footer ── */}
         {cart.length > 0 && (
-          <div
-            className="absolute bottom-0 left-0 right-0 px-5 pb-6 pt-8 shrink-0 z-10"
-            style={{ background: 'linear-gradient(to top, var(--color-brand-bg) 60%, transparent)' }}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-400 text-sm font-medium">Total</span>
-              <span className="text-xl font-black gradient-text">${megaTotal.toFixed(2)}</span>
+          <div className="w-full px-5 py-5 shrink-0 border-t border-white/[0.06] relative z-10" style={{ background: 'rgba(10,13,20,0.8)', backdropFilter: 'blur(20px)' }}>
+            
+            {/* Minimal Summary */}
+            <div className="flex items-center justify-between mb-4 px-2">
+              <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Grand Total</span>
+              <span className="text-xl font-black text-amber-400">${megaTotal.toFixed(2)}</span>
             </div>
 
             {isActive ? (
-              /* ── Modification mode: submit request ── */
               <button
                 onClick={handleSubmitModification}
                 disabled={requestModification.isPending}
-                className="w-full py-3.5 rounded-full text-sm font-bold flex items-center justify-center gap-2
-                  bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90
-                  text-black shadow-lg shadow-amber-900/30 disabled:opacity-50 transition-all"
+                className="w-full h-12 rounded-full text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black shadow-[0_0_30px_rgba(245,158,11,0.25)] focus:scale-95 transition-all disabled:opacity-50"
               >
-                {requestModification.isPending ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Sending request…</>
-                ) : (
-                  <><Pencil className="w-4 h-4" /> Request Modification</>
-                )}
+                {requestModification.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Request Update'}
               </button>
             ) : (
-              /* ── Normal checkout ── */
-              <GradientButton
-                className="w-full py-3.5 text-sm rounded-full shadow-lg shadow-orange-900/40"
+              <button
+                className="w-full h-12 rounded-full text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-black shadow-[0_0_30px_rgba(245,158,11,0.25)] hover:shadow-[0_0_40px_rgba(245,158,11,0.4)] focus:scale-95 transition-all outline-none"
                 onClick={() => {
                   onClose();
                   window.location.href = '/checkout';
                 }}
               >
-                <ShoppingCart className="w-4 h-4" />
-                Proceed to Checkout
-              </GradientButton>
+                Go to Checkout <span className="opacity-70 ml-1">→</span>
+              </button>
             )}
           </div>
         )}
       </div>
+
+      <style jsx global>{`
+        .custom-minimal-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-minimal-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-minimal-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255,255,255,0.1);
+          border-radius: 4px;
+        }
+        .custom-minimal-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255,255,255,0.2);
+        }
+        .glow-bento {
+          box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.05), inset 0 0 0 1px rgba(255,255,255,0.02), 0 20px 80px rgba(245,158,11,0.15);
+        }
+      `}</style>
     </>
   );
 }

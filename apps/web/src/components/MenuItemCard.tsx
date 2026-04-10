@@ -38,6 +38,7 @@ export default function MenuItemCard({
   categories,
   mode = 'customer', 
   cartQty = 0,
+  onAddToCart,
   onUpdateQuantity,
   onDelete,
   onUpdateField,

@@ -225,7 +225,7 @@ export function AppSidebar({ isExpanded, onToggle }: AppSidebarProps) {
             {isExpanded && (
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-slate-200 truncate">
-                  {session?.user?.name ?? 'Vendor'}
+                  {session?.user?.name ?? 'Partner'}
                 </p>
                 <p className="text-[10px] text-slate-500 truncate">
                   {session?.user?.email ?? ''}

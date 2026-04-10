@@ -33,8 +33,6 @@ export const tenantSchema = z.object({
 	tags: z.array(z.string()).nullable(),
 	logoUrl: z.string().nullable(),
 	heroImageUrl: z.string().nullable(),
-	acceptsDownpayment: z.boolean(),
-	downpaymentPercentage: z.number().nullable(),
 	businessHours: businessHoursSchema.nullable(),
 	acceptsOrders: z.boolean(),
 	closedUntil: timestampSchema.nullable(),

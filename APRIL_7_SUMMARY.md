@@ -4,7 +4,7 @@ This document serves as the cohesive, master technical log of the features archi
 
 ---
 
-## 1. Multi-Vendor Cart Management
+## 1. Multi-Partner Cart Management
 
 ### Feature Description
 NummyGo allows customers to add items from *multiple different restaurants* into a single session cart. We engineered an isolated mapping system so each vendor defines their own Fulfillment Method (Pickup vs Delivery) and Payment Method (Pay at Store vs Card). The customer manages all of this gracefully in a unified side-drawer interface.

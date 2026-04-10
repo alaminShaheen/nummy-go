@@ -28,8 +28,6 @@ export interface StorefrontPreviewProps {
 	tags?: string[] | null;
 	heroImageUrl?: string | null;
 	logoUrl?: string | null;
-	acceptsDownpayment?: boolean;
-	downpaymentPercentage?: number | null;
 	// TODO: Add it later
 	// closedUntil?: number | null;
 }
@@ -47,8 +45,6 @@ export default function StorefrontPreview({
 	tags,
 	heroImageUrl,
 	logoUrl,
-	acceptsDownpayment,
-	downpaymentPercentage,
 	// TODO: Add it later
 	// closedUntil,
 }: StorefrontPreviewProps) {
@@ -76,10 +72,10 @@ export default function StorefrontPreview({
 			</div>
 
 			{/* ── Scrollable storefront content ── */}
-			<div className="overflow-y-auto" style={{ maxHeight: 560 }}>
-				{/* Hero Banner Area */}
+			<div className="overflow-y-auto relative pb-8" style={{ maxHeight: 560 }}>
+				{/* Hero Banner Area (Matches HeroBanner.tsx) */}
 				<div 
-					className="relative min-h-[14rem] bg-[#0a0d14] rounded-xl overflow-hidden mb-4 shrink-0 shadow-inner group"
+					className="relative min-h-[14rem] bg-[#0D1117] flex items-center justify-center p-5 pt-8 pb-16 overflow-hidden shrink-0 group"
 					style={{
 						backgroundImage: heroImageUrl ? `url(${heroImageUrl})` : undefined,
 						backgroundSize: 'cover',
@@ -87,87 +83,96 @@ export default function StorefrontPreview({
 					}}
 				>
 					{/* Dark overlay mesh ensuring crisp text rendering */}
-					{heroImageUrl && <div className="absolute inset-0 bg-[#0D1117]/80 group-hover:bg-[#0D1117]/70 transition-colors" />}
+					{heroImageUrl && <div className="absolute inset-0 bg-[#0D1117]/70 group-hover:bg-[#0D1117]/60 transition-colors z-0" />}
 
 					{/* Banner pattern layer if no image */}
 					{!heroImageUrl && (
-						<div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
+						<div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
 					)}
 					<div
-						className="absolute inset-0 pointer-events-none opacity-40"
-						style={{
-							background: 'radial-gradient(circle at 20% 50%, rgba(251,191,36,0.18) 0%, transparent 60%)',
-						}}
+						className="absolute inset-0 pointer-events-none opacity-40 z-0"
+						style={{ background: 'radial-gradient(circle at 20% 50%, rgba(251,191,36,0.18) 0%, transparent 60%)' }}
 						aria-hidden="true"
 					/>
-					<div className="relative z-10 h-full p-4 flex flex-col justify-end">
-						{acceptsOrders ? (
-							<div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-400 text-[10px] font-semibold uppercase tracking-wider mb-2">
-								<span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" aria-hidden="true" />
-								Now Taking Orders
-							</div>
-						) : (
-							<div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-semibold uppercase tracking-wider mb-2">
-								<span className="w-1.5 h-1.5 rounded-full bg-red-500" aria-hidden="true" />
-								Temporarily Closed
-							</div>
-						)}
-
-						{/* Overtone Restaurant Name */}
-						<span className="block font-semibold uppercase text-indigo-400 tracking-[0.2em] text-[9px] mt-1 shadow-sm">
-							{name || 'YOUR RESTAURANT'}
-						</span>
-
-						{/* Headline */}
-						{promotionalHeading ? (
-							<h2 className="text-xl font-black text-slate-100 leading-tight mt-1 tracking-tight">
-								{promotionalHeading.split(' ').map((word, i, arr) => {
-									const targetIndex = arr.length > 2 ? Math.floor(arr.length / 2) : 1;
-									if (i === targetIndex && arr.length > 1) {
-										return (
-											<span key={i}>
-												<span className="gradient-text">{word}</span>{' '}
-											</span>
-										);
-									}
-									return (
-										<span key={i}>
-											{word}{i !== arr.length - 1 ? ' ' : ''}
-										</span>
-									);
-								})}
-							</h2>
-						) : (
-							<h2 className="text-xl font-black text-slate-100 leading-tight mt-1 tracking-tight">
-								Your{' '}
-								<span className="gradient-text">Neighbourhood</span>
-								<br />
-								Flavours
-							</h2>
-						)}
-
-						{/* Sub-text */}
-						{description ? (
-							<p className="text-[10px] text-slate-300 mt-2 border-l-[1.5px] border-indigo-500/60 pl-2 leading-relaxed">
-								{description}
-							</p>
-						) : (
-							<p className="text-[10px] text-slate-400 mt-2 leading-relaxed">
-								Freshly prepared meals crafted with love.
-							</p>
-						)}
-						<div className="flex gap-2 mt-2 flex-wrap">
-							{(tags?.length ? tags : ['🍔 Burgers', '🍝 Pasta']).map((t) => (
-								<span
-									key={t}
-									className="px-2 py-0.5 rounded-full text-[10px] bg-white/5 border border-white/10 text-slate-400"
-								>
-									{t}
-								</span>
-							))}
-						</div>
-					</div>
+                    
+                    <div className="relative z-10 w-full flex flex-col gap-2">
+                        {promotionalHeading ? (
+                            <h2 className="text-3xl font-black text-white leading-[1.05] drop-shadow-md break-words">
+                                {promotionalHeading.split(' ').map((word, i, arr) => {
+                                    const targetIndex = arr.length > 2 ? Math.floor(arr.length / 2) : 1;
+                                    if (i === targetIndex && arr.length > 1) {
+                                        return <span key={i}><span className="gradient-text">{word}</span> </span>;
+                                    }
+                                    return <span key={i}>{word}{i !== arr.length - 1 ? ' ' : ''}</span>;
+                                })}
+                            </h2>
+                        ) : (
+                            <h2 className="text-3xl font-black text-white leading-[1.05] drop-shadow-md break-words">
+                                Your <span className="gradient-text">Neighbourhood</span><br />Flavours.
+                            </h2>
+                        )}
+                    </div>
 				</div>
+
+				{/* Profile Header Block (Overlapping - Matches VendorProfileHeader.tsx) */}
+                <div className="relative z-20 mx-4 -mt-10 mb-4 bg-[rgba(19,25,31,0.85)] backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-2xl flex flex-col gap-3">
+                    {/* Logo & Status Row */}
+                    <div className="flex items-start gap-4">
+                        {/* Logo Identity Block */}
+                        {logoUrl ? (
+                            <div className="relative w-16 h-16 rounded-[10px] overflow-hidden border border-slate-700 shadow-md shrink-0 bg-slate-900">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={logoUrl} alt={`${name || 'Restaurant'} logo`} className="object-cover w-full h-full" />
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center w-16 h-16 rounded-[10px] border border-slate-700 bg-slate-900 shadow-md shrink-0">
+                                <span className="text-2xl font-black text-slate-600">
+                                    {(name || 'Y').charAt(0).toUpperCase()}
+                                </span>
+                            </div>
+                        )}
+
+                        <div className="flex flex-col items-start gap-1.5 pt-1">
+                            {/* Status Badge */}
+                            <div className={`inline-flex self-start items-center gap-1.5 px-2 py-0.5 rounded-full border text-[9px] font-semibold uppercase tracking-wider ${
+                                acceptsOrders 
+                                    ? 'bg-amber-400/10 border-amber-400/20 text-amber-400' 
+                                    : 'bg-red-500/10 border-red-500/20 text-red-500'
+                            }`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${acceptsOrders ? 'bg-amber-400 animate-pulse' : 'bg-red-500'}`} aria-hidden="true" />
+                                {acceptsOrders ? 'Taking Orders' : 'Closed'}
+                            </div>
+
+                            <h2 className="text-lg font-black text-slate-100 tracking-tight leading-none mt-0.5 break-words">
+                                {name || 'Your Restaurant'}
+                            </h2>
+                        </div>
+                    </div>
+
+                    {/* Texts & Tags */}
+                    <div className="flex flex-col gap-2">
+                        {description ? (
+                            <p className="text-slate-400 text-xs leading-relaxed line-clamp-3">
+                                {description}
+                            </p>
+                        ) : (
+                            <p className="text-slate-500 text-xs">
+                                Freshly prepared meals crafted with love by local chefs.
+                            </p>
+                        )}
+
+                        <div className="flex gap-1.5 flex-wrap mt-0.5">
+                            {(tags?.length ? tags : ['🍔 Burgers', '🍝 Pasta', '🍣 Sushi']).map((t) => (
+                                <span
+                                    key={t}
+                                    className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-indigo-500/10 border border-indigo-500/20 text-indigo-300"
+                                >
+                                    {t}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
 
 				{/* Info rows */}
 				<div className="px-5 py-4 flex flex-col gap-3 border-b border-white/5">
@@ -189,7 +194,7 @@ export default function StorefrontPreview({
 								href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
 								target="_blank"
 								rel="noreferrer"
-								className="text-amber-400/80 text-xs truncate hover:underline"
+								className="text-amber-400/80 text-xs break-words inline-block leading-relaxed hover:underline"
 							>
 								{address}
 							</a>

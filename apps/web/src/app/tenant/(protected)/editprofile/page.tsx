@@ -54,8 +54,6 @@ export default function EditProfilePage() {
 				tags: tenant.tags || undefined,
 				logoUrl: tenant.logoUrl || undefined,
 				heroImageUrl: tenant.heroImageUrl || undefined,
-				acceptsDownpayment: tenant.acceptsDownpayment ?? false,
-				downpaymentPercentage: tenant.downpaymentPercentage || undefined,
 			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps

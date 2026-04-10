@@ -67,7 +67,7 @@ export const BrandInput = React.forwardRef<HTMLInputElement, BrandInputProps>(
           onChange={handleChange}
           className={cn(
             // Apply text and reset base input styles to blend into the wrapper
-            'border-0 bg-transparent text-slate-100 shadow-none',
+            'border-0 bg-transparent text-slate-100 shadow-none min-w-0 w-full',
             'placeholder:text-slate-600',
             'focus-visible:ring-0 focus-visible:border-transparent focus-visible:outline-none',
             'h-auto py-2.5',

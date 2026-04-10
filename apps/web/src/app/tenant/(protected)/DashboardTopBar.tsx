@@ -1,14 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { trpc } from '@/trpc/client';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui';
 import {
   LayoutDashboard,
   UserCog,
   UtensilsCrossed,
-  ExternalLink,
-  ChevronRight,
+  LogOut,
   Flame,
 } from 'lucide-react';
 
@@ -24,18 +26,42 @@ const PAGE_META: Record<string, { label: string; icon: React.ElementType }> = {
 
 interface DashboardTopBarProps {
   pathname: string;
+  onToggleSidebar?: () => void;
 }
 
 export function DashboardTopBar({ pathname }: DashboardTopBarProps) {
+  const router = useRouter();
   const { data: session } = authClient.useSession();
   const { data: tenant } = trpc.tenant.me.useQuery(undefined, { staleTime: Infinity });
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   const page = PAGE_META[pathname];
   const PageIcon = page?.icon;
   const user = session?.user;
   const avatarImage = tenant?.logoUrl || user?.image;
-  const displayName = tenant?.name || user?.name || user?.email || 'Vendor';
+  const displayName = tenant?.name || user?.name || user?.email || 'Partner';
   const initials = displayName[0]?.toUpperCase() || 'V';
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setMobileMenuOpen(false);
+      }
+    }
+    if (mobileMenuOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [mobileMenuOpen]);
+
+  const handleLogout = async () => {
+    await authClient.signOut();
+    /* Optional: invalidate TRPC locally, but usually hard redirect handles it */
+    // await utils.tenant.me.invalidate(); 
+    // await utils.vendor.storefront.invalidate();
+    router.push('/tenant/login');
+  };
 
   return (
     <header
@@ -66,9 +92,70 @@ export function DashboardTopBar({ pathname }: DashboardTopBarProps) {
             {PageIcon && (
               <PageIcon className="h-4 w-4 text-slate-400 shrink-0" aria-hidden="true" />
             )}
-            <span className="text-sm font-semibold text-slate-200 truncate">
+            <span className="text-sm font-semibold text-slate-200 truncate hidden sm:block">
               {page.label}
             </span>
+          </div>
+        )}
+      </div>
+
+      {/* ── Right: Mobile Profile / Sign Out (Hidden on large screens because Sidebar handles it) ── */}
+      <div ref={mobileMenuRef} className="relative sm:hidden flex items-center">
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen((o) => !o)}
+          aria-haspopup="menu"
+          aria-expanded={mobileMenuOpen}
+          aria-label={`Account menu for ${displayName}`}
+          className="
+            relative flex flex-col items-center px-1.5 pt-1 pb-1 rounded-full
+            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60
+            transition-transform duration-200 hover:scale-105
+          "
+        >
+          <Avatar className="auth-avatar-ring h-8 w-8 block">
+            {avatarImage ? <AvatarImage src={avatarImage} alt={displayName} /> : null}
+            <AvatarFallback className="text-amber-400 text-xs font-bold" style={{ background: '#1a2130' }}>
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </button>
+
+        {mobileMenuOpen && (
+          <div
+            role="menu"
+            aria-label="Account options"
+            className="absolute right-0 top-full mt-2 z-50 w-56 rounded-2xl overflow-hidden border border-white/8 shadow-xl shadow-black/40 animate-slide-up py-2"
+            style={{ background: 'rgba(19,25,31,0.95)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+          >
+            <div className="px-4 py-3 border-b border-white/8">
+              <div className="flex items-center gap-3">
+                <Avatar className="auth-avatar-ring h-9 w-9 flex-shrink-0 block">
+                  {avatarImage ? <AvatarImage src={avatarImage} alt={displayName} /> : null}
+                  <AvatarFallback className="text-amber-400 text-xs font-bold" style={{ background: '#1a2130' }}>{initials}</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-sm font-semibold text-slate-200 truncate">{displayName}</span>
+                  <span className="text-[10px] text-slate-500 truncate">{user?.email}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="py-1">
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
+                tabIndex={0}
+              >
+                <LogOut size={16} aria-hidden="true" />
+                Sign out
+              </button>
+            </div>
           </div>
         )}
       </div>

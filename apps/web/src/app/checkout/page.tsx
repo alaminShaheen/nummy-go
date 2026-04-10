@@ -350,7 +350,7 @@ export default function CheckoutPage() {
                 <h2 className="text-2xl font-bold text-white">ORDER SUMMARY</h2>
                 <div className="flex items-center text-slate-400 text-sm mt-1">
                   <Store className="w-4 h-4 mr-1.5" />
-                  {cart.length} Vendor{cart.length !== 1 && 's'} • {totalItems} Items
+                  {cart.length} Partner{cart.length !== 1 && 's'} • {totalItems} Items
                 </div>
               </div>
 
@@ -370,7 +370,7 @@ export default function CheckoutPage() {
 
                   return (
                     <div key={vendor.tenantId} className="rounded-2xl border border-white/5 overflow-hidden" style={{ background: 'var(--color-brand-card)' }}>
-                      {/* Vendor Header */}
+                      {/* Partner Header */}
                       <div className="px-5 py-4 border-b border-white/5 bg-white/[0.02]">
                         <h3 className="font-bold text-slate-100 text-lg flex items-center">
                           {vendor.tenantName}
