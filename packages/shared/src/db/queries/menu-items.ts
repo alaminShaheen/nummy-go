@@ -101,5 +101,6 @@ export async function getMenuItemCategoriesByTenant(tenantId: string) {
 }
 
 export async function deleteMenuItemCategory(id: string) {
+  await getDb().update(menuItems).set({ categoryId: null }).where(eq(menuItems.categoryId, id));
   return getDb().delete(menuItemCategories).where(eq(menuItemCategories.id, id));
 }

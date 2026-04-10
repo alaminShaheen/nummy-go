@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import { TRPCProvider } from '@/trpc/Provider';
 import './globals.css';
 import { Geist } from "next/font/google";
-import { cn } from '@/components/ui';
+import { cn, Toaster } from '@/components/ui';
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -26,7 +26,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body><TRPCProvider>{children}</TRPCProvider></body>
+      <body>
+        <TRPCProvider>{children}</TRPCProvider>
+        <Toaster position="bottom-right" />
+      </body>
     </html>
   );
 }

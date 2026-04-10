@@ -6,7 +6,8 @@ import {
   updateMenuItem,
   deleteMenuItem,
   createMenuItemCategory,
-  getMenuItemCategoriesByTenant
+  getMenuItemCategoriesByTenant,
+  deleteMenuItemCategory
 } from '@nummygo/shared/db/queries';
 import {
   CreateMenuItemDto,
@@ -52,4 +53,8 @@ export async function addMenuCategory(data: CreateMenuItemCategoryDto) {
 
 export async function fetchAllTenantMenuCategories(tenantId: string) {
   return await getMenuItemCategoriesByTenant(tenantId);
+}
+
+export async function removeMenuCategory(id: string) {
+  return await deleteMenuItemCategory(id);
 }

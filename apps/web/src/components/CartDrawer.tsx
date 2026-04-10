@@ -8,6 +8,7 @@ import { useCart } from '@/hooks/useCart';
 import { useModificationMode } from '@/hooks/useModificationMode';
 import { GlassCard, GradientButton, GradientDivider, cn } from '@/components/ui';
 import { trpc } from '@/trpc/client';
+import { toast } from 'sonner';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -37,7 +38,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       }
     },
     onError: (err) => {
-      alert(`Modification failed: ${err.message}`);
+      toast.error('Modification failed', { description: err.message });
     },
   });
 

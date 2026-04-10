@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useState, useRef } from 'react';
 import { NummyGoBadge, InlineEditableField, BrandSwitch, GradientButton } from '@/components/ui';
-import { Minus, Plus, Trash2, UploadCloud, Loader2 } from 'lucide-react';
+import { Minus, Plus, Trash2, UploadCloud, Loader2, Check } from 'lucide-react';
 import { cn } from '@nummygo/shared/ui';
 
 export interface MenuItem {
@@ -21,17 +21,19 @@ export interface MenuItem {
 interface MenuItemCardProps {
 	item: MenuItem;
 	categoryName?: string;
+  categories?: { id: string; name: string }[];
 	mode?: 'customer' | 'builder' | 'draft';
 	onAddToCart?: (item: MenuItem, qty: number) => void;
-	onDelete?: (id: string) => void;
+	onDelete?: (id: string) => Promise<void> | void;
 	onUpdateField?: (id: string, field: string, value: any) => void;
-  onDraftSave?: (item: MenuItem) => void;
+  onDraftSave?: (item: MenuItem) => Promise<void> | void;
   onDraftCancel?: () => void;
 }
 
 export default function MenuItemCard({ 
   item, 
   categoryName, 
+  categories,
   mode = 'customer', 
   onAddToCart, 
   onDelete,
@@ -43,8 +45,11 @@ export default function MenuItemCard({
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Local draft state mirroring
+  // Local state modeling
   const [draftState, setDraftState] = useState<MenuItem>(item);
+  const [draftStatus, setDraftStatus] = useState<'idle' | 'saving' | 'success'>('idle');
+  const [deleteStatus, setDeleteStatus] = useState<'idle' | 'confirming' | 'deleting'>('idle');
+  const [validationError, setValidationError] = useState<string | null>(null);
 
 	const handleInitialAdd = () => {
 		if (onAddToCart) onAddToCart(item, 1);
@@ -69,6 +74,42 @@ export default function MenuItemCard({
   };
 
   const currentItem = mode === 'draft' ? draftState : item;
+
+  const handleConfirmDelete = async () => {
+    if (!onDelete) return;
+    setDeleteStatus('deleting');
+    try {
+      await onDelete(currentItem.id);
+      // No need to reset state, the component will smoothly unmount from DOM when TRPC invalidates.
+    } catch (err) {
+      setDeleteStatus('confirming');
+      // Toast error is handled centrally
+    }
+  };
+
+  const handleDraftSaveClick = async () => {
+    if (!onDraftSave) return;
+    
+    // Inline Validation
+    if (!currentItem.name?.trim() || !currentItem.price) {
+      setValidationError("Name & Price are required");
+      setTimeout(() => setValidationError(null), 3500);
+      return;
+    }
+
+    setDraftStatus('saving');
+    try {
+      await onDraftSave(currentItem);
+      setDraftStatus('success');
+      setValidationError(null);
+      setTimeout(() => {
+        onDraftCancel?.();
+      }, 1500);
+    } catch (err) {
+      setDraftStatus('idle');
+      // error is handled explicitly by the caller (Alerting)
+    }
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent) => {
     e.preventDefault();
@@ -108,30 +149,29 @@ export default function MenuItemCard({
 		<article
 			id={`menu-item-${currentItem.id}`}
 			className={cn(
-        "relative flex flex-col overflow-visible group bg-[rgba(15,20,29,0.4)] backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.3)] transition-all duration-300 rounded-[2rem]",
-        mode === 'draft' ? 'border border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/20' : 'border border-white/5',
+        "relative flex flex-col overflow-visible group bg-[rgba(15,20,29,0.4)] backdrop-blur-2xl transition-all duration-500 rounded-[2rem]",
+        mode === 'draft' ? 'border border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/20' : 'border border-white/5 shadow-[0_0_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(245,158,11,0.12)] hover:border-white/10',
         mode === 'builder' && currentItem.isAvailable === false ? 'opacity-70 grayscale-[30%]' : ''
       )}
 		>
-      {/* Builder Hover Availability Switch & Delete Action */}
+      {/* Background layer to trap overflow for image radius without cutting off absolute badges */}
+      <div className="absolute inset-0 rounded-[2rem] overflow-hidden pointer-events-none -z-10"></div>
+      {/* Builder Hover Availability Switch & Modern Danger Pivot */}
       {(mode === 'builder') && (
         <div className="absolute -top-3 right-4 z-50 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 border border-white/10 shadow-xl backdrop-blur-md">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">
-              {currentItem.isAvailable ? 'Live' : 'Hidden'}
-            </span>
+          <div className="bg-[#0f151d] rounded-full shadow-[0_0_20px_rgba(0,0,0,0.6)] flex items-center px-2 py-1.5 border border-white/5">
             <BrandSwitch 
               checked={currentItem.isAvailable ?? true}
-              onChange={(c) => handleFieldChange('isAvailable', c)}
+              onChange={(val) => handleFieldChange('isAvailable', val)}
               ariaLabel="Toggle availability"
             />
           </div>
-          <button
-            onClick={() => onDelete?.(currentItem.id)}
-            className="p-2 rounded-full bg-slate-900/90 border border-white/10 text-rose-500 hover:text-white hover:bg-rose-500 hover:border-rose-400 transition-all shadow-xl"
-            title="Delete Dish"
+          <button 
+            onClick={() => setDeleteStatus('confirming')}
+            className="group/delete relative flex items-center gap-1.5 pl-2.5 pr-2.5 py-1.5 rounded-full bg-rose-500 border border-rose-400/80 hover:bg-rose-400 hover:shadow-[0_0_20px_rgba(244,63,94,0.4)] text-rose-950 transition-all duration-300 overflow-hidden"
           >
-            <Trash2 size={16} />
+            <Trash2 size={16} strokeWidth={2.5} className="shrink-0" />
+            <span className="w-0 overflow-hidden group-hover/delete:w-10 group-hover/delete:ml-0.5 transition-all duration-300 text-[10px] font-black uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/delete:opacity-100">Drop</span>
           </button>
         </div>
       )}
@@ -214,9 +254,26 @@ export default function MenuItemCard({
 			{/* Typographic body bounds */}
 			<div className="flex flex-col flex-1 p-5 pt-4 gap-4 relative z-20">
 				<div className="flex-1 space-y-1">
-					{categoryName && (
-						<p className="text-[0.65rem] uppercase tracking-widest text-amber-500/80 mb-1 font-semibold">{categoryName}</p>
-					)}
+          {mode === 'customer' ? (
+            categoryName && (
+              <p className="text-[0.65rem] uppercase tracking-widest text-amber-500/80 mb-1 font-semibold">{categoryName}</p>
+            )
+          ) : (
+            <div className="mb-1 -ml-1">
+              <select 
+                value={currentItem.categoryId || 'uncategorized'}
+                onChange={(e) => handleFieldChange('categoryId', e.target.value === 'uncategorized' ? null : e.target.value)}
+                className="text-[0.65rem] uppercase tracking-[0.1em] text-amber-500/80 font-semibold bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 px-2 py-1 outline-none cursor-pointer rounded-full transition-colors appearance-none"
+              >
+                <option value="uncategorized" className="bg-slate-900 text-slate-400">❖ UNCATEGORIZED</option>
+                {categories?.map(c => (
+                  <option key={c.id} value={c.id} className="bg-slate-900 text-slate-200">
+                    {c.name.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           
           {mode === 'customer' ? (
             <>
@@ -277,19 +334,31 @@ export default function MenuItemCard({
 
         {/* Draft Mode Save Action */}
         {mode === 'draft' && (
-          <div className="pt-4 flex gap-2 w-full animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <button 
-              onClick={() => onDraftCancel?.()}
-              className="flex-1 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300 text-xs font-semibold transition-colors"
-            >
-              Cancel
-            </button>
-            <GradientButton 
-              onClick={() => onDraftSave?.(currentItem)}
-              className="flex-[2] py-2 h-auto text-xs font-bold"
-            >
-              🚀 Save Dish
-            </GradientButton>
+          <div className="pt-2 flex flex-col gap-2 w-full animate-in fade-in slide-in-from-bottom-2 duration-300">
+            {validationError && (
+              <div className="flex items-center gap-1.5 text-rose-500 text-[10px] font-bold uppercase tracking-widest bg-rose-500/10 px-3 py-1.5 rounded-full w-max mx-auto shadow-[0_0_10px_rgba(244,63,94,0.2)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                {validationError}
+              </div>
+            )}
+            <div className="flex gap-2 w-full mt-1">
+              <button 
+                onClick={() => onDraftCancel?.()}
+                disabled={draftStatus !== 'idle'}
+                className="flex-1 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300 text-xs font-semibold transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <GradientButton 
+                onClick={handleDraftSaveClick}
+                disabled={draftStatus !== 'idle'}
+                className="flex-[2] py-2 h-auto text-xs font-bold disabled:opacity-80 transition-all"
+              >
+                {draftStatus === 'saving' ? (
+                  <span className="flex items-center gap-2"><Loader2 size={14} className="animate-spin" /> Saving...</span>
+                ) : '🚀 Save Dish'}
+              </GradientButton>
+            </div>
           </div>
         )}
 
@@ -329,6 +398,50 @@ export default function MenuItemCard({
 					</div>
 				)}
 			</div>
+
+      {/* Option 2: Inline Canvas Morph Success State */}
+      {mode === 'draft' && (
+        <div className={cn(
+          "absolute inset-0 bg-emerald-500/15 backdrop-blur-xl border-2 border-emerald-500/50 flex flex-col items-center justify-center pointer-events-none transition-all duration-500 z-50 rounded-[2rem]",
+          draftStatus === 'success' ? "opacity-100 scale-100" : "opacity-0 scale-[0.8]"
+        )}>
+            <div className={cn(
+              "w-20 h-20 rounded-full bg-emerald-500 text-black flex items-center justify-center font-bold mb-6 shadow-[0_0_40px_rgba(16,185,129,0.4)]",
+              draftStatus === 'success' && "animate-bounce"
+            )}>
+                <Check size={40} strokeWidth={3} />
+            </div>
+            <span className="text-white font-black tracking-widest uppercase text-sm">Dish Created!</span>
+            {categoryName && (
+              <p className="text-emerald-400/80 text-[10px] mt-2 font-bold uppercase tracking-[0.2em]">Added to {categoryName}</p>
+            )}
+        </div>
+      )}
+
+      {/* Danger Deletion State Override (Inline Glassmorphic Lock) */}
+      {deleteStatus !== 'idle' && (
+        <div className="absolute inset-0 bg-[#300810]/70 backdrop-blur-xl border border-rose-500/30 z-[60] rounded-[2rem] flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in-95 duration-300">
+          <Trash2 size={36} className={cn("text-rose-500 mb-3 drop-shadow-[0_0_15px_rgba(244,63,94,0.4)]", deleteStatus === 'deleting' && "animate-bounce")} />
+          <h4 className="text-white font-bold text-lg leading-none mb-1">Erase this dish?</h4>
+          <p className="text-rose-300/80 text-xs font-medium mb-6 tracking-wide uppercase">This action is irreversible.</p>
+          <div className="flex gap-2 w-full">
+            <button 
+              onClick={() => setDeleteStatus('idle')}
+              disabled={deleteStatus === 'deleting'}
+              className="flex-[1] py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-rose-200 text-xs font-bold transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleConfirmDelete}
+              disabled={deleteStatus === 'deleting'}
+              className="flex-[2] py-2.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-black text-xs font-black uppercase tracking-widest shadow-[0_0_20px_rgba(244,63,94,0.3)] transition-all disabled:opacity-80 flex items-center justify-center gap-1"
+            >
+              {deleteStatus === 'deleting' ? <Loader2 size={14} className="animate-spin" /> : 'Confirm Drop'}
+            </button>
+          </div>
+        </div>
+      )}
 		</article>
 	);
 }

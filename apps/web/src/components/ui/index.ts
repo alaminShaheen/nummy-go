@@ -113,3 +113,4 @@ export { ImageDropzone } from './ImageDropzone';
 export { TagsInput } from './TagsInput';
 export { BrandSwitch } from './BrandSwitch';
 export { AddressAutocomplete } from './AddressAutocomplete';
+export { Toaster } from './toaster';
