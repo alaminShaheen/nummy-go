@@ -19,9 +19,9 @@ import { cn } from '@/lib/utils';
 // ── Page label map ───────────────────────────────────────────────────────────
 
 const PAGE_META: Record<string, { label: string; icon: React.ElementType }> = {
-  '/tenant/dashboard':   { label: 'Dashboard',    icon: LayoutDashboard },
-  '/tenant/editprofile': { label: 'Edit Profile',  icon: UserCog },
-  '/tenant/menu':        { label: 'Menu Builder',  icon: UtensilsCrossed },
+  '/tenant/dashboard': { label: 'Live Orders', icon: LayoutDashboard },
+  '/tenant/editprofile': { label: 'Store Settings', icon: UserCog },
+  '/tenant/menu': { label: 'Menu Builder', icon: UtensilsCrossed },
 };
 
 // ── DashboardTopBar ──────────────────────────────────────────────────────────

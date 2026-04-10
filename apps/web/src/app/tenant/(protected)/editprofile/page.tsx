@@ -79,7 +79,7 @@ export default function EditProfilePage() {
 
 	return (
 		<>
-			<div className="min-h-screen pb-16 px-4 sm:px-6 lg:px-8" style={{ background: '#0D1117' }}>
+			<div className="min-h-screen pt-8 pb-16 px-4 sm:px-6 lg:px-8 w-full" style={{ background: '#0D1117' }}>
 				{/* Ambient glows */}
 				<div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
 					<div
@@ -108,17 +108,13 @@ export default function EditProfilePage() {
 					/>
 				</div>
 
-				<div className="relative z-10 max-w-6xl mx-auto">
-					{/* Page header */}
-					<div className="mb-10">
-						<div className="text-center">
-							<div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-semibold uppercase tracking-widest mb-4">
-								Edit Your Profile
-							</div>
-							<h1 className="text-3xl sm:text-4xl font-black text-slate-100">Restaurant Settings</h1>
-							<p className="text-slate-400 mt-3 max-w-md mx-auto text-sm leading-relaxed">
-								Update your restaurant information. Changes will be reflected on your public storefront
-								immediately.
+				<div className="relative z-10 max-w-[1400px] mx-auto space-y-8 animate-fade-in">
+					{/* Page header (Standardized) */}
+					<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-8">
+						<div>
+							<h1 className="text-3xl font-black gradient-text">Store Settings</h1>
+							<p className="text-slate-400 text-sm mt-1">
+								Update your restaurant details, location, and business hours. Changes sync to your public storefront.
 							</p>
 						</div>
 					</div>

@@ -161,16 +161,43 @@ export default function TenantDashboardPage() {
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="p-4 sm:p-6 space-y-5">
+    <div className="min-h-screen pt-8 pb-16 px-4 sm:px-6 lg:px-8 w-full" style={{ background: '#0D1117' }}>
+      {/* Ambient glows matching Edit Profile */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+        <div
+          style={{
+            position: 'absolute',
+            top: '-10%',
+            left: '-5%',
+            width: 600,
+            height: 600,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(251,191,36,0.10) 0%, transparent 70%)',
+            filter: 'blur(40px)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '5%',
+            right: '-5%',
+            width: 500,
+            height: 500,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
+            filter: 'blur(40px)',
+          }}
+        />
+      </div>
 
-      {/* ── Page heading + live status ──────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="relative z-10 max-w-[1400px] mx-auto space-y-8 animate-fade-in">      {/* ── Page heading + live status ──────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-8">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-orange-400 leading-tight">
+          <h1 className="text-3xl font-black gradient-text">
             Live Orders
           </h1>
-          <p className="text-slate-500 text-sm mt-0.5">
-            Real-time order management · synced to kitchen &amp; customers
+          <p className="text-slate-400 text-sm mt-1">
+            Manage incoming orders and customer requests in real-time.
           </p>
         </div>
 
@@ -237,6 +264,7 @@ export default function TenantDashboardPage() {
           onClose={() => { setReviewingOrder(null); setLoadingModOrderId(null); }}
         />
       )}
+      </div>
     </div>
   );
 }

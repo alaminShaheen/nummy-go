@@ -142,10 +142,39 @@ export default function TenantMenuDashboard() {
 
   return (
     <>
-      <div className="p-4 sm:p-8 max-w-[1400px] mx-auto space-y-12 animate-fade-in relative min-h-screen">
+      <div className="min-h-screen pt-8 pb-16 px-4 sm:px-6 lg:px-8 w-full" style={{ background: '#0D1117' }}>
+        {/* Ambient glows matching Edit Profile */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+          <div
+            style={{
+              position: 'absolute',
+              top: '-10%',
+              left: '-5%',
+              width: 600,
+              height: 600,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(251,191,36,0.10) 0%, transparent 70%)',
+              filter: 'blur(40px)',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '5%',
+              right: '-5%',
+              width: 500,
+              height: 500,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
+              filter: 'blur(40px)',
+            }}
+          />
+        </div>
+
+        <div className="relative z-10 max-w-[1400px] mx-auto space-y-8 animate-fade-in">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-8">
           <div>
-            <h1 className="text-3xl font-black gradient-text">Inline Canvas</h1>
+            <h1 className="text-3xl font-black gradient-text">Menu Builder</h1>
             <p className="text-slate-400 text-sm mt-1">
               Click any text to edit directly. Drop an image to upload. Changes save automatically.
             </p>
@@ -333,6 +362,7 @@ export default function TenantMenuDashboard() {
           </div>
         </div>
 
+      </div>
       </div>
     </>
   );

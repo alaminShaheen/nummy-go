@@ -27,9 +27,9 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard',    href: '/tenant/dashboard',   icon: LayoutDashboard },
-  { label: 'Edit Profile', href: '/tenant/editprofile', icon: UserCog },
-  { label: 'Menu Builder', href: '/tenant/menu',        icon: UtensilsCrossed },
+  { label: 'Live Orders',       href: '/tenant/dashboard',   icon: LayoutDashboard },
+  { label: 'Store Settings',    href: '/tenant/editprofile', icon: UserCog },
+  { label: 'Menu Builder',      href: '/tenant/menu',        icon: UtensilsCrossed },
 ];
 
 // ── NavLink ──────────────────────────────────────────────────────────────────
