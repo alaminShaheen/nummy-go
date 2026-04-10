@@ -65,7 +65,7 @@ export function ColumnCustomizer({ table }: ColumnCustomizerProps) {
             checked={col.getIsVisible()}
             onCheckedChange={(val) => col.toggleVisibility(!!val)}
           >
-            {COLUMN_LABELS[col.id] ?? col.id}
+            <span className="ml-6 flex-1 truncate whitespace-nowrap">{COLUMN_LABELS[col.id] ?? col.id}</span>
           </DropdownMenuCheckboxItem>
         ))}
       </DropdownMenuContent>

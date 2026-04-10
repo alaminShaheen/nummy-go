@@ -7,6 +7,8 @@ import { CalendarClock, LayoutList } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { OrderTab } from './OrderFilterTabs';
+import { trpc } from '@/trpc/client';
+import { Loader2 } from 'lucide-react';
 
 // ── OrdersTable ──────────────────────────────────────────────────────────────
 
@@ -21,10 +23,9 @@ export function OrdersTable({ table, columns, activeTab }: OrdersTableProps) {
 
   return (
     <div
-      className="rounded-xl overflow-hidden"
-      style={{ border: '1px solid rgba(255,255,255,0.06)', background: '#111820' }}
+      className="rounded-xl overflow-hidden w-full border border-white/[0.06] bg-[#111820]"
     >
-      <div className="overflow-x-auto">
+      <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
         <table className="w-full text-left border-collapse min-w-[800px]">
 
           {/* ── Head ── */}
@@ -118,21 +119,58 @@ export function OrdersTable({ table, columns, activeTab }: OrdersTableProps) {
 // ── OrderDetailPanel ─────────────────────────────────────────────────────────
 
 function OrderDetailPanel({ row }: { row: Order }) {
+  const { data, isLoading } = trpc.order.getOrderDetails.useQuery(
+    { orderId: row.id },
+    { staleTime: 1000 * 60 * 5 } // 5 minutes cache
+  );
+
   return (
     <div
       className="px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-in-from-top-2 duration-200"
       style={{ borderLeft: '3px solid rgba(99,102,241,0.4)' }}
     >
-      {/* Order items placeholder */}
+      {/* Order items */}
       <div>
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
           Order Items
         </p>
-        <div
-          className="p-3 rounded-lg text-xs text-slate-500 italic"
-          style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.04)' }}
-        >
-          Item breakdown coming soon.
+        <div className="space-y-2">
+          {isLoading ? (
+            <div className="flex items-center justify-center p-6 rounded-lg text-slate-500" style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.04)' }}>
+              <Loader2 className="w-5 h-5 animate-spin text-indigo-400" />
+              <span className="ml-3 text-xs">Loading items...</span>
+            </div>
+          ) : data?.items ? (
+            <div className="space-y-2">
+              {data.items.map((item, idx) => (
+                <div key={idx} className="flex items-center gap-3 rounded-xl border border-white/8 bg-black/30 px-3 py-2.5">
+                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white/5 border border-white/10 flex items-center justify-center relative">
+                    {item.imageUrl ? (
+                      <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+                    ) : (
+                      <LayoutList className="w-4 h-4 text-white/20" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-slate-200 truncate">{item.name}</p>
+                    <p className="text-xs text-slate-500">
+                      ${item.price.toFixed(2)} × {item.quantity}
+                    </p>
+                  </div>
+                  <span className="text-sm font-bold text-amber-400">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="p-3 rounded-lg text-xs text-slate-500 italic"
+              style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.04)' }}
+            >
+              No item details available.
+            </div>
+          )}
         </div>
       </div>
 

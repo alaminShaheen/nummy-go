@@ -12,6 +12,7 @@ import {
   flexRender,
   type SortingState,
   type VisibilityState,
+  type ColumnFiltersState,
 } from '@tanstack/react-table';
 import { buildColumns } from '../orders/components/columns';
 import { KpiCards } from '../orders/components/KpiCards';
@@ -19,8 +20,8 @@ import { OrderFilterTabs, type OrderTab } from '../orders/components/OrderFilter
 import { ColumnCustomizer } from '../orders/components/ColumnCustomizer';
 import { ReviewModificationDialog } from '../orders/components/ReviewModificationDialog';
 import { OrdersTable } from '../orders/components/OrdersTable';
-import { Skeleton } from '@/components/ui';
-import { Bell, Wifi, WifiOff } from 'lucide-react';
+import { Skeleton, Input } from '@/components/ui';
+import { Bell, Wifi, WifiOff, Search } from 'lucide-react';
 import type { Order } from '@nummygo/shared/models/types';
 import { cn } from '@/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
@@ -32,6 +33,7 @@ export default function TenantDashboardPage() {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'createdAt', desc: false }]);
   const [activeTab, setActiveTab] = useState<OrderTab>('all');
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   // Modification review state
   const [reviewingOrderId, setReviewingOrderId] = useState<string | null>(null);
@@ -134,9 +136,10 @@ export default function TenantDashboardPage() {
   const table = useReactTable({
     data: filteredOrders,
     columns,
-    state: { sorting, columnVisibility },
+    state: { sorting, columnVisibility, columnFilters },
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -190,7 +193,7 @@ export default function TenantDashboardPage() {
         />
       </div>
 
-      <div className="relative z-10 max-w-[1400px] mx-auto space-y-8 animate-fade-in">      {/* ── Page heading + live status ──────────────────────────────────────── */}
+      <div className="relative z-10 w-full min-w-0 max-w-[1400px] mx-auto space-y-8 animate-fade-in">      {/* ── Page heading + live status ──────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-8">
         <div>
           <h1 className="text-3xl font-black gradient-text">
@@ -236,13 +239,24 @@ export default function TenantDashboardPage() {
       <KpiCards orders={sortedOrders} />
 
       {/* ── Filter bar ─────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-3 flex-wrap justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-wrap justify-between">
         <OrderFilterTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}
           counts={counts}
         />
-        <ColumnCustomizer table={table} />
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-64">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <Input
+              placeholder="Search Order ID..."
+              value={(table.getColumn('id')?.getFilterValue() as string) ?? ''}
+              onChange={(e) => table.getColumn('id')?.setFilterValue(e.target.value)}
+              className="pl-9 h-9 border-white/[0.08] bg-black/30 text-sm text-slate-300 placeholder:text-slate-600 focus-visible:ring-1 focus-visible:ring-amber-500/50 w-full rounded-xl"
+            />
+          </div>
+          <ColumnCustomizer table={table} />
+        </div>
       </div>
 
       {/* ── Orders table ───────────────────────────────────────────────────── */}

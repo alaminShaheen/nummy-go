@@ -1,17 +1,26 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { Skeleton } from '@/components/ui';
 import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { AppSidebar } from './AppSidebar';
 import { DashboardTopBar } from './DashboardTopBar';
+import { cn } from '@/lib/utils';
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Default open for Desktop
+
+  // Auto-collapse if loading on a mobile viewport
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
 
   const isOnboardingPage = pathname === '/tenant/onboarding';
 
@@ -52,17 +61,19 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
       className="flex min-h-screen"
       style={{ background: '#0D1117', color: '#f1f5f9' }}
     >
-      {/* Fixed sidebar */}
-      <AppSidebar />
+      {/* Responsive sidebar or bottom nav */}
+      <AppSidebar isExpanded={isSidebarOpen} onToggle={() => setIsSidebarOpen(prev => !prev)} />
 
-      {/* Main content — offset by sidebar width */}
+      {/* Main content — full width mobile, offset depends on sidebar open state on desktop lg+ */}
       <div
-        className="flex flex-col flex-1 min-w-0"
-        style={{ marginLeft: 'var(--sidebar-w, 256px)' }}
+        className={cn(
+          "flex flex-col flex-1 min-w-0 transition-all duration-300 pb-16 sm:pb-0",
+          isSidebarOpen ? "sm:ml-[256px]" : "sm:ml-[64px]"
+        )}
         id="dashboard-main"
       >
         {/* Sticky top bar */}
-        <DashboardTopBar pathname={pathname} />
+        <DashboardTopBar pathname={pathname} onToggleSidebar={() => setIsSidebarOpen(prev => !prev)} />
 
         {/* Scrollable page content */}
         <main className="flex-1 overflow-y-auto">
