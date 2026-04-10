@@ -7,6 +7,9 @@ out/
 .vercel/
 .open-next/
 
+# React Email (generated build artifact)
+.react-email/
+
 # Build outputs
 dist/
 build/
