@@ -58,22 +58,29 @@ export async function updateTenantOrderAcceptance(id: string, acceptsOrders: boo
 }
 
 export async function searchTenantsByName(query: string, limit = 50) {
+    const baseConditions = and(
+        eq(tenants.isActive, true),
+        eq(tenants.onboardingCompleted, true),
+    );
+
+    const whereClause = query.trim()
+        ? and(like(tenants.name, `%${query.trim()}%`), baseConditions)
+        : baseConditions;
+
     return getDb()
         .select({
             name: tenants.name,
             slug: tenants.slug,
             address: tenants.address,
+            latitude: tenants.latitude,
+            longitude: tenants.longitude,
+            description: tenants.description,
+            tags: tenants.tags,
             acceptsOrders: tenants.acceptsOrders,
             closedUntil: tenants.closedUntil,
             logoUrl: tenants.logoUrl,
         })
         .from(tenants)
-        .where(
-            and(
-                like(tenants.name, `%${query}%`),
-                eq(tenants.isActive, true),
-                eq(tenants.onboardingCompleted, true),
-            )
-        )
+        .where(whereClause)
         .limit(limit);
 }

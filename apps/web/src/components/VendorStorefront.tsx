@@ -11,10 +11,9 @@ import MenuSection from '@/components/MenuSection';
 import CartFab from '@/components/CartFab';
 import type { MenuItem } from '@/components/MenuItemCard';
 import { GradientDivider } from '@/components/ui';
-import { authClient } from '@/lib/auth-client';
+import { trpc } from '@/trpc/client';
 import { Tenant } from '@nummygo/shared/models';
 import { getGoogleMapsUrl } from '@/utils/tenant';
-import { trpc } from '@/trpc/client';
 import { useCart } from '@/hooks/useCart';
 import { useModificationMode } from '@/hooks/useModificationMode';
 import { differenceInSeconds } from 'date-fns';
@@ -198,9 +197,6 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
     createdAt: number;
   } | null>(null);
 
-  const { data: session } = authClient.useSession();
-  const isVendorOwner = !!session?.user && session.user.id === tenant.userId;
-
   const { data: serverMenuItems } = trpc.menu.getStorefrontMenu.useQuery({ tenantId: tenant.id });
   const { data: serverCategories } = trpc.category.getStorefrontCategories.useQuery({ tenantId: tenant.id });
 
@@ -318,7 +314,6 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
           tags={tenant.tags}
           logoUrl={tenant.logoUrl}
           acceptsOrders={tenant.acceptsOrders ?? true}
-          isVendorOwner={isVendorOwner}
         />
 
         <VendorMapDivider
@@ -339,7 +334,7 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
             { day: 'Sun', time: tenant.businessHours.sunday.closed ? 'Closed' : `${tenant.businessHours.sunday.open} – ${tenant.businessHours.sunday.close}` },
           ] : VENDOR.hours}
         />
-        <MenuSection items={displayItems} categories={serverCategories || []} onAddToCart={handleAddToCart} isVendorOwner={isVendorOwner} />
+        <MenuSection items={displayItems} categories={serverCategories || []} onAddToCart={handleAddToCart} />
 
         <footer className="py-10 px-4 text-center border-t border-white/5">
           <p className="text-slate-600 text-sm">

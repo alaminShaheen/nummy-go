@@ -61,9 +61,11 @@ export default function VendorSearchBar({
     (e: React.FormEvent) => {
       e.preventDefault();
       const trimmed = query.trim();
+      setIsOpen(false);
       if (trimmed) {
-        setIsOpen(false);
         router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+      } else {
+        router.push('/search');
       }
     },
     [query, router],

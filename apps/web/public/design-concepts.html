@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NummyGo — Quick Filter Design Concept</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #0D1117;
+      color: #f1f5f9;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Background ── */
+    .bg {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    }
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .bg-sweep {
+      position: absolute; top: 50%; left: 50%;
+      width: 200vw; height: 200vw; border-radius: 50%;
+      background: conic-gradient(from 0deg, transparent 70%, rgba(245,158,11,0.07) 100%);
+      animation: radar 16s linear infinite;
+    }
+    @keyframes radar {
+      from { transform: translate(-50%,-50%) rotate(0deg); }
+      to   { transform: translate(-50%,-50%) rotate(360deg); }
+    }
+    .orb-amber {
+      position: absolute; top: -8%; right: -4%;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%);
+      filter: blur(40px);
+    }
+    .orb-indigo {
+      position: absolute; bottom: 0; left: -4%;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
+      filter: blur(40px);
+    }
+
+    /* ── Layout ── */
+    .page {
+      position: relative; z-index: 1;
+      max-width: 1100px; margin: 0 auto;
+      padding: 36px 24px 80px;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px;
+    }
+    .back-link {
+      display: flex; align-items: center; gap: 6px;
+      color: #94a3b8; font-size: 14px; font-weight: 500; text-decoration: none;
+    }
+    .back-link:hover { color: #f1f5f9; }
+    .live-badge {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.25);
+      color: #fbbf24; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 6px 14px; border-radius: 999px;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #fbbf24; position: relative;
+    }
+    .live-dot::after {
+      content: ''; position: absolute; inset: -3px; border-radius: 50%;
+      border: 1px solid rgba(251,191,36,0.6);
+      animation: ping 2s ease-in-out infinite;
+    }
+    @keyframes ping {
+      0%,100% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 0; transform: scale(1.6); }
+    }
+
+    /* ── Search bar ── */
+    .search-wrap {
+      max-width: 840px; margin: 0 auto 16px;
+      position: relative;
+    }
+    .search-bar {
+      position: relative; display: flex; align-items: center;
+      height: 68px;
+      background: rgba(19,25,31,0.92);
+      border: 1.5px solid rgba(245,158,11,0.45);
+      border-radius: 999px;
+      padding: 0 8px 0 24px;
+      box-shadow: 0 0 40px rgba(245,158,11,0.12), inset 0 0 20px rgba(245,158,11,0.04);
+      backdrop-filter: blur(20px);
+    }
+    .search-icon { color: #64748b; margin-right: 14px; flex-shrink: 0; }
+    .search-input {
+      flex: 1; background: none; border: none; outline: none;
+      font-family: inherit; font-size: 22px; font-weight: 700;
+      color: #f1f5f9;
+      caret-color: #f59e0b;
+    }
+    .search-input::placeholder { color: rgba(148,163,184,0.65); }
+    .search-btn {
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      color: #000; font-family: inherit; font-size: 15px; font-weight: 700;
+      border: none; border-radius: 999px; padding: 0 28px; height: 50px;
+      cursor: pointer; flex-shrink: 0; margin-left: 12px;
+      transition: opacity 0.2s;
+    }
+    .search-btn:hover { opacity: 0.9; }
+    .view-toggle {
+      display: flex; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 999px;
+      padding: 4px; margin-left: 10px; flex-shrink: 0;
+    }
+    .view-btn {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; border: none; background: none;
+      color: #64748b; font-family: inherit;
+    }
+    .view-btn.active {
+      background: rgba(255,255,255,0.1);
+      color: #f1f5f9;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    /* ── QUICK FILTER ROW ── */
+    .filter-row {
+      max-width: 840px; margin: 0 auto 24px;
+      display: flex; align-items: center; gap: 8px;
+      overflow-x: auto; padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .filter-row::-webkit-scrollbar { display: none; }
+
+    /* Base pill */
+    .pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 8px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; white-space: nowrap; cursor: pointer;
+      border: 1.5px solid transparent; transition: all 0.18s;
+      font-family: inherit;
+    }
+
+    /* Open Now pill — green */
+    .pill-open {
+      background: rgba(34,197,94,0.08);
+      border-color: #22c55e;
+      color: #4ade80;
+      box-shadow: 0 0 10px rgba(34,197,94,0.2);
+    }
+    .pill-open:hover { background: rgba(34,197,94,0.15); box-shadow: 0 0 18px rgba(34,197,94,0.35); }
+    .open-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+    }
+    .pill-open.active {
+      background: rgba(34,197,94,0.2);
+      box-shadow: 0 0 20px rgba(34,197,94,0.5);
+    }
+
+    /* Tag pills — amber outline default */
+    .pill-tag {
+      background: rgba(245,158,11,0.08);
+      border-color: rgba(245,158,11,0.35);
+      color: #fbbf24;
+    }
+    .pill-tag:hover {
+      background: rgba(245,158,11,0.15);
+      border-color: rgba(245,158,11,0.6);
+    }
+    /* SELECTED tag pill */
+    .pill-tag.active {
+      background: #f59e0b;
+      border-color: #f59e0b;
+      color: #000;
+      box-shadow: 0 0 16px rgba(245,158,11,0.55);
+    }
+
+    /* More pill */
+    .pill-more {
+      background: rgba(255,255,255,0.03);
+      border-color: rgba(255,255,255,0.1);
+      color: #64748b;
+    }
+    .pill-more:hover { color: #94a3b8; border-color: rgba(255,255,255,0.2); }
+
+    /* ── Results header ── */
+    .results-header {
+      max-width: 840px; margin: 0 auto 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .results-title {
+      font-size: 30px; font-weight: 900; color: #f1f5f9; line-height: 1.1;
+    }
+    .results-title .highlight {
+      background: linear-gradient(135deg, #fbbf24, #f97316);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .results-count { color: #64748b; font-size: 14px; margin-top: 4px; }
+
+    /* ── Cards grid ── */
+    .cards-grid {
+      max-width: 840px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    /* ── Vendor Card ── */
+    .card {
+      background: rgba(26,33,48,0.7);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px; padding: 20px;
+      cursor: pointer; transition: all 0.3s;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #fbbf24, #f97316);
+    }
+    .card:hover {
+      border-color: rgba(245,158,11,0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,158,11,0.08);
+    }
+
+    .card-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+    .logo {
+      width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 900; color: #f59e0b;
+      overflow: hidden;
+    }
+    .logo img { width: 100%; height: 100%; object-fit: cover; }
+    .card-meta { flex: 1; min-width: 0; }
+    .card-name { font-size: 16px; font-weight: 800; color: #f1f5f9; line-height: 1.2; }
+    .card-desc { font-size: 12px; color: #64748b; margin-top: 3px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    .status-open {
+      display: flex; align-items: center; gap: 5px;
+      background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25);
+      color: #4ade80; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;
+    }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 5px #22c55e; }
+
+    .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .tag-chip {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 999px;
+      background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24;
+    }
+
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .card-status-text { font-size: 12px; color: #475569; }
+    .explore-btn {
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      color: #000; font-family: inherit; font-size: 12px; font-weight: 700;
+      border: none; border-radius: 999px; padding: 6px 16px; cursor: pointer;
+    }
+
+    /* ── Label annotation ── */
+    .new-label {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.4);
+      color: #818cf8; font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 999px; margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="bg-grid"></div>
+  <div class="bg-sweep"></div>
+  <div class="orb-amber"></div>
+  <div class="orb-indigo"></div>
+</div>
+
+<div class="page">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <a href="#" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to Home
+    </a>
+    <div class="live-badge">
+      <span class="live-dot"></span>
+      Live Search
+    </div>
+  </div>
+
+  <!-- Search bar -->
+  <div class="search-wrap">
+    <div class="search-bar">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input class="search-input" type="text" placeholder="What are you craving?" value="Bengali" readonly />
+      <button class="search-btn">Search</button>
+      <div class="view-toggle">
+        <button class="view-btn active">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Grid
+        </button>
+        <button class="view-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          Map
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ★ QUICK FILTER ROW — NEW FEATURE ★ -->
+  <div class="filter-row">
+    <span class="new-label" style="white-space:nowrap; flex-shrink:0;">
+      ★ New
+    </span>
+
+    <!-- Open Now -->
+    <button class="pill pill-open" onclick="toggleFilter(this)">
+      <span class="open-dot"></span>
+      Open Now
+    </button>
+
+    <!-- Cuisine/tag pills — dynamically from vendor tags -->
+    <button class="pill pill-tag active" onclick="toggleFilter(this)">Bengali</button>
+    <button class="pill pill-tag" onclick="toggleFilter(this)">Halal</button>
+    <button class="pill pill-tag" onclick="toggleFilter(this)">Desi</button>
+    <button class="pill pill-tag" onclick="toggleFilter(this)">Biryani</button>
+    <button class="pill pill-tag" onclick="toggleFilter(this)">Summer 25% Discount</button>
+    <button class="pill pill-more">▸ More</button>
+  </div>
+
+  <!-- Results header -->
+  <div class="results-header">
+    <h1 class="results-title">Results for <span class="highlight">'Bengali'</span></h1>
+    <p class="results-count" id="count-text">2 places found — 1 filter active</p>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="cards-grid" id="cards">
+
+    <!-- Card 1 -->
+    <div class="card" data-tags="desi">
+      <div class="card-header">
+        <div class="logo">T</div>
+        <div class="card-meta">
+          <div class="card-name">Toasted Pasta</div>
+          <div class="card-desc" style="font-style:italic; color:#475569;">No description available</div>
+        </div>
+        <div class="status-open"><span class="status-dot"></span> Open</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-status-text">Taking orders now</span>
+        <button class="explore-btn">Explore</button>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="card" data-tags="bengali halal">
+      <div class="card-header">
+        <div class="logo" style="background:#0f172a;">
+          <svg width="32" height="32" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="#1e293b"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#94a3b8" font-size="16" font-family="system-ui" font-weight="800">AD</text></svg>
+        </div>
+        <div class="card-meta">
+          <div class="card-name">Authentic Dhakaiya</div>
+          <div class="card-desc">Freshly prepared meals crafted with love by local chefs. Order online, pick up fresh.</div>
+        </div>
+        <div class="status-open"><span class="status-dot"></span> Open</div>
+      </div>
+      <div class="card-tags">
+        <span class="tag-chip">Bengali</span>
+        <span class="tag-chip">Halal</span>
+        <span class="tag-chip">Summer 25% Discount</span>
+      </div>
+      <div class="card-footer">
+        <span class="card-status-text">Taking orders now</span>
+        <button class="explore-btn">Explore</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function toggleFilter(el) {
+    if (el.classList.contains('pill-tag')) {
+      // Toggle this tag
+      el.classList.toggle('active');
+    } else if (el.classList.contains('pill-open')) {
+      el.classList.toggle('active');
+    }
+
+    // Count active filters
+    const active = document.querySelectorAll('.pill.active').length;
+    const selectedTags = [...document.querySelectorAll('.pill-tag.active')].map(p => p.textContent.trim().toLowerCase());
+    const openOnly = document.querySelector('.pill-open.active') !== null;
+
+    // Update count text
+    const countEl = document.getElementById('count-text');
+    const filterText = active > 0 ? `— ${active} filter${active>1?'s':''} active` : '';
+    countEl.textContent = `2 places found ${filterText}`;
+
+    // Simple client-side filter demo
+    document.querySelectorAll('.card').forEach(card => {
+      const tags = (card.dataset.tags || '').split(' ');
+      let show = true;
+
+      if (selectedTags.length > 0) {
+        show = selectedTags.some(t => tags.includes(t));
+      }
+
+      card.style.display = show ? '' : 'none';
+      card.style.opacity = show ? '1' : '0';
+    });
+  }
+</script>
+
+</body>
+</html>

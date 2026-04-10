@@ -44,7 +44,7 @@ export const checkTenantSlugSchema = z.object({
 });
 
 export const searchTenantsSchema = z.object({
-  query: z.string().trim().min(1, 'Search query is required'),
+  query: z.string().trim().min(0),
   limit: z.number().int().positive().max(50).optional(),
 });
 

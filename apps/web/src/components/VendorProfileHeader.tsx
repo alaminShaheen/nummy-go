@@ -1,6 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { Pencil } from 'lucide-react';
 import { GradientDivider } from '@/components/ui';
 
 interface VendorProfileHeaderProps {
@@ -9,7 +7,6 @@ interface VendorProfileHeaderProps {
   tags?: string[] | null;
   logoUrl?: string | null;
   acceptsOrders: boolean;
-  isVendorOwner?: boolean;
 }
 
 export default function VendorProfileHeader({
@@ -18,7 +15,6 @@ export default function VendorProfileHeader({
   tags,
   logoUrl,
   acceptsOrders,
-  isVendorOwner,
 }: VendorProfileHeaderProps) {
   return (
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-20">
@@ -86,23 +82,7 @@ export default function VendorProfileHeader({
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-row md:flex-col gap-3 w-full md:w-auto mt-2 md:mt-0">
-          {isVendorOwner && (
-            <Link
-              href="/tenant/editprofile"
-              className="
-                flex items-center justify-center min-w-[140px] gap-2 px-6 py-3 rounded-xl font-semibold text-sm
-                border border-indigo-500/50 text-indigo-300
-                bg-indigo-500/5 hover:bg-indigo-500/15 hover:border-indigo-400 hover:text-indigo-200
-                transition-all duration-300 shadow-[0_0_15px_rgba(99,102,241,0.15)]
-              "
-            >
-              <Pencil size={16} />
-              Edit Profile
-            </Link>
-          )}
-        </div>
+        <div className="flex flex-row md:flex-col gap-3 w-full md:w-auto mt-2 md:mt-0" />
       </div>
       
       {/* Visual Divider bleeding gently downwards from the block */}

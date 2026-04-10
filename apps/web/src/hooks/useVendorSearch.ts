@@ -1,40 +1,53 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { trpc } from '@/trpc/client';
 
 /**
  * Custom hook for vendor search with debounce.
- * Fires a tRPC query only after the user stops typing for 300ms,
- * and only when the query is at least `minChars` characters long.
+ * - Auto-searches after 300ms when query >= minChars characters.
+ * - Clears results when query drops below minChars.
+ * - `triggerSearch()` can bypass the minChars limit (e.g. empty string = show all).
  */
-export function useVendorSearch(query: string, minChars = 3) {
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+export function useVendorSearch(query: string, minChars = 3, limit = 20) {
+  // null = query not yet triggered; '' or a string = actively searching
+  const [activeQuery, setActiveQuery] = useState<string | null>(() => {
+    const trimmed = query.trim();
+    return trimmed.length >= minChars ? trimmed : null;
+  });
 
-  // Debounce the raw query with a 300ms delay
   useEffect(() => {
     const trimmed = query.trim();
+
     if (trimmed.length < minChars) {
-      setDebouncedQuery('');
+      // Clear results immediately when below threshold
+      setActiveQuery(null);
       return;
     }
 
+    // Debounce the query when long enough
     const timer = setTimeout(() => {
-      setDebouncedQuery(trimmed);
+      setActiveQuery(trimmed);
     }, 300);
 
     return () => clearTimeout(timer);
   }, [query, minChars]);
 
+  // Manually force a search — bypasses minChars (e.g. clicking Search with empty input shows all)
+  const triggerSearch = useCallback(() => {
+    setActiveQuery(query.trim());
+  }, [query]);
+
   const { data, isLoading, isFetching } = trpc.tenant.searchTenants.useQuery(
-    { query: debouncedQuery, limit: 5 },
-    { enabled: debouncedQuery.length >= minChars },
+    { query: activeQuery ?? '', limit },
+    { enabled: activeQuery !== null },
   );
 
   return {
     results: data ?? [],
     isLoading: isFetching,
-    debouncedQuery,
-    hasSearched: debouncedQuery.length >= minChars,
+    debouncedQuery: activeQuery,
+    hasSearched: activeQuery !== null,
+    triggerSearch,
   };
 }

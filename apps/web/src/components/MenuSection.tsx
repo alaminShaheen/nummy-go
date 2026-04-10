@@ -4,17 +4,14 @@ import { useState } from 'react';
 import { Button } from '@/components/ui';
 import { SectionLabel } from '@/components/ui';
 import MenuItemCard, { type MenuItem } from './MenuItemCard';
-import { Pencil } from 'lucide-react';
-import Link from 'next/link';
 
 interface MenuSectionProps {
   items: MenuItem[];
   categories?: { id: string; name: string }[];
   onAddToCart: (item: MenuItem, qty: number) => void;
-  isVendorOwner: boolean;
 }
 
-export default function MenuSection({ items, categories = [], onAddToCart, isVendorOwner }: MenuSectionProps) {
+export default function MenuSection({ items, categories = [], onAddToCart }: MenuSectionProps) {
   const [activeCategory, setActiveCategory] = useState<string | 'ALL'>('ALL');
 
   const filteredItems = activeCategory === 'ALL'
@@ -40,15 +37,6 @@ export default function MenuSection({ items, categories = [], onAddToCart, isVen
             <SectionLabel className="mb-2">Fresh Today</SectionLabel>
             <div className="flex items-center gap-4">
               <h2 className="text-4xl font-black text-slate-100">Our Menu</h2>
-              {isVendorOwner && (
-                <Link
-                  href="/tenant/menu"
-                  className="px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-sm font-semibold hover:bg-indigo-500/20 transition-all hover:-translate-y-0.5 flex items-center gap-2"
-                >
-                  <Pencil size={16} aria-hidden="true" />
-                  <span>Edit Menu</span>
-                </Link>
-              )}
             </div>
           </div>
 
