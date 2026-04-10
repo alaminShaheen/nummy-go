@@ -46,26 +46,6 @@ export function OrderActions({ orderId, status }: OrderActionsProps) {
 
   return (
     <div className="flex items-center gap-2">
-      {status === 'pending' && (
-        <>
-          <button
-            onClick={() => setRejecting(true)}
-            className="flex items-center justify-center w-8 h-8 rounded-full border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 transition-colors"
-            title="Reject Order"
-          >
-            <XCircle className="w-4 h-4" />
-          </button>
-          <GradientButton 
-            onClick={() => handleUpdate('accepted')}
-            disabled={isPending}
-            className="py-1.5 px-3 text-xs"
-          >
-            {isPending ? <Loader2 className="w-3 h-3 animate-spin"/> : <Check className="w-3 h-3 mr-1" />}
-            Accept
-          </GradientButton>
-        </>
-      )}
-
       {status === 'accepted' && (
         <>
           <button

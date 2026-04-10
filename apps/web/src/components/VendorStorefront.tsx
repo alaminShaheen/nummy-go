@@ -333,6 +333,7 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
           tags={tenant.tags}
           logoUrl={tenant.logoUrl}
           acceptsOrders={tenant.acceptsOrders ?? true}
+          socialLinks={tenant.socialLinks}
         />
 
         <VendorMapDivider

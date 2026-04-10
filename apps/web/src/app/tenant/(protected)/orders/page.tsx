@@ -300,12 +300,11 @@ export default function TenantDashboardOrders() {
   const groupedOrders = useMemo(() => {
     if (!orders) return [];
     const statusWeight: Record<string, number> = {
-      pending: 1,
-      accepted: 2,
-      preparing: 3,
-      ready: 4,
-      completed: 5,
-      cancelled: 6,
+      accepted: 1,
+      preparing: 2,
+      ready: 3,
+      completed: 4,
+      cancelled: 5,
     };
     return [...orders].sort((a, b) => {
       // Orders with pending modifications bubble to the very top

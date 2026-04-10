@@ -1,46 +1,43 @@
 {
-  "name": "nummygo",
-  "version": "1.0.0",
-  "private": true,
-  "description": "NummyGo – food-ordering monorepo (Next.js + Cloudflare Worker + Durable Objects)",
-  "scripts": {
-    "build:all": "pnpm --filter @nummygo/shared --filter web --filter api-worker run build",
-    "build:shared": "pnpm --filter @nummygo/shared build",
-    "dev:api": "pnpm --filter api-worker dev",
-    "dev:web": "pnpm --filter web dev",
-    "dev:email": "pnpm --filter email-preview dev",
-    "deploy": "pnpm build:shared && pnpm --filter web --filter api-worker deploy --parallel",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
-    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
-    
-
-    "build:web:prod": "pnpm run build:shared && pnpm --filter web run build:cf:prod",
-    "build:web:staging": "pnpm run build:shared && pnpm --filter web run build:cf:staging",
-
-    "build:api:prod": "pnpm run build:shared && pnpm --filter api-worker run build",
-    "build:api:staging": "pnpm run build:shared && pnpm --filter api-worker run build",
-
-    "deploy:web:prod": "pnpm --filter web run deploy:cf:prod",
-    "deploy:web:staging": "pnpm --filter web run deploy:cf:staging",
-
-    "deploy:api:prod": "pnpm --filter api-worker run deploy:prod",
-    "deploy:api:staging": "pnpm --filter api-worker run deploy:staging"
-  },
-  "devDependencies": {
-    "@types/node": "^22.15.19",
-    "prettier": "^3.4.2",
-    "typescript": "^5.9.2"
-  },
-  "pnpm": {
-    "overrides": {
-      "zod": "^4.0.0",
-      "react": "19.2.4",
-      "react-dom": "19.2.4"
-    },
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "sharp"
-    ]
-  },
-  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
+	"name": "nummygo",
+	"version": "1.0.0",
+	"private": true,
+	"description": "NummyGo – food-ordering monorepo (Next.js + Cloudflare Worker + Durable Objects)",
+	"scripts": {
+		"build:all": "pnpm --filter @nummygo/shared --filter web --filter api-worker run build",
+		"build:shared": "pnpm --filter @nummygo/shared build",
+		"dev:api": "pnpm --filter api-worker dev",
+		"dev:web": "pnpm --filter web dev",
+		"dev:email": "pnpm --filter email-preview dev",
+		"deploy": "pnpm build:shared && pnpm --filter web --filter api-worker deploy --parallel",
+		"format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+		"format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+		"build:web:prod": "pnpm run build:shared && pnpm --filter web run build:cf:prod",
+		"deploy:web:prod": "pnpm --filter web run deploy:cf:prod",
+		"build:web:staging": "pnpm run build:shared && pnpm --filter web run build:cf:staging",
+		"deploy:web:staging": "pnpm --filter web run deploy:cf:staging",
+		"build:api:prod": "pnpm run build:shared && pnpm --filter api-worker run build",
+		"deploy:api:prod": "pnpm --filter api-worker run deploy:prod",
+		"build:api:staging": "pnpm run build:shared && pnpm --filter api-worker run build",
+		"deploy:api:staging": "pnpm --filter api-worker run deploy:staging"
+	},
+	"devDependencies": {
+		"@types/node": "^22.15.19",
+		"prettier": "^3.4.2",
+		"typescript": "^5.9.2"
+	},
+	"pnpm": {
+		"overrides": {
+			"zod": "^4.0.0",
+			"react": "19.2.4",
+			"react-dom": "19.2.4",
+			"@types/react": "19.2.14",
+			"@types/react-dom": "19.2.3"
+		},
+		"onlyBuiltDependencies": [
+			"esbuild",
+			"sharp"
+		]
+	},
+	"packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
 }

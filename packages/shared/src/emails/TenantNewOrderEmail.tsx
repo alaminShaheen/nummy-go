@@ -186,7 +186,7 @@ export function TenantNewOrderEmail({
                           </Column>
                           <Column>
                             <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Status</Text>
-                            <Text className="text-[12px] font-bold m-0" style={{ color: '#f59e0b' }}>Pending</Text>
+                            <Text className="text-[12px] font-bold m-0" style={{ color: '#f59e0b' }}>Confirmed</Text>
                           </Column>
                         </Row>
                       </Section>
