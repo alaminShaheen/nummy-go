@@ -677,7 +677,8 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 			</form>
 
 			{/* ════ LIVE PREVIEW (tablet + desktop only) ════ */}
-			<div className="hidden md:flex flex-col gap-3 sticky top-8 self-start">
+			<div className="hidden md:block self-stretch">
+			<div className="sticky top-8 flex flex-col gap-3">
 				<p className="text-xs text-slate-500 uppercase tracking-widest font-medium text-center">Live Preview</p>
 				<StorefrontPreview
 					acceptsOrders={(formValues as UpdateTenantDto).acceptsOrders ?? true}
@@ -697,6 +698,7 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 				<p className="text-[11px] text-slate-600 text-center leading-relaxed">
 					Fill in the form to see your storefront update in real-time.
 				</p>
+			</div>
 			</div>
 		</div>
 	);

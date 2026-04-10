@@ -20,7 +20,7 @@ export const orders = sqliteTable('orders', {
   deliveryAddress: text('delivery_address'),
   isPosOrder: integer('is_pos_order', { mode: 'boolean' }).notNull().default(false),
   
-  status: text('status', { enum: ORDER_STATUS }).notNull().default('pending'),
+  status: text('status', { enum: ORDER_STATUS }).notNull().default('accepted'),
   totalAmount: integer('total_amount').notNull(),
   specialInstruction: text('special_instruction'),
   rejectionReason: text('rejection_reason'),

@@ -7,7 +7,6 @@ import {
   ShoppingBag,
   DollarSign,
   Clock,
-  Flame,
   TrendingUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -150,8 +149,7 @@ export function KpiCards({ orders }: KpiCardsProps) {
     .filter(o => o.status !== 'cancelled')
     .reduce((sum, o) => sum + (parseFloat(String(o.totalAmount)) || 0), 0);
 
-  const pendingCount = orders.filter(o => o.status === 'pending').length;
-  const preparingCount = orders.filter(o => o.status === 'preparing').length;
+  const activeCount = orders.filter(o => o.status === 'accepted' || o.status === 'preparing').length;
 
   const completedOrders = todayOrders.filter(o => o.status !== 'cancelled');
   const avgOrderValue = completedOrders.length > 0
@@ -175,22 +173,12 @@ export function KpiCards({ orders }: KpiCardsProps) {
       iconClass: revenueToday > 0 ? 'animate-[pulse_3s_ease-in-out_infinite]' : '',
     },
     {
-      label: 'Pending',
-      rawValue: pendingCount,
-      sub: pendingCount === 0 ? 'all clear' : 'awaiting action',
+      label: 'Active',
+      rawValue: activeCount,
+      sub: activeCount === 0 ? 'all clear' : 'in progress',
       icon: Clock,
-      // Apply a subtle rotation tick animation naturally if pending > 0
-      iconClass: pendingCount > 0 ? "animate-[pulse_1.5s_ease-in-out_infinite]" : "",
-      pulse: pendingCount > 0,
-    },
-    {
-      label: 'In Kitchen',
-      rawValue: preparingCount,
-      sub: 'being prepared',
-      icon: Flame,
-      // Makes the flame pulsate/flicker realistically
-      iconClass: preparingCount > 0 ? "animate-pulse" : "",
-      pulse: preparingCount > 0,
+      iconClass: activeCount > 0 ? "animate-[pulse_1.5s_ease-in-out_infinite]" : "",
+      pulse: activeCount > 0,
     },
     {
       label: 'Avg Order Value',

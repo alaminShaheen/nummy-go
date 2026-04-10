@@ -28,8 +28,7 @@ type OrderStatus = 'pending' | 'accepted' | 'preparing' | 'ready' | 'completed' 
 type ModStatus = 'pending' | 'accepted' | 'rejected' | null;
 
 const STATUS_STAGES: { status: OrderStatus; label: string; icon: React.ReactNode; color: string }[] = [
-  { status: 'pending', label: 'Received', icon: <ReceiptText className="w-4 h-4" />, color: 'bg-slate-500' },
-  { status: 'accepted', label: 'Accepted', icon: <CheckCircle2 className="w-4 h-4" />, color: 'bg-indigo-500' },
+  { status: 'accepted', label: 'Confirmed', icon: <CheckCircle2 className="w-4 h-4" />, color: 'bg-indigo-500' },
   { status: 'preparing', label: 'Preparing', icon: <ChefHat className="w-4 h-4" />, color: 'bg-amber-500' },
   { status: 'ready', label: 'Ready for Pickup', icon: <PackageCheck className="w-4 h-4" />, color: 'bg-emerald-500' },
 ];
