@@ -43,6 +43,7 @@
 
     "staging": {
       "name": "staging-nummy-go-api",
+      "main": "src/index.ts",
       "routes": [{"pattern": "api-staging.nummygo.ca", "custom_domain": true}],
       "durable_objects": {
         "bindings": [{ "name": "TENANT_ORDER_DO", "class_name": "TenantOrderDO" }]
@@ -64,6 +65,7 @@
     },
     "production": {
       "name": "production-nummy-go-api",
+      "main": "src/index.ts",
       "routes": [{"pattern": "api.nummygo.ca", "custom_domain": true}],
       "durable_objects": {
         "bindings": [{ "name": "TENANT_ORDER_DO", "class_name": "TenantOrderDO" }]
