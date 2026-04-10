@@ -1,6 +1,6 @@
 import React from 'react';
 import { Resend } from 'resend';
-import { EmailTemplates } from '@nummygo/shared';
+import { EmailTemplates, EMAIL_FROM } from '@nummygo/shared';
 import type { Env } from '../index';
 import type { Order } from '@nummygo/shared/models';
 
@@ -26,7 +26,7 @@ export class EmailService {
     if (!customerEmail) return null;
     try {
       return await this.resend.emails.send({
-        from: 'NummyGo <onboarding@resend.dev>',
+        from: EMAIL_FROM.ORDERS,
         to: customerEmail,
         subject: `Order Confirmed: #${order.id.slice(-6).toUpperCase()}`,
         react: EmailTemplates.OrderConfirmationEmail({
@@ -50,7 +50,7 @@ export class EmailService {
     if (!customerEmail) return null;
     try {
       return await this.resend.emails.send({
-        from: 'NummyGo <onboarding@resend.dev>',
+        from: EMAIL_FROM.ORDERS,
         to: customerEmail,
         subject: `Order Update: #${order.id.slice(-6).toUpperCase()}`,
         react: EmailTemplates.OrderDeclinedEmail({
@@ -75,7 +75,7 @@ export class EmailService {
     console.log('Sending tenant new order email to', tenantEmail);
     try {
       return await this.resend.emails.send({
-        from: 'NummyGo <onboarding@resend.dev>',
+        from: EMAIL_FROM.NOTIFICATIONS,
         to: tenantEmail,
         subject: `NummyGo: New Order #${order.id.slice(-6).toUpperCase()}`,
         react: EmailTemplates.TenantNewOrderEmail({
@@ -99,7 +99,7 @@ export class EmailService {
     if (!tenantEmail) return null;
     try {
       return await this.resend.emails.send({
-        from: 'NummyGo <onboarding@resend.dev>',
+        from: EMAIL_FROM.NOTIFICATIONS,
         to: tenantEmail,
         subject: `NummyGo: Order Cancelled #${order.id.slice(-6).toUpperCase()}`,
         react: EmailTemplates.TenantOrderCancelledEmail({
