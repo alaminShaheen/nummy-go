@@ -23,7 +23,9 @@ interface MenuItemCardProps {
 	categoryName?: string;
   categories?: { id: string; name: string }[];
 	mode?: 'customer' | 'builder' | 'draft';
-	onAddToCart?: (item: MenuItem, qty: number) => void;
+	onAddToCart?: (item: MenuItem, qty: number) => void; // Deprecated, kept for backward comp
+  onUpdateQuantity?: (item: MenuItem, qty: number) => void;
+  cartQty?: number;
 	onDelete?: (id: string) => Promise<void> | void;
 	onUpdateField?: (id: string, field: string, value: any) => void;
   onDraftSave?: (item: MenuItem) => Promise<void> | void;
@@ -35,13 +37,13 @@ export default function MenuItemCard({
   categoryName, 
   categories,
   mode = 'customer', 
-  onAddToCart, 
+  cartQty = 0,
+  onUpdateQuantity,
   onDelete,
   onUpdateField,
   onDraftSave,
   onDraftCancel
 }: MenuItemCardProps) {
-	const [qty, setQty] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -52,17 +54,17 @@ export default function MenuItemCard({
   const [validationError, setValidationError] = useState<string | null>(null);
 
 	const handleInitialAdd = () => {
-		if (onAddToCart) onAddToCart(item, 1);
-		setQty(1);
+    if (onUpdateQuantity) onUpdateQuantity(item, 1);
+		else if (onAddToCart) onAddToCart(item, 1);
 	};
 
 	const increment = () => {
-		if (onAddToCart) onAddToCart(item, 1);
-		setQty((q) => q + 1);
+    if (onUpdateQuantity) onUpdateQuantity(item, cartQty + 1);
+		else if (onAddToCart) onAddToCart(item, 1);
 	};
 
 	const decrement = () => {
-		setQty((q) => Math.max(0, q - 1));
+		if (onUpdateQuantity) onUpdateQuantity(item, Math.max(0, cartQty - 1));
 	};
 
   const handleFieldChange = (field: string, value: any) => {
@@ -365,7 +367,7 @@ export default function MenuItemCard({
 				{/* Purely Morphing CTA Button Zone (Customer Mode Only) */}
 				{mode === 'customer' && (
 					<div className="mt-1 h-12 flex items-center justify-center w-full relative">
-						{qty > 0 ? (
+						{cartQty > 0 ? (
 							<div className="w-full h-full flex items-center justify-between px-1.5 rounded-[1.5rem] border border-amber-500/40 bg-amber-500/10 shadow-[0_0_20px_rgba(245,158,11,0.15)] animate-in fade-in zoom-in duration-200">
 								<button 
 									onClick={decrement}
@@ -375,7 +377,7 @@ export default function MenuItemCard({
 									<Minus size={18} strokeWidth={2.5} />
 								</button>
 								<span className="font-bold text-xs uppercase tracking-widest text-amber-400 tabular-nums select-none">
-									<span className="text-white text-sm font-black mr-1">{qty}</span> Added
+									<span className="text-white text-sm font-black mr-1">{cartQty}</span> Added
 								</span>
 								<button 
 									onClick={increment}

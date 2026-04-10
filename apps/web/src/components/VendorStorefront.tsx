@@ -183,7 +183,7 @@ function ModificationBanner({
 function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { addToCart, loadFromOrderItems, cart } = useCart();
+  const { addToCart, updateItemQuantity, loadFromOrderItems, cart } = useCart();
   const { activate, deactivate, mode, isActive } = useModificationMode();
 
   // URL params from the modification flow
@@ -273,6 +273,25 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
     );
   };
 
+  const handleUpdateQuantity = (item: MenuItem, qty: number) => {
+    const existingVendorCart = cart.find(v => v.tenantId === tenant.id);
+    const existingItem = existingVendorCart?.items.find(i => i.id === item.id);
+    
+    if (existingItem) {
+      updateItemQuantity(tenant.id, item.id, qty);
+    } else if (qty > 0) {
+      addToCart(tenant.id, tenant.name, { id: item.id, name: item.name, price: item.price, image: item.image }, qty);
+    }
+  };
+
+  const vendorCart = cart.find((v) => v.tenantId === tenant.id);
+  const cartQuantities = vendorCart 
+    ? vendorCart.items.reduce((acc, obj) => {
+        acc[obj.id] = obj.quantity;
+        return acc;
+      }, {} as Record<string, number>)
+    : {};
+
   const inModMode = isActive && mode?.orderId === modifyOrderId;
 
   return (
@@ -334,7 +353,13 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
             { day: 'Sun', time: tenant.businessHours.sunday.closed ? 'Closed' : `${tenant.businessHours.sunday.open} – ${tenant.businessHours.sunday.close}` },
           ] : VENDOR.hours}
         />
-        <MenuSection items={displayItems} categories={serverCategories || []} onAddToCart={handleAddToCart} />
+        <MenuSection 
+          items={displayItems} 
+          categories={serverCategories || []} 
+          onAddToCart={handleAddToCart} 
+          onUpdateQuantity={handleUpdateQuantity}
+          cartQuantities={cartQuantities}
+        />
 
         <footer className="py-10 px-4 text-center border-t border-white/5">
           <p className="text-slate-600 text-sm">

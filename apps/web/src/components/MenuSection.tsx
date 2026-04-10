@@ -8,10 +8,12 @@ import MenuItemCard, { type MenuItem } from './MenuItemCard';
 interface MenuSectionProps {
   items: MenuItem[];
   categories?: { id: string; name: string }[];
-  onAddToCart: (item: MenuItem, qty: number) => void;
+  onAddToCart?: (item: MenuItem, qty: number) => void;
+  onUpdateQuantity?: (item: MenuItem, qty: number) => void;
+  cartQuantities?: Record<string, number>;
 }
 
-export default function MenuSection({ items, categories = [], onAddToCart }: MenuSectionProps) {
+export default function MenuSection({ items, categories = [], onAddToCart, onUpdateQuantity, cartQuantities = {} }: MenuSectionProps) {
   const [activeCategory, setActiveCategory] = useState<string | 'ALL'>('ALL');
 
   const filteredItems = activeCategory === 'ALL'
@@ -82,7 +84,14 @@ export default function MenuSection({ items, categories = [], onAddToCart }: Men
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {filteredItems.map((item) => {
             const categoryName = categories.find((c) => c.id === item.categoryId)?.name;
-            return <MenuItemCard key={item.id} item={item} onAddToCart={onAddToCart} categoryName={categoryName} />;
+            return <MenuItemCard 
+              key={item.id} 
+              item={item} 
+              onAddToCart={onAddToCart} 
+              onUpdateQuantity={onUpdateQuantity}
+              cartQty={cartQuantities[item.id] || 0}
+              categoryName={categoryName} 
+            />;
           })}
         </div>
 
