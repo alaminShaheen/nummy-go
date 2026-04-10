@@ -11,9 +11,10 @@
  */
 
 import { Clock, Link as LinkIcon, Mail, MapPin, Phone } from 'lucide-react';
-import type { BusinessHours } from '@nummygo/shared/models/types';
+import type { BusinessHours, SocialLinks } from '@nummygo/shared/models/types';
 import { DAY_LABELS, DAYS } from '@/constants/tenant';
 import { fmt24To12 } from '@/utils/tenant';
+import SocialLinksRow from '@/components/SocialLinksRow';
 
 export interface StorefrontPreviewProps {
 	name: string;
@@ -28,6 +29,7 @@ export interface StorefrontPreviewProps {
 	tags?: string[] | null;
 	heroImageUrl?: string | null;
 	logoUrl?: string | null;
+	socialLinks?: SocialLinks | null;
 	// TODO: Add it later
 	// closedUntil?: number | null;
 }
@@ -45,6 +47,7 @@ export default function StorefrontPreview({
 	tags,
 	heroImageUrl,
 	logoUrl,
+	socialLinks,
 	// TODO: Add it later
 	// closedUntil,
 }: StorefrontPreviewProps) {
@@ -171,6 +174,9 @@ export default function StorefrontPreview({
                                 </span>
                             ))}
                         </div>
+
+                        {/* Social Links — after tags */}
+                        {socialLinks && <SocialLinksRow links={socialLinks} size="sm" />}
                     </div>
                 </div>
 

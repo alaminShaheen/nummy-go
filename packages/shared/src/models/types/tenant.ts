@@ -18,6 +18,14 @@ export const businessHoursSchema = z.object({
 	sunday: dayHoursSchema,
 });
 
+export const socialLinksSchema = z.object({
+	instagram: z.string().optional().or(z.literal('')),
+	facebook: z.string().optional().or(z.literal('')),
+	twitter: z.string().optional().or(z.literal('')),
+	tiktok: z.string().optional().or(z.literal('')),
+	website: z.string().optional().or(z.literal('')),
+});
+
 export const tenantSchema = z.object({
 	id: ulidSchema,
 	userId: ulidSchema,
@@ -33,6 +41,7 @@ export const tenantSchema = z.object({
 	tags: z.array(z.string()).nullable(),
 	logoUrl: z.string().nullable(),
 	heroImageUrl: z.string().nullable(),
+	socialLinks: socialLinksSchema.nullable(),
 	businessHours: businessHoursSchema.nullable(),
 	acceptsOrders: z.boolean(),
 	closedUntil: timestampSchema.nullable(),
@@ -50,4 +59,5 @@ export const tenantSchema = z.object({
 });
 
 export type BusinessHours = z.infer<typeof businessHoursSchema>;
+export type SocialLinks = z.infer<typeof socialLinksSchema>;
 export type Tenant = z.infer<typeof tenantSchema>;
