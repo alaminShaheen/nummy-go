@@ -43,7 +43,7 @@ function toLocalIso(date: Date, hours: number, minutes: number): string {
 function parseLocalIso(iso: string): { year: number; month: number; day: number; hours: number; minutes: number } | null {
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
   if (!m) return null;
-  return { year: +m[1], month: +m[2] - 1, day: +m[3], hours: +m[4], minutes: +m[5] };
+  return { year: +m[1]!, month: +m[2]! - 1, day: +m[3]!, hours: +m[4]!, minutes: +m[5]! };
 }
 
 function isSameDay(a: Date, b: Date) {
