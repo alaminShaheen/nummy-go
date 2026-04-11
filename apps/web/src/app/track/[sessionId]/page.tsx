@@ -16,6 +16,7 @@ import { differenceInSeconds, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { getGoogleMapsUrl } from '@/utils/tenant';
 import Link from 'next/link';
+import { GradientButton, GlossButton } from '@/components/ui';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -127,11 +128,11 @@ function OrbitalRing({
         className="absolute inset-0 rounded-full blur-2xl opacity-40 transition-all duration-700"
         style={{ background: `radial-gradient(circle, ${colors.glow} 0%, transparent 70%)` }}
       />
-      
+
       {/* Ember Particles for Preparing Stage */}
       {accentColor === 'amber' && (
-         <div className="absolute inset-0 -z-10 rounded-full overflow-hidden" aria-hidden="true">
-           <style>{`
+        <div className="absolute inset-0 -z-10 rounded-full overflow-hidden" aria-hidden="true">
+          <style>{`
              .orbital-ember { animation: orbitalRise 3s ease-out infinite; }
              @keyframes orbitalRise {
                0% { opacity: 0; transform: translateY(20px) scale(0.5); }
@@ -139,20 +140,20 @@ function OrbitalRing({
                100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
              }
            `}</style>
-           {[...Array(5)].map((_, i) => (
-             <div
-               key={i}
-               className="orbital-ember absolute rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]"
-               style={{
-                 width: (i % 2 === 0 ? 3 : 5) + 'px',
-                 height: (i % 2 === 0 ? 3 : 5) + 'px',
-                 left: 30 + (i * 10) + '%',
-                 bottom: '20%',
-                 animationDelay: `${i * 0.4}s`,
-               }}
-             />
-           ))}
-         </div>
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="orbital-ember absolute rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]"
+              style={{
+                width: (i % 2 === 0 ? 3 : 5) + 'px',
+                height: (i % 2 === 0 ? 3 : 5) + 'px',
+                left: 30 + (i * 10) + '%',
+                bottom: '20%',
+                animationDelay: `${i * 0.4}s`,
+              }}
+            />
+          ))}
+        </div>
       )}
 
       <svg width={size} height={size} className="relative -rotate-90">
@@ -331,39 +332,46 @@ function OrderActionBar({
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-        {/* Timer */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-400 bg-white/5 rounded-lg px-3 py-2 flex-1 sm:flex-none">
-          <Clock className="w-3.5 h-3.5 text-indigo-400" />
-          <span>Edit: <span className="font-mono font-bold text-indigo-300">{label}</span></span>
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Timer (Left side instruction) */}
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-400 self-start sm:self-auto w-full sm:w-auto">
+          <Clock className="w-4 h-4 text-slate-500" />
+          <span>
+            Modification window closes in:{' '}
+            <span className="font-mono font-bold text-amber-500/90 tracking-wide">{label}</span>
+          </span>
         </div>
 
-        {/* Cancel */}
-        {canModify && (
-          <button
-            onClick={() => setShowCancelModal(true)}
-            disabled={cancelOrder.isPending}
-            className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 disabled:opacity-50 transition-all"
-          >
-            <X className="w-3 h-3" />
-            Cancel
-          </button>
-        )}
-
-        {/* Modify */}
-        <button
-          onClick={handleModify}
-          disabled={!canModify}
-          className={cn(
-            "flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all",
-            canModify
-              ? "bg-indigo-600/80 hover:bg-indigo-600 text-white border border-indigo-500/30"
-              : "bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed"
+        {/* Action Buttons (Right side aligned) */}
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+          {/* Cancel */}
+          {canModify && (
+            <GlossButton
+              onClick={() => setShowCancelModal(true)}
+              disabled={cancelOrder.isPending}
+              className="px-5 py-2 hover:border-rose-500/30 hover:text-rose-400 hover:bg-rose-500/10 text-slate-300"
+            >
+              <X className="w-4 h-4" />
+              Cancel
+            </GlossButton>
           )}
-        >
-          <Pencil className="w-3 h-3" />
-          {canModify ? 'Modify' : 'Pending'}
-        </button>
+
+          {/* Modify */}
+          <div className="relative group">
+            {/* Ambient glow underneath the modify button */}
+            {canModify && (
+              <div className="absolute -inset-1 rounded-full bg-indigo-500/20 blur opacity-40 group-hover:opacity-75 transition-opacity duration-300 pointer-events-none" />
+            )}
+            <GradientButton
+              onClick={handleModify}
+              disabled={!canModify}
+              className="relative px-6 py-2 shadow-lg shadow-indigo-900/20"
+            >
+              <Pencil className="w-4 h-4" />
+              {canModify ? 'Modify Order' : 'Pending'}
+            </GradientButton>
+          </div>
+        </div>
       </div>
 
       {/* Cancel Modal */}
@@ -448,7 +456,7 @@ function ConnectionBanner({ isConnected }: { isConnected: boolean }) {
 function LiveIndicator({ isConnected }: { isConnected: boolean }) {
   return (
     <div className={cn(
-      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all",
+      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all mt-[10px]",
       isConnected
         ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
         : "border-rose-500/30 bg-rose-500/10 text-rose-400"
@@ -709,37 +717,70 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
                   </div>
                 </div>
 
-                {/* ── Order Details Footer ── */}
-                <div className="px-4 sm:px-6 py-4 border-t border-white/5 bg-black/20">
-                  {/* Order ID + meta */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Order ID</span>
-                      <span className="text-xs sm:text-sm font-mono font-bold text-slate-300">#{order.id.slice(-8).toUpperCase()}</span>
+                {/* ── Receipt Summary Panel ── */}
+                <div className="px-4 sm:px-6 py-5 border-t border-white/5 bg-black/20">
+                  <div className="flex flex-col md:flex-row gap-6 mb-5">
+                    {/* Left: Meta details & Items */}
+                    <div className="flex-1 min-w-0">
+                      {/* Meta Grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-5 gap-x-4 mb-6">
+                        <div>
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Order ID</span>
+                          <span className="text-xs sm:text-sm font-mono font-bold text-slate-300">#{order.id.slice(-8).toUpperCase()}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Order Type</span>
+                          <span className="text-xs sm:text-sm font-semibold text-slate-300 capitalize flex items-center gap-1.5 truncate">
+                            {order.fulfillmentMethod === 'delivery' ? <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" /> : <ShoppingBag className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
+                            <span className="truncate">{order.fulfillmentMethod}</span>
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Payment</span>
+                          <span className="text-xs sm:text-sm font-semibold text-slate-300 capitalize flex items-center gap-1.5 truncate">
+                            <ReceiptText className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span className="truncate">{order.paymentMethod}</span>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Line Items */}
+                      {order.items && order.items.length > 0 && (
+                        <div className="bg-white/[0.02] border border-white/[0.04] rounded-xl p-4 sm:p-5">
+                          <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-4">Your Order</h4>
+                          <div className="space-y-3.5">
+                            {order.items.map((item: any, idx: number) => (
+                              <div key={idx} className="flex items-center justify-between gap-3 text-sm">
+                                <div className="flex items-start gap-2 min-w-0">
+                                  <span className="font-semibold text-slate-400 shrink-0">{item.quantity}x</span>
+                                  <span className="text-slate-200 font-medium truncate">{item.name}</span>
+                                </div>
+                                <div className="grow border-b border-dotted border-white/10 mx-1 relative top-[-6px]" />
+                                <span className="font-mono text-slate-400 shrink-0">${item.price.toFixed(2)}</span>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {/* Special Instructions integrated cleanly */}
+                          {order.specialInstruction && (
+                            <div className="mt-5 pt-4 border-t border-dashed border-white/5 flex items-start gap-2.5 text-xs text-slate-400">
+                              <AlertCircle className="w-4 h-4 shrink-0 text-amber-500/70" />
+                              <p className="italic leading-relaxed">&quot;{order.specialInstruction}&quot;</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Total</span>
-                      <span className="text-sm sm:text-base font-black text-amber-400">${order.totalAmount.toFixed(2)}</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Order Type</span>
-                      <span className="text-xs sm:text-sm font-semibold text-slate-300 capitalize flex items-center gap-1">
-                        {order.fulfillmentMethod === 'delivery' ? <MapPin className="w-3 h-3" /> : <ShoppingBag className="w-3 h-3" />}
-                        {order.fulfillmentMethod}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Payment</span>
-                      <span className="text-xs sm:text-sm font-semibold text-slate-300 capitalize">{order.paymentMethod}</span>
+
+                    {/* Right: Grand Total Badge */}
+                    <div className="shrink-0">
+                      <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20 rounded-2xl p-5 md:p-6 flex flex-col items-start md:items-end w-full md:w-auto h-full justify-center shadow-[inset_0_0_20px_rgba(245,158,11,0.05)]">
+                        <span className="text-[10px] font-bold text-amber-500/80 uppercase tracking-widest block mb-1">Grand Total</span>
+                        <span className="text-3xl md:text-4xl font-black text-amber-400 tracking-tight">${order.totalAmount.toFixed(2)}</span>
+                        <span className="text-[10px] text-amber-500/40 uppercase tracking-wider mt-2.5 font-bold">Taxes Included</span>
+                      </div>
                     </div>
                   </div>
-
-                  {order.specialInstruction && (
-                    <div className="mb-4 flex items-start gap-2 text-xs text-slate-400 bg-white/[0.02] border border-white/5 rounded-lg px-3 py-2">
-                      <ReceiptText className="w-3.5 h-3.5 shrink-0 mt-0.5 text-slate-500" />
-                      <span>{order.specialInstruction}</span>
-                    </div>
-                  )}
 
                   {/* Actions */}
                   {!isCancelled && !isCompleted && vendor && (
