@@ -357,19 +357,38 @@ export async function fetchCheckoutSession(env: Env, input: GetOrderGroupDto) {
   const rows = await getOrdersByCheckoutSession(input.checkoutSessionId);
   const orders = rows.map(rowToOrder);
 
+  // Batch-fetch all unique tenant profiles
+  const tenantIds = [...new Set(orders.map((o) => o.tenantId))];
+  const tenantRows = await getTenantsByIds(tenantIds);
+  const tenantMap = new Map(tenantRows.map((t) => [t.id, t]));
+
+  // Build vendor info map
+  const vendorInfo: Record<string, {
+    name: string;
+    slug: string;
+    phoneNumber: string;
+    logoUrl: string | null;
+    address: string | null;
+    modificationThreshold: number;
+  }> = {};
+
   let tenantModificationThreshold = 30;
-  if (orders && orders.length > 0) {
-    const tenantId = orders[0]?.tenantId;
-    if (tenantId) {
-      const tenant = await getTenantById(tenantId);
-      if (tenant?.orderModificationThreshold) {
-        tenantModificationThreshold = tenant.orderModificationThreshold;
-      }
+  for (const tenant of tenantRows) {
+    vendorInfo[tenant.id] = {
+      name: tenant.name,
+      slug: tenant.slug,
+      phoneNumber: tenant.phoneNumber,
+      logoUrl: tenant.logoUrl ?? null,
+      address: tenant.address ?? null,
+      modificationThreshold: tenant.orderModificationThreshold ?? 30,
+    };
+    // Keep legacy field using first tenant's threshold
+    if (tenant.id === orders[0]?.tenantId) {
+      tenantModificationThreshold = tenant.orderModificationThreshold ?? 30;
     }
   }
 
-  // We explicitly typecast as any before TRPC processes it to sidestep deep Zod internal object mismatch mappings on price fields
-  return { orders, tenantModificationThreshold } as any;
+  return { orders, tenantModificationThreshold, vendorInfo } as any;
 }
 
 // ── changeOrderStatus ──────────────────────────────────────────────────────

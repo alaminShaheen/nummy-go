@@ -138,7 +138,7 @@ function ModificationBanner({
   const { label, expired } = useCountdown(createdAt, THRESHOLD);
 
   return (
-    <div className="sticky top-0 z-30 w-full border-b border-amber-500/30 bg-amber-950/80 backdrop-blur-md">
+    <div className="sticky top-16 z-50 w-full border-b border-amber-500/30 bg-amber-950/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="p-1.5 rounded-lg bg-amber-500/20 border border-amber-500/30">
