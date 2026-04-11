@@ -13,7 +13,7 @@ export interface MenuItem {
 	description: string;
 	price: number;
 	image: string;
-	badge?: string;
+	badge?: string | null;
 	categoryId?: string | null;
 	calories?: number | null;
 	isAvailable?: boolean;

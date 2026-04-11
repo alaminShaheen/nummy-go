@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Plus, Trash2, X, Check, Utensils, Lightbulb, Sparkles, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, X, Check, Utensils, Lightbulb, Sparkles, AlertCircle, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { trpc } from '@/trpc/client';
 import MenuItemCard from '@/components/MenuItemCard';
+import MenuSection from '@/components/MenuSection';
 import { cn, NummyGoBadge } from '@/components/ui';
 
 export default function TenantMenuDashboard() {
   const [draftForms, setDraftForms] = useState<Record<string, boolean>>({});
   const [showGuide, setShowGuide] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
 
   const utils = trpc.useUtils();
   const { data: menuItems, isLoading } = trpc.menu.getMenuItems.useQuery();
@@ -176,14 +178,18 @@ export default function TenantMenuDashboard() {
 
         <div className="relative z-10 max-w-[1400px] mx-auto space-y-8 animate-fade-in">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-white/5 pb-8">
-            <div className="max-w-2xl">
-              <h1 className="text-4xl font-black gradient-text tracking-tight mb-2">Menu Builder</h1>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Design your storefront directly. Everything is live-editable. Changes are saved instantly and pushed to your customers in real-time.
-              </p>
-            </div>
+          <div className="max-w-2xl">
+            <h1 className="text-4xl font-black gradient-text tracking-tight mb-2">Menu Builder</h1>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Design your storefront directly. Everything is live-editable. Changes are saved instantly and pushed to your customers in real-time.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 shrink-0 flex-wrap">
             <button
-              onClick={() => setShowGuide(!showGuide)}
+              onClick={() => {
+                setShowGuide(!showGuide);
+                if (isPreviewMode) setIsPreviewMode(false);
+              }}
               className={cn(
                 "flex items-center justify-center gap-2 px-5 py-2.5 rounded-full transition-all text-xs font-black uppercase tracking-widest shrink-0 border",
                 showGuide
@@ -194,13 +200,30 @@ export default function TenantMenuDashboard() {
               <Lightbulb size={16} strokeWidth={2.5} />
               {showGuide ? 'Hide Guide' : 'Builder Guide'}
             </button>
+
+            <button
+              onClick={() => {
+                setIsPreviewMode(!isPreviewMode);
+                if (showGuide) setShowGuide(false);
+              }}
+              className={cn(
+                "flex items-center justify-center gap-2 px-5 py-2.5 rounded-full transition-all text-xs font-black uppercase tracking-widest shrink-0 border",
+                isPreviewMode
+                  ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white border-transparent shadow-[0_0_20px_rgba(245,158,11,0.4)] scale-105"
+                  : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10 hover:text-white"
+              )}
+            >
+              <Eye size={16} strokeWidth={2.5} />
+              {isPreviewMode ? 'Exit Preview' : 'Customer Preview'}
+            </button>
           </div>
+        </div>
 
           {/* ── Visual Guide Dropdown ── */}
-          <div className={cn(
-            "grid grid-rows-[0fr] transition-[grid-template-rows] duration-500 ease-out",
-            showGuide && "grid-rows-[1fr]"
-          )}>
+        <div className={cn(
+          "grid grid-rows-[0fr] transition-[grid-template-rows] duration-500 ease-out",
+          showGuide && "grid-rows-[1fr]"
+        )}>
             <div className="overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
 
@@ -260,9 +283,32 @@ export default function TenantMenuDashboard() {
             </div>
           </div>
 
-          {/* ── Category Swimlanes ── */}
+          {/* ── Main Dynamic View Toggle (Builder vs Preview) ── */}
+        {isPreviewMode ? (
+          <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-both mt-10 bg-[#0f141d]/50 border border-white/5 rounded-[3rem] pb-10 overflow-hidden relative shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 to-orange-600 shadow-[0_0_30px_rgba(245,158,11,0.6)]"></div>
+            <div className="absolute top-6 left-6 flex items-center gap-2 bg-amber-500/10 text-amber-500 px-3 py-1.5 rounded-full border border-amber-500/20 z-50 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+              <span className="text-[10px] font-black uppercase tracking-widest">Storefront Live Preview</span>
+            </div>
+            
+            <div className="pt-16 sm:px-6">  
+              <MenuSection 
+                items={menuItems?.map(i => ({...i, image: i.imageUrl || '', description: i.description || ''})) || []} 
+                categories={menuCategories || []}
+              />
+            </div>
+            <div className="absolute bottom-6 inset-x-0 flex justify-center pointer-events-none">
+              <p className="text-slate-500 text-xs uppercase tracking-widest font-black bg-black/50 px-4 py-2 rounded-full backdrop-blur-md border border-white/5">
+                Ordering is disabled in preview mode
+              </p>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* ── Category Swimlanes ── */}
 
-          {swimlanes.map((lane, index) => (
+            {swimlanes.map((lane, index) => (
             <div
               key={lane.categoryId}
               className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-both"
@@ -440,8 +486,9 @@ export default function TenantMenuDashboard() {
               </div>
             </div>
           </div>
-
-        </div>
+          </>
+        )}
+      </div>
       </div>
     </>
   );
