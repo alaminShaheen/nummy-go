@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useState, useId } from 'react';
 import { useRouter } from 'next/navigation';
 import { trpc } from '@/trpc/client';
 import { useWebSocket } from '@/hooks/useWebSocket';
@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { differenceInSeconds, format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { getGoogleMapsUrl } from '@/utils/tenant';
+import Link from 'next/link';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -29,9 +31,61 @@ interface VendorInfo {
   modificationThreshold: number;
 }
 
+// ── Animated SVG Icons ─────────────────────────────────────────────────────
+
+function AnimatedWokIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 52 52" fill="none" aria-hidden="true" className={className}>
+      <style>{`
+        .wok-flame-1 { animation: wokFlicker 0.35s 0s ease-in-out infinite alternate; transform-origin: 26px 40px; }
+        .wok-flame-2 { animation: wokFlicker 0.3s 0.1s ease-in-out infinite alternate; transform-origin: 26px 38px; }
+        .wok-steam   { animation: wokSteam 1.8s ease-in-out infinite; }
+        .wok-food    { animation: wokBubble 1.2s ease-in-out infinite alternate; }
+        @keyframes wokFlicker {
+          0%   { transform: scaleY(1) scaleX(0.95); }
+          100% { transform: scaleY(1.25) scaleX(1.08); }
+        }
+        @keyframes wokSteam {
+          0%   { opacity:0; transform: translateY(0) scaleX(1); }
+          40%  { opacity: 0.5; }
+          100% { opacity:0; transform: translateY(-12px) scaleX(1.6); }
+        }
+        @keyframes wokBubble {
+          0%   { transform: scale(1); }
+          100% { transform: scale(1.05); }
+        }
+      `}</style>
+      {/* Flames */}
+      <ellipse className="wok-flame-1" cx="26" cy="42" rx="7" ry="5" fill="#ea580c" opacity="0.9" />
+      <ellipse className="wok-flame-2" cx="26" cy="40" rx="4" ry="3.5" fill="#fbbf24" opacity="0.95" />
+
+      {/* Wok body */}
+      <path d="M10 28 Q10 40 26 40 Q42 40 42 28" fill="#1e293b" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M8 26 Q8 16 26 16 Q44 16 44 26" fill="#334155" stroke="currentColor" strokeWidth="1.5" />
+      <ellipse cx="26" cy="26" rx="18" ry="10" fill="#1e293b" stroke="currentColor" strokeWidth="1.5" />
+
+      {/* Food */}
+      <g className="wok-food">
+        <circle cx="21" cy="24" r="2.5" fill="#f97316" opacity="0.9" />
+        <circle cx="27" cy="22" r="2" fill="#84cc16" opacity="0.85" />
+        <circle cx="31" cy="25" r="2.5" fill="#f59e0b" opacity="0.9" />
+        <circle cx="24" cy="27" r="1.5" fill="#ef4444" opacity="0.8" />
+      </g>
+
+      {/* Handle */}
+      <path d="M42 24 L50 20" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M10 24 L4 28" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+
+      {/* Steam */}
+      <path className="wok-steam" d="M22 16 Q21 10 22 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <path className="wok-steam" d="M30 14 Q29 8 30 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" style={{ animationDelay: '0.6s' }} />
+    </svg>
+  );
+}
+
 const STATUS_STAGES: { status: OrderStatus; label: string; icon: React.ReactNode; color: string; mobileLabel: string }[] = [
   { status: 'accepted', label: 'Confirmed', mobileLabel: 'Confirmed', icon: <CheckCircle2 className="w-4 h-4" />, color: 'indigo' },
-  { status: 'preparing', label: 'Preparing', mobileLabel: 'Preparing', icon: <ChefHat className="w-4 h-4" />, color: 'amber' },
+  { status: 'preparing', label: 'Preparing', mobileLabel: 'Preparing', icon: <AnimatedWokIcon className="w-5 h-5 -mt-1" />, color: 'amber' },
   { status: 'ready', label: 'Ready for Pickup', mobileLabel: 'Ready', icon: <PackageCheck className="w-4 h-4" />, color: 'emerald' },
 ];
 
@@ -55,7 +109,8 @@ function OrbitalRing({
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - progress);
 
-  const gradientId = `orbital-grad-${Math.random().toString(36).slice(2, 8)}`;
+  const rawId = useId();
+  const gradientId = `orbital-grad-${rawId.replace(/:/g, '')}`;
 
   const colorMap: Record<string, { from: string; to: string; glow: string }> = {
     indigo: { from: '#818cf8', to: '#6366f1', glow: 'rgba(99,102,241,0.3)' },
@@ -72,6 +127,33 @@ function OrbitalRing({
         className="absolute inset-0 rounded-full blur-2xl opacity-40 transition-all duration-700"
         style={{ background: `radial-gradient(circle, ${colors.glow} 0%, transparent 70%)` }}
       />
+      
+      {/* Ember Particles for Preparing Stage */}
+      {accentColor === 'amber' && (
+         <div className="absolute inset-0 -z-10 rounded-full overflow-hidden" aria-hidden="true">
+           <style>{`
+             .orbital-ember { animation: orbitalRise 3s ease-out infinite; }
+             @keyframes orbitalRise {
+               0% { opacity: 0; transform: translateY(20px) scale(0.5); }
+               20% { opacity: 0.8; }
+               100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
+             }
+           `}</style>
+           {[...Array(5)].map((_, i) => (
+             <div
+               key={i}
+               className="orbital-ember absolute rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]"
+               style={{
+                 width: (i % 2 === 0 ? 3 : 5) + 'px',
+                 height: (i % 2 === 0 ? 3 : 5) + 'px',
+                 left: 30 + (i * 10) + '%',
+                 bottom: '20%',
+                 animationDelay: `${i * 0.4}s`,
+               }}
+             />
+           ))}
+         </div>
+      )}
 
       <svg width={size} height={size} className="relative -rotate-90">
         {/* Track */}
@@ -101,10 +183,10 @@ function OrbitalRing({
 
       {/* Center content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center rotate-0">
-        <div className={cn("mb-1.5 text-white")} style={{ color: colors.from }}>
+        <div className={cn("mb-1 text-white")} style={{ color: colors.from }}>
           {statusIcon}
         </div>
-        <span className="text-xs sm:text-sm font-black text-white uppercase tracking-wider">
+        <span className="text-[11px] sm:text-xs font-black text-white uppercase tracking-wider">
           {statusLabel}
         </span>
       </div>
@@ -173,9 +255,9 @@ function VerticalTimeline({ activeStage, isCompleted, isCancelled }: { activeSta
 function ModificationBanner({ status, note }: { status: ModStatus; note?: string | null }) {
   if (!status) return null;
   const configs = {
-    pending: { bg: 'border-amber-500/30 bg-amber-500/10', icon: <Clock className="w-4 h-4 text-amber-400 shrink-0" />, label: 'Modification pending vendor review…', text: 'text-amber-300' },
-    accepted: { bg: 'border-emerald-500/30 bg-emerald-500/10', icon: <CheckCheck className="w-4 h-4 text-emerald-400 shrink-0" />, label: 'Order modification accepted!', text: 'text-emerald-300' },
-    rejected: { bg: 'border-rose-500/30 bg-rose-500/10', icon: <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />, label: 'Modification request rejected.', text: 'text-rose-300' },
+    pending: { bg: 'border-amber-500/30 bg-amber-500/10', icon: <Clock className="w-4 h-4 text-amber-400 shrink-0" />, label: 'Waiting for the kitchen to review your changes...', text: 'text-amber-300' },
+    accepted: { bg: 'border-emerald-500/30 bg-emerald-500/10', icon: <CheckCheck className="w-4 h-4 text-emerald-400 shrink-0" />, label: 'Great news! Your changes were approved.', text: 'text-emerald-300' },
+    rejected: { bg: 'border-rose-500/30 bg-rose-500/10', icon: <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />, label: "The kitchen couldn't accommodate your changes.", text: 'text-rose-300' },
   } as const;
   const c = configs[status];
   return (
@@ -183,7 +265,7 @@ function ModificationBanner({ status, note }: { status: ModStatus; note?: string
       {c.icon}
       <div>
         <p className={`text-sm font-semibold ${c.text}`}>{c.label}</p>
-        {note && <p className="text-xs text-slate-400 mt-0.5">Partner note: &quot;{note}&quot;</p>}
+        {note && <p className="text-xs text-slate-400 mt-0.5">Message from kitchen: &quot;{note}&quot;</p>}
       </div>
     </div>
   );
@@ -242,7 +324,7 @@ function OrderActionBar({
     return (
       <div className="flex items-center gap-2 text-slate-600 text-xs border border-white/5 rounded-lg px-3 py-2">
         <Clock className="w-3.5 h-3.5" />
-        <span>Modification window closed</span>
+        <span>Too late to make changes</span>
       </div>
     );
   }
@@ -288,9 +370,9 @@ function OrderActionBar({
       {showCancelModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-[#11161d] border border-white/10 rounded-2xl w-full max-w-sm overflow-hidden p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-            <h2 className="text-xl font-bold text-slate-200 mb-2">Cancel Order?</h2>
+            <h2 className="text-xl font-bold text-slate-200 mb-2">Change of plans?</h2>
             <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-              Are you sure you want to cancel your order? This action cannot be undone.
+              Are you sure you want to cancel this order? The restaurant will be notified immediately and this action cannot be undone.
             </p>
             <div className="flex gap-3">
               <button onClick={() => setShowCancelModal(false)} className="flex-[0.8] px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 bg-white/5 hover:bg-white/10 transition-colors" disabled={cancelOrder.isPending}>
@@ -348,12 +430,12 @@ function ConnectionBanner({ isConnected }: { isConnected: boolean }) {
       {isConnected ? (
         <>
           <CheckCircle2 className="w-3.5 h-3.5" />
-          Reconnected — live updates restored
+          You&apos;re back online — tracking updated
         </>
       ) : (
         <>
           <WifiOff className="w-3.5 h-3.5" />
-          Connection lost — attempting to reconnect…
+          Waiting for connection…
           <RefreshCw className="w-3 h-3 animate-spin ml-1" />
         </>
       )}
@@ -375,7 +457,7 @@ function LiveIndicator({ isConnected }: { isConnected: boolean }) {
         {isConnected && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />}
         <span className={cn("relative inline-flex rounded-full h-2 w-2", isConnected ? "bg-emerald-500" : "bg-rose-500")} />
       </span>
-      {isConnected ? 'Live' : 'Offline'}
+      {isConnected ? 'Live with kitchen' : 'Reconnecting to kitchen'}
     </div>
   );
 }
@@ -411,10 +493,37 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
   const orders = sessionData?.orders || [];
   const vendorInfo: Record<string, VendorInfo> = (sessionData as any)?.vendorInfo || {};
 
+  // ── Dynamic Headline ──
+  const mainOrder = orders[0];
+  let headingNode = <><span className="gradient-text">Live</span> Tracking</>;
+
+  if (mainOrder) {
+    const customerFirstName = mainOrder.customerName ? mainOrder.customerName.split(' ')[0] : '';
+    const vendorName = vendorInfo[mainOrder.tenantId]?.name || 'The kitchen';
+    const nameStr = customerFirstName ? `, ${customerFirstName}` : '';
+
+    if (mainOrder.status === 'completed') {
+      headingNode = <>Enjoy your meal<span className="gradient-text">{nameStr}!</span></>;
+    } else if (mainOrder.status === 'cancelled') {
+      headingNode = <><span className="text-rose-400">Order</span> Cancelled</>;
+    } else if (mainOrder.status === 'ready') {
+      headingNode = <>Your order is <span className="text-emerald-400">ready</span>{nameStr}!</>;
+    } else {
+      headingNode = <><span className="gradient-text">{vendorName}</span> is preparing your order{nameStr}</>;
+    }
+  }
+
   // ── Loading ──
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: 'var(--color-brand-bg, #0D1117)' }}>
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        {/* Fixed Background */}
+        <div className="fixed inset-0 bg-[#0D1117] -z-10 pointer-events-none overflow-hidden">
+          <div className="absolute rounded-full" style={{ width: 700, height: 700, top: '-18%', left: '-12%', background: 'radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.6 }} aria-hidden="true" />
+          <div className="absolute rounded-full" style={{ width: 650, height: 650, bottom: '-20%', right: '-14%', background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.5 }} aria-hidden="true" />
+          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.5) 1px,transparent 1px)', backgroundSize: '50px 50px' }} aria-hidden="true" />
+        </div>
+
         <Loader2 className="w-8 h-8 text-amber-500 animate-spin mb-4" />
         <p className="text-slate-400 font-medium text-sm">Looking up your orders…</p>
       </div>
@@ -425,13 +534,20 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
   if (error || orders.length === 0) {
     return (
       <>
+        {/* Fixed Background */}
+        <div className="fixed inset-0 bg-[#0D1117] -z-10 pointer-events-none overflow-hidden">
+          <div className="absolute rounded-full" style={{ width: 700, height: 700, top: '-18%', left: '-12%', background: 'radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.6 }} aria-hidden="true" />
+          <div className="absolute rounded-full" style={{ width: 650, height: 650, bottom: '-20%', right: '-14%', background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.5 }} aria-hidden="true" />
+          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.5) 1px,transparent 1px)', backgroundSize: '50px 50px' }} aria-hidden="true" />
+        </div>
+
         <Navbar />
-        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center" style={{ background: 'var(--color-brand-bg, #0D1117)' }}>
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
           <div className="p-4 bg-rose-500/10 text-rose-400 rounded-full mb-4 border border-rose-500/20">
             <Clock className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-200 mb-2">Tracking Not Found</h1>
-          <p className="text-slate-400 mb-6 max-w-sm">We couldn&apos;t find active orders for this tracking ID. It may have expired.</p>
+          <h1 className="text-2xl font-bold text-slate-200 mb-2">Hmm, we couldn&apos;t find this order</h1>
+          <p className="text-slate-400 mb-6 max-w-sm">This tracking link might have expired or the order no longer exists.</p>
           <button onClick={() => router.push('/')} className="text-indigo-400 hover:text-indigo-300 font-medium text-sm flex items-center gap-1">
             <ArrowLeft className="w-4 h-4" /> Return Home
           </button>
@@ -441,25 +557,29 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-brand-bg, #0D1117)' }}>
+    <div className="min-h-screen flex flex-col">
+      {/* Fixed Background */}
+      <div className="fixed inset-0 bg-[#0D1117] -z-10 pointer-events-none overflow-hidden">
+        <div className="absolute rounded-full" style={{ width: 700, height: 700, top: '-18%', left: '-12%', background: 'radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.6 }} aria-hidden="true" />
+        <div className="absolute rounded-full" style={{ width: 650, height: 650, bottom: '-20%', right: '-14%', background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.5 }} aria-hidden="true" />
+        <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.5) 1px,transparent 1px)', backgroundSize: '50px 50px' }} aria-hidden="true" />
+      </div>
+
       <Navbar />
       <ConnectionBanner isConnected={isConnected} />
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-3 sm:px-6 py-6 sm:py-10 pt-20 sm:pt-24">
         {/* ── Header ── */}
-        <div className="mb-6 sm:mb-10">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-amber-100 to-amber-300 tracking-tight">
-            LIVE TRACKING
-          </h1>
-          <div className="w-12 sm:w-16 h-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 mt-2 sm:mt-3" />
-
-          {/* Session ID + Live indicator */}
-          <div className="flex flex-wrap items-center gap-3 mt-3 sm:mt-4">
-            <span className="text-xs text-slate-500">
-              Session: <span className="font-mono text-slate-400">{sessionId.slice(0, 12)}…</span>
-            </span>
-            <LiveIndicator isConnected={isConnected} />
+        <div className="mb-6 sm:mb-10 lg:mb-12">
+          <div className="flex justify-between items-start gap-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-100 tracking-tight leading-tight max-w-2xl">
+              {headingNode}
+            </h1>
+            <div className="shrink-0 pt-1 sm:pt-2">
+              <LiveIndicator isConnected={isConnected} />
+            </div>
           </div>
+          <div className="w-12 sm:w-16 h-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 mt-4 sm:mt-5" />
         </div>
 
         {/* ── Orders ── */}
@@ -494,7 +614,7 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
             } else {
               const stage = STATUS_STAGES[activeStage];
               if (stage) {
-                ringProgress = (activeStage + 1) / (STATUS_STAGES.length + 1);
+                ringProgress = (activeStage + 1) / STATUS_STAGES.length;
                 ringColor = stage.color;
                 ringLabel = stage.mobileLabel;
                 ringIcon = <div className="scale-150">{stage.icon}</div>;
@@ -520,28 +640,23 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
                       {/* Vendor name + contact */}
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm sm:text-base font-bold text-white truncate">{vendor.name}</h3>
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-2">
                           <a href={`tel:${vendor.phoneNumber}`} className="flex items-center gap-1 text-[10px] sm:text-xs text-slate-400 hover:text-amber-400 transition-colors">
                             <Phone className="w-3 h-3" />
                             {formatPhoneNumber(vendor.phoneNumber)}
                           </a>
                           {vendor.address && (
-                            <span className="flex items-center gap-1 text-[10px] sm:text-xs text-slate-500 truncate max-w-[180px]">
+                            <Link
+                              href={getGoogleMapsUrl(vendor.address || '')}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 text-[10px] sm:text-xs text-slate-500 truncate max-w-[180px]"
+                            >
                               <MapPin className="w-3 h-3 shrink-0" />
                               {vendor.address}
-                            </span>
+                            </Link>
                           )}
                         </div>
-                      </div>
-
-                      {/* Status badge */}
-                      <div className={cn(
-                        "px-2.5 py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider border shrink-0",
-                        isCancelled && "border-rose-500/30 bg-rose-500/10 text-rose-400",
-                        isCompleted && "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
-                        !isCancelled && !isCompleted && "border-indigo-500/30 bg-indigo-500/10 text-indigo-300",
-                      )}>
-                        {isCancelled ? 'Cancelled' : isCompleted ? 'Complete' : STATUS_STAGES[activeStage]?.mobileLabel || 'Active'}
                       </div>
                     </div>
                   </div>
@@ -586,8 +701,8 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
                       {/* Cancelled message */}
                       {isCancelled && (
                         <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 p-4 text-center">
-                          <p className="text-sm font-medium text-rose-400">This order was cancelled.</p>
-                          {order.rejectionReason && <p className="text-xs text-rose-500/70 mt-1">Reason: &quot;{order.rejectionReason}&quot;</p>}
+                          <p className="text-sm font-medium text-rose-400">Your order has been cancelled.</p>
+                          {order.rejectionReason && <p className="text-xs text-rose-500/70 mt-1">Reason provided: &quot;{order.rejectionReason}&quot;</p>}
                         </div>
                       )}
                     </div>
@@ -607,7 +722,7 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
                       <span className="text-sm sm:text-base font-black text-amber-400">${order.totalAmount.toFixed(2)}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Fulfillment</span>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Order Type</span>
                       <span className="text-xs sm:text-sm font-semibold text-slate-300 capitalize flex items-center gap-1">
                         {order.fulfillmentMethod === 'delivery' ? <MapPin className="w-3 h-3" /> : <ShoppingBag className="w-3 h-3" />}
                         {order.fulfillmentMethod}

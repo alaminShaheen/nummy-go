@@ -182,7 +182,7 @@ function GrowthIcon() {
       `}</style>
       {/* Axes */}
       <line x1="8" y1="44" x2="46" y2="44" stroke="#334155" strokeWidth="1.5" />
-      <line x1="8" y1="8"  x2="8"  y2="44" stroke="#334155" strokeWidth="1.5" />
+      <line x1="8" y1="8" x2="8" y2="44" stroke="#334155" strokeWidth="1.5" />
       {/* Grid */}
       <line x1="8" y1="32" x2="46" y2="32" stroke="#1e293b" strokeWidth="1" />
       <line x1="8" y1="20" x2="46" y2="20" stroke="#1e293b" strokeWidth="1" />
@@ -227,15 +227,15 @@ function GlobeIcon() {
 function GlobeBackground() {
   return (
     <div className="absolute -right-12 sm:right-[-10%] top-[-25%] bottom-[-25%] w-[250px] sm:w-[450px] pointer-events-none opacity-[0.35] mix-blend-screen overflow-hidden z-0">
-      <div className="absolute inset-0 rounded-full overflow-hidden" 
-           style={{ maskImage: 'radial-gradient(ellipse at center, white 55%, transparent 72%)', WebkitMaskImage: 'radial-gradient(ellipse at center, white 55%, transparent 72%)' }}>
+      <div className="absolute inset-0 rounded-full overflow-hidden"
+        style={{ maskImage: 'radial-gradient(ellipse at center, white 55%, transparent 72%)', WebkitMaskImage: 'radial-gradient(ellipse at center, white 55%, transparent 72%)' }}>
         <div className="absolute inset-[-100%] globe-spin-bg" style={{
-           backgroundImage: 'radial-gradient(rgba(255,255,255,0.9) 1.5px, transparent 1.5px)',
-           backgroundSize: '20px 20px',
-           backgroundPosition: '0 0',
+          backgroundImage: 'radial-gradient(rgba(255,255,255,0.9) 1.5px, transparent 1.5px)',
+          backgroundSize: '20px 20px',
+          backgroundPosition: '0 0',
         }}></div>
         <div className="absolute inset-0" style={{
-           background: 'radial-gradient(circle at 35% 35%, transparent 0%, rgba(19,25,31,0.85) 65%, rgba(19,25,31,1) 100%)'
+          background: 'radial-gradient(circle at 35% 35%, transparent 0%, rgba(19,25,31,0.85) 65%, rgba(19,25,31,1) 100%)'
         }}></div>
       </div>
       <style>{`
@@ -373,8 +373,8 @@ export default function RestaurantBentoFeatures() {
       <BentoCard
         icon={<GrowthIcon />}
         eyebrow="Business Growth"
-        title="Local Visibility"
-        body="Reach customers who are already searching for restaurants near them."
+        title="Unrivaled Local Discovery"
+        body="Position your restaurant directly in front of highly-engaged, local diners actively seeking authentic culinary experiences in your exact neighborhood."
         accentColor="#f59e0b"
         delay={400}
       />
@@ -385,8 +385,8 @@ export default function RestaurantBentoFeatures() {
         icon={<GlobeIcon />}
         backgroundGraphic={<GlobeBackground />}
         eyebrow="Access Anywhere"
-        title="Cloud-Based Access"
-        body="Stay connected to your business no matter where you are. Manage orders, tweak your menu, and track performance securely from any device."
+        title="Unrestricted Global Mobility"
+        body="Monitor kitchen operations, adapt to sudden inventory changes, and review performance metrics securely from any device, ensuring total operational control from anywhere in the world."
         accentColor="#f8fafc"
         delay={500}
       />
