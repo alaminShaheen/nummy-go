@@ -20,11 +20,11 @@ interface TabConfig {
 }
 
 const TABS: TabConfig[] = [
-  { id: 'all',           label: 'All Orders',    countKey: 'all' },
-  { id: 'active',        label: 'Active',         countKey: 'active' },
-  { id: 'preparing',     label: 'In Kitchen',     countKey: 'preparing' },
-  { id: 'ready',         label: 'Ready',          countKey: 'ready' },
-  { id: 'modifications', label: 'Modifications',  countKey: 'modifications', alertVariant: true },
+  { id: 'all', label: 'All Orders', countKey: 'all' },
+  { id: 'active', label: 'Active', countKey: 'active' },
+  { id: 'preparing', label: 'Preparing', countKey: 'preparing' },
+  { id: 'ready', label: 'Ready', countKey: 'ready' },
+  { id: 'modifications', label: 'Modifications', countKey: 'modifications', alertVariant: true },
 ];
 
 // ── Count badge ─────────────────────────────────────────────────────────────
