@@ -25,8 +25,8 @@ function getWsUrl(endpoint: string, type: 'tenant' | 'session' = 'tenant') {
 }
 
 interface UseWebSocketOptions {
-  onMessage:     (msg: WsMessage) => void;
-  onConnect?:    () => void;
+  onMessage: (msg: WsMessage) => void;
+  onConnect?: () => void;
   onDisconnect?: () => void;
 }
 
@@ -34,18 +34,18 @@ export function useWebSocket(
   endpointId: string | null,
   { onMessage, onConnect, onDisconnect, type = 'tenant' }: UseWebSocketOptions & { type?: 'tenant' | 'session' }
 ) {
-  const wsRef          = useRef<WebSocket | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const reconnectDelay = useRef(1000);
-  const unmountedRef   = useRef(false);
+  const unmountedRef = useRef(false);
 
-  const onMessageRef   = useRef(onMessage);
+  const onMessageRef = useRef(onMessage);
   onMessageRef.current = onMessage;
 
-  const onConnectRef   = useRef(onConnect);
+  const onConnectRef = useRef(onConnect);
   onConnectRef.current = onConnect;
 
-  const onDisconnectRef   = useRef(onDisconnect);
+  const onDisconnectRef = useRef(onDisconnect);
   onDisconnectRef.current = onDisconnect;
 
   const connect = useCallback(() => {
@@ -119,7 +119,7 @@ export function useWebSocket(
         window.removeEventListener('online', handleOnline);
       }
     };
-  }, [connect]);
+  }, [connect, isConnected]);
 
   return {
     disconnect: () => wsRef.current?.close(),

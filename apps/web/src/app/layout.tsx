@@ -8,7 +8,9 @@ import './globals.css';
 import { Geist } from "next/font/google";
 import { cn, Toaster } from '@/components/ui';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
+import { ScrollToTop } from '@/components/ui/ScrollToTop';
 
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
