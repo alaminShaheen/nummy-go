@@ -1,5 +1,5 @@
 import { useLocalStorage } from 'usehooks-ts';
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
 export interface CartItem {
   id: string; // menuItemId
@@ -16,7 +16,12 @@ export interface VendorCart {
 }
 
 export function useCart() {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [cart, setCart] = useLocalStorage<VendorCart[]>('nummygo-cart', []);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
   const addToCart = useCallback(
     (tenantId: string, tenantName: string, item: Omit<CartItem, 'quantity'>, qty: number) => {
@@ -134,5 +139,6 @@ export function useCart() {
     loadFromOrderItems,
     totalItems,
     megaTotal,
+    isLoaded,
   };
 }

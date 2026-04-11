@@ -140,7 +140,7 @@ function VendorLoginContent() {
                             className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-amber-400 transition-colors duration-200"
                         >
                             <ArrowLeft size={14} aria-hidden="true" />
-                            Back to NummyGo
+                            Back to nummyGo
                         </Link>
                     </div>
                 </div>

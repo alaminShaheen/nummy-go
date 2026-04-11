@@ -186,7 +186,7 @@ function ScheduleTimePicker({
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, megaTotal, clearAll } = useCart();
+  const { cart, megaTotal, clearAll, isLoaded } = useCart();
 
   const [vendorSettings, setVendorSettings] = useState<
     Record<string, {
@@ -278,6 +278,14 @@ export default function CheckoutPage() {
       placeOrderMutation.mutate(pendingFormData);
     }
   };
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col pt-20 items-center justify-center text-white">
+        <Loader2 className="w-8 h-8 animate-spin text-amber-500/50" />
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (
