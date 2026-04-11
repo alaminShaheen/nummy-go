@@ -190,7 +190,7 @@ export default function PlatformHome() {
             style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize: '50px 50px' }}
             aria-hidden="true" />
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-24 pt-40">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-24">
             <div className="flex flex-col items-center text-center gap-8">
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-bold uppercase tracking-widest backdrop-blur-sm">
@@ -200,16 +200,13 @@ export default function PlatformHome() {
 
               {/* Headline */}
               <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] tracking-tight max-w-5xl break-words">
-                Find Your{' '}
-                <span className="gradient-text">Neighbourhood</span>
-                <br />
-                Restaurant
+                Experience True{' '}
+                <span className="gradient-text">Local Flavour</span>
               </h1>
 
               {/* Subheadline */}
               <p className="text-slate-400 text-lg sm:text-xl max-w-xl leading-relaxed">
-                Freshly prepared meals from local restaurants, delivered to your door or
-                ready for pickup. Discover what&apos;s cooking near you.
+                Connect directly with authentic neighbourhood kitchens. Skip the hidden fees and third-party markups, and enjoy freshly prepared meals ready for pickup.
               </p>
 
               {/* Search with shimmer */}
@@ -309,7 +306,7 @@ export default function PlatformHome() {
                 </span>
               </h2>
               <p className="text-slate-500 mt-3 text-base max-w-lg mx-auto">
-                One platform to run, grow, and showcase your restaurant — without the complexity, the middlemen, or the upfront cost.
+                Take back control of your customer relationships. A comprehensive, beautifully designed platform to run and scale your restaurant — free from predatory commissions.
               </p>
             </div>
 

@@ -26,7 +26,9 @@ function VendorLoginContent() {
             setLoading(true);
             await authClient.signIn.social({
                 provider: 'google',
-                callbackURL: `${window.location.origin}/tenant/onboarding`,
+                callbackURL: searchParams.get('from') 
+                    ? `${window.location.origin}${searchParams.get('from')}` 
+                    : `${window.location.origin}/tenant/onboarding`,
                 additionalData: {
                     role: 'tenant' as UserRole,
                 },

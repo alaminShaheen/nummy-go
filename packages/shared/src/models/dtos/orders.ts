@@ -185,7 +185,15 @@ export const vendorInfoSchema = z.object({
 });
 
 export const checkoutGroupResponseSchema = z.object({
-  orders: z.array(orderResponseSchema),
+  orders: z.array(orderResponseSchema.extend({
+    items: z.array(z.object({
+      menuItemId: z.string(),
+      name: z.string(),
+      price: z.number(),
+      imageUrl: z.string().nullable().optional(),
+      quantity: z.number().int().positive(),
+    })).optional(),
+  })),
   tenantModificationThreshold: z.number().int().nonnegative(),
   vendorInfo: z.record(z.string(), vendorInfoSchema),
 });

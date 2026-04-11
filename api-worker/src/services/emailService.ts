@@ -6,8 +6,10 @@ import type { Order, Tenant } from '@nummygo/shared/models';
 
 export class EmailService {
   private resend: Resend;
+  private env: Env;
 
   constructor(env: Env) {
+    this.env = env;
     const key = env.RESEND_API_KEY;
     console.log('[EmailService] RESEND_API_KEY present?', !!key, '| starts with re_?', key?.startsWith('re_'));
     this.resend = new Resend(key || 're_dummy_key');
@@ -90,6 +92,7 @@ export class EmailService {
           customerName: order.customerName || 'Customer',
           customerEmail: order.customerEmail || 'Guest',
           customerPhone: order.customerPhone || undefined,
+          dashboardUrl: this.env.CUSTOMER_WEB_URL ? `${this.env.CUSTOMER_WEB_URL}/tenant/orders` : 'https://nummygo.ca/tenant/orders',
           items: this.buildItems(order),
         }),
       });

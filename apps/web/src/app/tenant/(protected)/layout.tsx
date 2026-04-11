@@ -30,9 +30,9 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   // ── Auth gate ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!isPending && !session?.user) {
-      router.replace('/tenant/login');
+      router.replace(`/tenant/login?from=${encodeURIComponent(pathname)}`);
     }
-  }, [session, isPending, router]);
+  }, [session, isPending, router, pathname]);
 
   // ── Loading skeleton ───────────────────────────────────────────────────────
   if (isPending || (!isOnboardingPage && isOnboardingLoading)) {

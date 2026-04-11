@@ -25,7 +25,7 @@ interface StatusConfig {
 
 const STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   pending: {
-    label: 'Received',
+    label: 'New Order',
     dotColor: 'bg-blue-400',
     textColor: 'text-blue-300',
     bgColor: 'bg-blue-500/8',
@@ -81,9 +81,7 @@ function StatusBadge({ status, className, ...props }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide border',
-        config.bgColor,
-        config.borderColor,
+        'inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide',
         config.textColor,
         className,
       )}
