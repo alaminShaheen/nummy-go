@@ -2,7 +2,7 @@
  * packages/shared/src/ui/BrandInput.tsx
  *
  * A brand-styled text input built on top of the shadcn Input primitive.
- * Applies NummyGo's dark-glass style (dark bg, amber focus ring, slate text)
+ * Applies nummyGo's dark-glass style (dark bg, amber focus ring, slate text)
  * while remaining fully compatible with existing Input props.
  *
  * Usage:
@@ -30,7 +30,7 @@ export interface BrandInputProps
 }
 
 /**
- * BrandInput — shadcn Input with NummyGo dark-glass styling.
+ * BrandInput — shadcn Input with nummyGo dark-glass styling.
  * Supports optional prefix text and suffix slot (e.g. spinner / check icon).
  */
 export const BrandInput = React.forwardRef<HTMLInputElement, BrandInputProps>(

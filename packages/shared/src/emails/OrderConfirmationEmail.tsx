@@ -9,7 +9,6 @@ import {
   Row,
   Column,
   Text,
-  Button,
   Hr,
   Link,
   Tailwind,
@@ -19,12 +18,11 @@ import {
 
 export interface OrderConfirmationEmailProps {
   tenantName: string;
+  tenantEmail?: string;
+  tenantPhone?: string;
   orderId: string;
   createdAt: number;
   totalCents: number;
-  customerName: string;
-  customerEmail: string;
-  customerPhone?: string;
   fulfillmentMethod?: 'pickup' | 'delivery';
   deliveryAddress?: string;
   paymentMethod?: string;
@@ -33,7 +31,7 @@ export interface OrderConfirmationEmailProps {
     quantity: number;
     priceCents: number;
   }>;
-  trackingUrl?: string;
+  trackingUrl: string;
 }
 
 // ── Shared Tailwind Config ─────────────────────────────────────────────────
@@ -62,22 +60,18 @@ const tailwindConfig = {
 
 // ── Brand gradient (matching globals.css .gradient-text) ───────────────────
 const GRADIENT_TEXT_STYLE: React.CSSProperties = {
-  background: 'linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #818cf8 100%)',
-  WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent',
-  color: '#f59e0b', // fallback for email clients
+  color: '#f59e0b',
 };
 
 // ── Component ──────────────────────────────────────────────────────────────
 
 export function OrderConfirmationEmail({
   tenantName,
+  tenantEmail,
+  tenantPhone,
   orderId,
   createdAt,
   totalCents,
-  customerName,
-  customerEmail,
-  customerPhone,
   fulfillmentMethod = 'pickup',
   deliveryAddress,
   paymentMethod = 'Cash',
@@ -184,7 +178,7 @@ export function OrderConfirmationEmail({
 
             {/* ── CTA Button ── */}
             <Section className="text-center mb-10">
-              <Button
+              <Link
                 href={trackingUrl}
                 className="inline-block rounded-full px-10 py-3.5 text-[13px] font-bold text-black no-underline tracking-wide"
                 style={{
@@ -193,182 +187,182 @@ export function OrderConfirmationEmail({
                 }}
               >
                 Track Your Order →
-              </Button>
+              </Link>
             </Section>
 
             {/* ═══════════════════════════════════════════════════════════
-                TWO-COLUMN: Customer Details + Receipt
+                STACKED LAYOUT: Receipt Card FIRST, then Contact Details
             ═══════════════════════════════════════════════════════════ */}
-            <Section>
-              <Row>
-                {/* ── LEFT: Customer Details ── */}
-                <Column className="w-[46%]" style={{ verticalAlign: 'top' }}>
+            <Section className="mb-6">
+              {/* ── Receipt Card ── */}
+              <Section
+                className="rounded-2xl overflow-hidden"
+                style={{
+                  backgroundColor: '#13191f',
+                  border: '1px solid #252e3f',
+                  boxShadow: '0 0 60px rgba(245, 158, 11, 0.06), 0 0 120px rgba(129, 140, 248, 0.04)',
+                }}
+              >
+                {/* Gradient accent bar */}
+                <div style={{
+                  height: '3px',
+                  background: 'linear-gradient(90deg, #fbbf24 0%, #f97316 50%, #818cf8 100%)',
+                }} />
+
+                <Section className="px-5 pt-6 pb-5">
+                  <Text className="text-[18px] font-black m-0 mb-1" style={{ color: '#f1f5f9' }}>Order Summary</Text>
+                  <Text className="text-[12px] m-0 mb-5" style={{ color: '#94a3b8' }}>{tenantName}</Text>
+
+                  {/* ── Meta block ── */}
                   <Section
-                    className="rounded-2xl p-5"
-                    style={{
-                      backgroundColor: '#13191f',
-                      border: '1px solid #252e3f',
-                    }}
+                    className="rounded-xl mb-5 px-4 py-4"
+                    style={{ backgroundColor: '#0D1117', border: '1px solid rgba(255,255,255,0.04)' }}
                   >
-                    <Text className="text-[9px] font-bold tracking-[2px] uppercase m-0 mb-5" style={{ color: '#f59e0b' }}>
-                      Customer Details
-                    </Text>
-
-                    <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Name</Text>
-                    <Text className="text-[14px] font-semibold m-0 mb-4" style={{ color: '#f1f5f9' }}>{customerName}</Text>
-
-                    <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Email</Text>
-                    <Text className="text-[13px] font-medium m-0 mb-4" style={{ color: '#f1f5f9' }}>{customerEmail}</Text>
-
-                    {customerPhone && (
-                      <>
-                        <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Phone</Text>
-                        <Text className="text-[13px] font-medium m-0 mb-4" style={{ color: '#f1f5f9' }}>{customerPhone}</Text>
-                      </>
-                    )}
-
-                    <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-2" style={{ color: '#475569' }}>Fulfillment</Text>
-                    <table cellPadding="0" cellSpacing="0" role="presentation">
-                      <tr>
-                        <td style={{
-                          backgroundColor: fulfillmentMethod === 'delivery'
-                            ? 'rgba(129, 140, 248, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-                          border: `1px solid ${fulfillmentMethod === 'delivery'
-                            ? 'rgba(129, 140, 248, 0.2)' : 'rgba(245, 158, 11, 0.2)'}`,
-                          borderRadius: '8px',
-                          padding: '4px 12px',
-                        }}>
-                          <Text
-                            className="text-[11px] font-bold m-0"
-                            style={{ color: fulfillmentMethod === 'delivery' ? '#818cf8' : '#f59e0b' }}
-                          >
-                            {fulfillmentMethod === 'delivery' ? '🚗 Delivery' : '📍 Pickup'}
-                          </Text>
-                        </td>
-                      </tr>
-                    </table>
-
-                    {fulfillmentMethod === 'delivery' && deliveryAddress && (
-                      <>
-                        <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mt-4 mb-1" style={{ color: '#475569' }}>Address</Text>
-                        <Text className="text-[13px] m-0" style={{ color: '#94a3b8' }}>{deliveryAddress}</Text>
-                      </>
-                    )}
+                    <Row>
+                      <Column style={{ paddingBottom: '12px' }}>
+                        <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Date</Text>
+                        <Text className="text-[12px] font-bold m-0" style={{ color: '#94a3b8' }}>{dateStr}</Text>
+                      </Column>
+                    </Row>
+                    <Hr style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '0 0 12px 0' }} />
+                    <Row>
+                      <Column>
+                        <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Order #</Text>
+                        <Text className="text-[12px] font-bold m-0" style={{ color: '#f59e0b' }}>#{shortId}</Text>
+                      </Column>
+                      <Column>
+                        <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Payment</Text>
+                        <Text className="text-[12px] font-bold m-0" style={{ color: '#94a3b8' }}>{paymentMethod}</Text>
+                      </Column>
+                    </Row>
                   </Section>
 
-                  <Text className="text-[11px] leading-[1.6] m-0 mt-4 px-1" style={{ color: '#475569' }}>
-                    Need help? Reply to this email or contact <strong style={{ color: '#94a3b8' }}>{tenantName}</strong> directly.
-                  </Text>
-                </Column>
-
-                {/* ── Gutter ── */}
-                <Column className="w-[4%]">&nbsp;</Column>
-
-                {/* ── RIGHT: Receipt Card ── */}
-                <Column className="w-[50%]" style={{ verticalAlign: 'top' }}>
-                  <Section
-                    className="rounded-2xl overflow-hidden"
-                    style={{
-                      backgroundColor: '#13191f',
-                      border: '1px solid #252e3f',
-                      boxShadow: '0 0 60px rgba(245, 158, 11, 0.06), 0 0 120px rgba(129, 140, 248, 0.04)',
-                    }}
-                  >
-                    {/* Gradient accent bar — matching NummyGo gradient */}
-                    <div style={{
-                      height: '3px',
-                      background: 'linear-gradient(90deg, #fbbf24 0%, #f97316 50%, #818cf8 100%)',
-                    }} />
-
-                    <Section className="px-5 pt-6 pb-5">
-                      <Text className="text-[18px] font-black m-0 mb-1" style={{ color: '#f1f5f9' }}>Order Summary</Text>
-                      <Text className="text-[12px] m-0 mb-5" style={{ color: '#94a3b8' }}>{tenantName}</Text>
-
-                      {/* ── Meta row ── */}
-                      <Section
-                        className="rounded-xl mb-5 px-4 py-3"
-                        style={{ backgroundColor: '#0D1117', border: '1px solid rgba(255,255,255,0.04)' }}
-                      >
-                        <Row>
-                          <Column>
-                            <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Date</Text>
-                            <Text className="text-[12px] font-bold m-0" style={{ color: '#94a3b8' }}>{dateStr}</Text>
-                          </Column>
-                          <Column>
-                            <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Order #</Text>
-                            <Text className="text-[12px] font-bold m-0" style={{ color: '#f59e0b' }}>#{shortId}</Text>
-                          </Column>
-                          <Column>
-                            <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Payment</Text>
-                            <Text className="text-[12px] font-bold m-0" style={{ color: '#94a3b8' }}>{paymentMethod}</Text>
-                          </Column>
-                        </Row>
-                      </Section>
-
-                      {/* ── Items ── */}
-                      {items.map((item, i) => (
-                        <React.Fragment key={i}>
-                          <Row className="mb-1">
-                            <Column>
-                              <Text className="text-[13px] font-bold m-0" style={{ color: '#f1f5f9' }}>{item.name}</Text>
-                              <Text className="text-[11px] m-0 mt-1" style={{ color: '#64748b' }}>Qty: {item.quantity}</Text>
-                            </Column>
-                            <Column style={{ textAlign: 'right', verticalAlign: 'top' }}>
-                              <Text className="text-[13px] font-extrabold m-0" style={{ color: '#94a3b8' }}>{fmt(item.priceCents)}</Text>
-                            </Column>
-                          </Row>
-                          {i < items.length - 1 && (
-                            <Hr style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '10px 0' }} />
-                          )}
-                        </React.Fragment>
-                      ))}
-
-                      {/* ── Pricing breakdown ── */}
-                      <Hr style={{ borderTop: '1px dashed rgba(255,255,255,0.08)', margin: '16px 0 12px 0' }} />
-
-                      <Row className="mb-1">
-                        <Column><Text className="text-[12px] m-0" style={{ color: '#64748b' }}>Subtotal</Text></Column>
-                        <Column style={{ textAlign: 'right' }}>
-                          <Text className="text-[12px] font-semibold m-0" style={{ color: '#94a3b8' }}>{fmt(subtotalCents)}</Text>
-                        </Column>
-                      </Row>
-                      <Row className="mb-1">
-                        <Column><Text className="text-[12px] m-0" style={{ color: '#64748b' }}>Tax (13%)</Text></Column>
-                        <Column style={{ textAlign: 'right' }}>
-                          <Text className="text-[12px] font-semibold m-0" style={{ color: '#94a3b8' }}>{fmt(taxCents)}</Text>
-                        </Column>
-                      </Row>
+                  {/* ── Items ── */}
+                  {items.map((item, i) => (
+                    <React.Fragment key={i}>
                       <Row className="mb-1">
                         <Column>
-                          <Text className="text-[12px] m-0" style={{ color: '#64748b' }}>
-                            {fulfillmentMethod === 'delivery' ? 'Delivery' : 'Pickup'}
-                          </Text>
+                          <Text className="text-[13px] font-bold m-0" style={{ color: '#f1f5f9' }}>{item.name}</Text>
+                          <Text className="text-[11px] m-0 mt-1" style={{ color: '#64748b' }}>Qty: {item.quantity}</Text>
                         </Column>
-                        <Column style={{ textAlign: 'right' }}>
-                          <Text className="text-[12px] font-semibold m-0" style={{ color: '#94a3b8' }}>
-                            {fulfillmentMethod === 'delivery' ? '$2.99' : 'Free'}
-                          </Text>
+                        <Column style={{ textAlign: 'right', verticalAlign: 'top' }}>
+                          <Text className="text-[13px] font-extrabold m-0" style={{ color: '#94a3b8' }}>{fmt(item.priceCents)}</Text>
                         </Column>
                       </Row>
+                      {i < items.length - 1 && (
+                        <Hr style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '10px 0' }} />
+                      )}
+                    </React.Fragment>
+                  ))}
 
-                      {/* ── Total ── */}
-                      <Hr style={{ borderTop: '1px solid #252e3f', margin: '12px 0' }} />
-                      <Row>
-                        <Column><Text className="text-[15px] font-black m-0" style={{ color: '#f1f5f9' }}>Total</Text></Column>
-                        <Column style={{ textAlign: 'right' }}>
-                          <Text className="text-[18px] font-black m-0" style={{ color: '#f59e0b' }}>{fmt(totalCents)}</Text>
-                        </Column>
-                      </Row>
-                    </Section>
+                  {/* ── Pricing breakdown ── */}
+                  <Hr style={{ borderTop: '1px dashed rgba(255,255,255,0.08)', margin: '16px 0 12px 0' }} />
 
-                    {/* Bottom accent bar */}
-                    <div style={{
-                      height: '2px',
-                      background: 'linear-gradient(90deg, rgba(251,191,36,0.3) 0%, rgba(129,140,248,0.3) 100%)',
-                    }} />
-                  </Section>
-                </Column>
-              </Row>
+                  <Row className="mb-1">
+                    <Column><Text className="text-[12px] m-0" style={{ color: '#64748b' }}>Subtotal</Text></Column>
+                    <Column style={{ textAlign: 'right' }}>
+                      <Text className="text-[12px] font-semibold m-0" style={{ color: '#94a3b8' }}>{fmt(subtotalCents)}</Text>
+                    </Column>
+                  </Row>
+                  <Row className="mb-1">
+                    <Column><Text className="text-[12px] m-0" style={{ color: '#64748b' }}>Tax (13%)</Text></Column>
+                    <Column style={{ textAlign: 'right' }}>
+                      <Text className="text-[12px] font-semibold m-0" style={{ color: '#94a3b8' }}>{fmt(taxCents)}</Text>
+                    </Column>
+                  </Row>
+                  <Row className="mb-1">
+                    <Column>
+                      <Text className="text-[12px] m-0" style={{ color: '#64748b' }}>
+                        {fulfillmentMethod === 'delivery' ? 'Delivery' : 'Pickup'}
+                      </Text>
+                    </Column>
+                    <Column style={{ textAlign: 'right' }}>
+                      <Text className="text-[12px] font-semibold m-0" style={{ color: '#94a3b8' }}>
+                        {fulfillmentMethod === 'delivery' ? '$2.99' : 'Free'}
+                      </Text>
+                    </Column>
+                  </Row>
+
+                  {/* ── Total ── */}
+                  <Hr style={{ borderTop: '1px solid #252e3f', margin: '12px 0' }} />
+                  <Row>
+                    <Column><Text className="text-[15px] font-black m-0" style={{ color: '#f1f5f9' }}>Total</Text></Column>
+                    <Column style={{ textAlign: 'right' }}>
+                      <Text className="text-[18px] font-black m-0" style={{ color: '#f59e0b' }}>{fmt(totalCents)}</Text>
+                    </Column>
+                  </Row>
+                </Section>
+
+                {/* Bottom accent bar */}
+                <div style={{
+                  height: '2px',
+                  background: 'linear-gradient(90deg, rgba(251,191,36,0.3) 0%, rgba(129,140,248,0.3) 100%)',
+                }} />
+              </Section>
+            </Section>
+
+            <Section className="mb-8">
+              {/* ── Restaurant Details ── */}
+              <Section
+                className="rounded-2xl p-5"
+                style={{
+                  backgroundColor: '#13191f',
+                  border: '1px solid #252e3f',
+                }}
+              >
+                <Text className="text-[9px] font-bold tracking-[2px] uppercase m-0 mb-5" style={{ color: '#f59e0b' }}>
+                  Restaurant Details
+                </Text>
+
+                <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Name</Text>
+                <Text className="text-[14px] font-semibold m-0 mb-4" style={{ color: '#f1f5f9' }}>{tenantName}</Text>
+
+                {tenantEmail && (
+                  <>
+                    <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Email</Text>
+                    <Text className="text-[13px] font-medium m-0 mb-4" style={{ color: '#f1f5f9' }}>{tenantEmail}</Text>
+                  </>
+                )}
+
+                {tenantPhone && (
+                  <>
+                    <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Phone</Text>
+                    <Text className="text-[13px] font-medium m-0 mb-4" style={{ color: '#f1f5f9' }}>{tenantPhone}</Text>
+                  </>
+                )}
+
+                <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-2" style={{ color: '#475569' }}>Fulfillment</Text>
+                <table cellPadding="0" cellSpacing="0" role="presentation">
+                  <tr>
+                    <td style={{
+                      backgroundColor: fulfillmentMethod === 'delivery'
+                        ? 'rgba(129, 140, 248, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+                      border: `1px solid ${fulfillmentMethod === 'delivery'
+                        ? 'rgba(129, 140, 248, 0.2)' : 'rgba(245, 158, 11, 0.2)'}`,
+                      borderRadius: '8px',
+                      padding: '4px 12px',
+                    }}>
+                      <Text
+                        className="text-[11px] font-bold m-0"
+                        style={{ color: fulfillmentMethod === 'delivery' ? '#818cf8' : '#f59e0b' }}
+                      >
+                        {fulfillmentMethod === 'delivery' ? '🚗 Delivery' : '📍 Pickup'}
+                      </Text>
+                    </td>
+                  </tr>
+                </table>
+
+                {fulfillmentMethod === 'delivery' && deliveryAddress && (
+                  <>
+                    <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mt-4 mb-1" style={{ color: '#475569' }}>Delivery Address</Text>
+                    <Text className="text-[13px] m-0" style={{ color: '#94a3b8' }}>{deliveryAddress}</Text>
+                  </>
+                )}
+              </Section>
+
+              <Text className="text-[11px] leading-[1.6] m-0 mt-4 px-1" style={{ color: '#475569' }}>
+                Need help? Contact <strong style={{ color: '#94a3b8' }}>{tenantName}</strong> directly.
+              </Text>
             </Section>
 
             {/* ═══════════════════════════════════════════════════════════
@@ -377,12 +371,7 @@ export function OrderConfirmationEmail({
             <Section className="mt-12">
               <Hr style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '0 0 16px 0' }} />
               <Text className="text-[11px] text-center m-0 leading-relaxed" style={{ color: '#475569' }}>
-                © {new Date().getFullYear()} NummyGo · Automated transactional email
-              </Text>
-              <Text className="text-[11px] text-center m-0 mt-2">
-                <Link href="#" style={{ color: '#64748b', textDecoration: 'underline' }}>Unsubscribe</Link>
-                <span style={{ color: '#252e3f' }}> · </span>
-                <Link href="#" style={{ color: '#64748b', textDecoration: 'underline' }}>Privacy</Link>
+                © {new Date().getFullYear()} nummyGo · Automated transactional email
               </Text>
             </Section>
 

@@ -1,6 +1,6 @@
 /**
  * GradientButton
- * Primary CTA button using the NummyGo amber→orange gradient.
+ * Primary CTA button using the nummyGo amber→orange gradient.
  * Wraps shadcn Button with brand styling and scale micro-animation.
  */
 import * as React from 'react';

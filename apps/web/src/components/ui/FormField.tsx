@@ -36,20 +36,20 @@ function ErrorIcon() {
 
 export interface FormFieldProps {
   /** The id of the associated input element — used for htmlFor */
-  id:        string;
-  label:     string;
+  id: string;
+  label: string;
   required?: boolean;
   /** Shown below the input in rose-400 when truthy */
-  error?:    string;
+  error?: string;
   /** Shown below the input in slate-500 when no error */
-  hint?:     string;
+  hint?: string;
   className?: string;
-  children:  React.ReactNode;
+  children: React.ReactNode;
 }
 
 /**
  * FormField — wraps an input with label, hint, and error message.
- * Styled to match the NummyGo dark brand system.
+ * Styled to match the nummyGo dark brand system.
  */
 export function FormField({
   id,

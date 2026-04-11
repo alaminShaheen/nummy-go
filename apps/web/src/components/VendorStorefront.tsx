@@ -138,7 +138,7 @@ function ModificationBanner({
   const { label, expired } = useCountdown(createdAt, THRESHOLD);
 
   return (
-    <div className="sticky top-0 z-30 w-full border-b border-amber-500/30 bg-amber-950/80 backdrop-blur-md">
+    <div className="sticky top-16 z-50 w-full border-b border-amber-500/30 bg-amber-950/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="p-1.5 rounded-lg bg-amber-500/20 border border-amber-500/30">
@@ -180,7 +180,15 @@ function ModificationBanner({
 
 /* ─── Component ─────────────────────────────────── */
 
-function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
+function VendorStorefrontContent({ 
+  tenant, 
+  initialMenu, 
+  initialCategories 
+}: { 
+  tenant: Tenant, 
+  initialMenu?: any[], 
+  initialCategories?: any[] 
+}) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { addToCart, updateItemQuantity, loadFromOrderItems, cart } = useCart();
@@ -197,8 +205,14 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
     createdAt: number;
   } | null>(null);
 
-  const { data: serverMenuItems } = trpc.menu.getStorefrontMenu.useQuery({ tenantId: tenant.id });
-  const { data: serverCategories } = trpc.category.getStorefrontCategories.useQuery({ tenantId: tenant.id });
+  const { data: serverMenuItems } = trpc.menu.getStorefrontMenu.useQuery(
+    { tenantId: tenant.id },
+    { initialData: initialMenu as any }
+  );
+  const { data: serverCategories } = trpc.category.getStorefrontCategories.useQuery(
+    { tenantId: tenant.id },
+    { initialData: initialCategories as any }
+  );
 
   // Fetch order details only when ?modify is present
   const { data: orderDetails } = trpc.order.getOrderDetails.useQuery(
@@ -261,8 +275,9 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
       badge: item.badge || undefined,
       categoryId: item.categoryId || null,
       calories: item.calories || null,
+      isAvailable: item.isAvailable,
     }))
-    : MENU_ITEMS;
+    : [];
 
   const handleAddToCart = (item: MenuItem, qty: number) => {
     addToCart(
@@ -360,6 +375,7 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
           onAddToCart={handleAddToCart} 
           onUpdateQuantity={handleUpdateQuantity}
           cartQuantities={cartQuantities}
+          isClosed={!(tenant.acceptsOrders ?? true)}
         />
 
         <footer className="py-10 px-4 text-center border-t border-white/5">
@@ -376,7 +392,15 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
   );
 }
 
-export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
+export default function VendorStorefrontPage({ 
+  tenant,
+  initialMenu,
+  initialCategories
+}: { 
+  tenant: Tenant,
+  initialMenu?: any[],
+  initialCategories?: any[]
+}) {
   return (
     <Suspense
       fallback={
@@ -385,7 +409,11 @@ export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
         </div>
       }
     >
-      <VendorStorefrontContent tenant={tenant} />
+      <VendorStorefrontContent 
+        tenant={tenant} 
+        initialMenu={initialMenu} 
+        initialCategories={initialCategories} 
+      />
     </Suspense>
   );
 }

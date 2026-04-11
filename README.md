@@ -1,4 +1,4 @@
-# NummyGo
+# nummyGo
 
 A real-time food ordering platform that connects customers and restaurant tenants. Customers browse and place orders; tenants manage their kitchen queue live as orders come in.
 

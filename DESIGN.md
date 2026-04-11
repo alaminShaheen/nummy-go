@@ -1,11 +1,11 @@
-# NummyGo – UX & UI Design Specifications
+# nummyGo – UX & UI Design Specifications
 
-This document serves as the design foundation for NummyGo, detailing the core architecture, visual identity, and user flows. A ready-to-use prompt for AI UI/UX generators (like Midjourney, v0, or similar tools) is provided at the bottom.
+This document serves as the design foundation for nummyGo, detailing the core architecture, visual identity, and user flows. A ready-to-use prompt for AI UI/UX generators (like Midjourney, v0, or similar tools) is provided at the bottom.
 
 ---
 
 ## 1. Project Overview
-**NummyGo** is a premium, real-time food ordering platform that functions as both a B2C customer marketplace and a B2B SaaS Point-of-Sale (POS) dashboard for restaurant tenants.
+**nummyGo** is a premium, real-time food ordering platform that functions as both a B2C customer marketplace and a B2B SaaS Point-of-Sale (POS) dashboard for restaurant tenants.
 The defining characteristic is **real-time synchronization**. Customers see their food progress instantly without refreshing, while restaurant kitchens manage incoming queues live via WebSocket connections.
 
 ## 2. Target Audiences
@@ -48,7 +48,7 @@ The platform must deviate from standard, flat SAAS designs and embrace a highly 
 
 **Copy and paste the prompt below into your preferred AI UI/UX generator or pass it to a designer.**
 
-> **Context:** Create high-fidelity UI design mockups for a premium web application named "NummyGo". NummyGo is a real-time food ordering platform connecting customers to multiple restaurant tenants. The app uses WebSockets for instant, no-refresh order tracking and kitchen queue management. 
+> **Context:** Create high-fidelity UI design mockups for a premium web application named "nummyGo". nummyGo is a real-time food ordering platform connecting customers to multiple restaurant tenants. The app uses WebSockets for instant, no-refresh order tracking and kitchen queue management. 
 > 
 > **Aesthetic & Vibe:** The design MUST use a sleek, modern Dark Mode aesthetic (deep backgrounds like #0D1117). Use cutting-edge web design trends: subtle glassmorphism (frosted backgrounds), glossy gradient borders on cards, and vivid accent glows (Amber/Orange gradients for primary actions, Indigo/Violet for decorative or live-status indicators). Avoid basic, flat utility designs—aim for a dynamic, premium, high-converting "wow" factor similar to top-tier Dribbble shots, Stripe, or Linear.
 > 
