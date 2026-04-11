@@ -7,6 +7,7 @@ import { TRPCProvider } from '@/trpc/Provider';
 import './globals.css';
 import { Geist } from "next/font/google";
 import { cn, Toaster } from '@/components/ui';
+import { ScrollToTop } from '@/components/ui/ScrollToTop';
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <TRPCProvider>{children}</TRPCProvider>
+        <ScrollToTop />
         <Toaster position="bottom-right" />
       </body>
     </html>

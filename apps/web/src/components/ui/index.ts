@@ -114,3 +114,4 @@ export { TagsInput } from './TagsInput';
 export { BrandSwitch } from './BrandSwitch';
 export { AddressAutocomplete } from './AddressAutocomplete';
 export { Toaster } from './toaster';
+export { ScrollToTop } from './ScrollToTop';

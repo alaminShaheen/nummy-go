@@ -180,7 +180,15 @@ function ModificationBanner({
 
 /* ─── Component ─────────────────────────────────── */
 
-function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
+function VendorStorefrontContent({ 
+  tenant, 
+  initialMenu, 
+  initialCategories 
+}: { 
+  tenant: Tenant, 
+  initialMenu?: any[], 
+  initialCategories?: any[] 
+}) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { addToCart, updateItemQuantity, loadFromOrderItems, cart } = useCart();
@@ -197,8 +205,14 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
     createdAt: number;
   } | null>(null);
 
-  const { data: serverMenuItems } = trpc.menu.getStorefrontMenu.useQuery({ tenantId: tenant.id });
-  const { data: serverCategories } = trpc.category.getStorefrontCategories.useQuery({ tenantId: tenant.id });
+  const { data: serverMenuItems } = trpc.menu.getStorefrontMenu.useQuery(
+    { tenantId: tenant.id },
+    { initialData: initialMenu as any }
+  );
+  const { data: serverCategories } = trpc.category.getStorefrontCategories.useQuery(
+    { tenantId: tenant.id },
+    { initialData: initialCategories as any }
+  );
 
   // Fetch order details only when ?modify is present
   const { data: orderDetails } = trpc.order.getOrderDetails.useQuery(
@@ -377,7 +391,15 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
   );
 }
 
-export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
+export default function VendorStorefrontPage({ 
+  tenant,
+  initialMenu,
+  initialCategories
+}: { 
+  tenant: Tenant,
+  initialMenu?: any[],
+  initialCategories?: any[]
+}) {
   return (
     <Suspense
       fallback={
@@ -386,7 +408,11 @@ export default function VendorStorefrontPage({ tenant }: { tenant: Tenant }) {
         </div>
       }
     >
-      <VendorStorefrontContent tenant={tenant} />
+      <VendorStorefrontContent 
+        tenant={tenant} 
+        initialMenu={initialMenu} 
+        initialCategories={initialCategories} 
+      />
     </Suspense>
   );
 }
