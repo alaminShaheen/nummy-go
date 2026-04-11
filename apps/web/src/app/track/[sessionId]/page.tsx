@@ -202,7 +202,7 @@ function OrderTimeline({ activeStage, isCompleted, isCancelled }: { activeStage:
     <div className="relative flex flex-col md:flex-row w-full mt-4 sm:mt-6 md:mt-2 justify-between items-start md:items-start">
       {/* ── Desktop Horizontal Track ── */}
       <div className="hidden md:block absolute top-[17px] left-[10%] right-[10%] h-px bg-white/10 z-0" />
-      <div 
+      <div
         className="hidden md:block absolute top-[17px] left-[10%] h-px bg-indigo-500/50 transition-all duration-1000 z-0"
         style={{ width: `${Math.min(100, Math.max(0, (activeStage / (STATUS_STAGES.length - 1)) * 80))}%` }}
       />
@@ -234,7 +234,7 @@ function OrderTimeline({ activeStage, isCompleted, isCancelled }: { activeStage:
               >
                 {isPast ? <CheckCircle2 className="w-4 h-4" /> : stage.icon}
               </div>
-              
+
               {/* Mobile vertical line */}
               {idx < STATUS_STAGES.length - 1 && (
                 <div className={cn(
@@ -520,9 +520,9 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
     if (mainOrder.status === 'completed') {
       headingNode = <>Enjoy your meal, <span className="gradient-text">{customerFirstName}!</span></>;
     } else if (mainOrder.status === 'cancelled') {
-      headingNode = <><span className="text-rose-400">Order</span> Cancelled</>;
+      headingNode = <>Order {' '}<span className="text-rose-400">Cancelled</span> </>;
     } else if (mainOrder.status === 'ready') {
-      headingNode = <>It&apos;s ready, <span className="text-emerald-400">{customerFirstName}!</span></>;
+      headingNode = <>It&apos;s {' '}<span className="text-emerald-400">ready,</span>{' '}{customerFirstName}!</>;
     } else {
       headingNode = <><span className="gradient-text">Cooking</span> for you, {customerFirstName}!</>;
     }
@@ -730,10 +730,17 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
                     {/* Left: Meta details & Items */}
                     <div className="flex-1 min-w-0">
                       {/* Meta Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-5 gap-x-4 mb-6">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-5 gap-x-4 mb-6">
                         <div>
                           <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Order ID</span>
                           <span className="text-xs sm:text-sm font-mono font-bold text-slate-300">#{order.id.slice(-8).toUpperCase()}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Requested Time</span>
+                          <span className="text-xs sm:text-sm font-semibold text-slate-300 flex items-center gap-1.5 truncate">
+                            <CalendarClock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span className="truncate">{order.scheduledFor ? format(new Date(order.scheduledFor), 'h:mm a') : 'ASAP'}</span>
+                          </span>
                         </div>
                         <div>
                           <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Order Type</span>
@@ -767,7 +774,7 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
                               </div>
                             ))}
                           </div>
-                          
+
                           {/* Special Instructions integrated cleanly */}
                           {order.specialInstruction && (
                             <div className="mt-5 pt-4 border-t border-dashed border-white/5 flex items-start gap-2.5 text-xs text-slate-400">
@@ -790,7 +797,7 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
                   </div>
 
                   {/* Actions */}
-                  {!isCancelled && !isCompleted && vendor && (
+                  {!isCancelled && !isCompleted && order.status !== 'ready' && vendor && (
                     <OrderActionBar
                       order={order}
                       sessionId={sessionId}
