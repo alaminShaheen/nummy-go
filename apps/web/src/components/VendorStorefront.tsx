@@ -360,6 +360,7 @@ function VendorStorefrontContent({ tenant }: { tenant: Tenant }) {
           onAddToCart={handleAddToCart} 
           onUpdateQuantity={handleUpdateQuantity}
           cartQuantities={cartQuantities}
+          isClosed={!(tenant.acceptsOrders ?? true)}
         />
 
         <footer className="py-10 px-4 text-center border-t border-white/5">

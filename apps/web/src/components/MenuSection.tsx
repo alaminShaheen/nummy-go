@@ -11,9 +11,10 @@ interface MenuSectionProps {
   onAddToCart?: (item: MenuItem, qty: number) => void;
   onUpdateQuantity?: (item: MenuItem, qty: number) => void;
   cartQuantities?: Record<string, number>;
+  isClosed?: boolean;
 }
 
-export default function MenuSection({ items, categories = [], onAddToCart, onUpdateQuantity, cartQuantities = {} }: MenuSectionProps) {
+export default function MenuSection({ items, categories = [], onAddToCart, onUpdateQuantity, cartQuantities = {}, isClosed = false }: MenuSectionProps) {
   const [activeCategory, setActiveCategory] = useState<string | 'ALL'>('ALL');
 
   const filteredItems = activeCategory === 'ALL'
@@ -91,6 +92,7 @@ export default function MenuSection({ items, categories = [], onAddToCart, onUpd
               onUpdateQuantity={onUpdateQuantity}
               cartQty={cartQuantities[item.id] || 0}
               categoryName={categoryName} 
+              isClosed={isClosed}
             />;
           })}
         </div>

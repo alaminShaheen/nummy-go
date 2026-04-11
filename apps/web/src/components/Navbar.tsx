@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import { ClipboardList, Pencil, LogOut, LogIn, User, CookingPot, ShoppingCart } from 'lucide-react';
+import { ClipboardList, Pencil, LogOut, LogIn, User, CookingPot, ShoppingCart, Search } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { trpc } from '@/trpc/client';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
@@ -126,7 +126,23 @@ export default function Navbar() {
           )}
 
           {/* ── Right side ── */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+
+            {/* ── Mobile Search Icon (visible on non-search pages) ── */}
+            {pathname !== '/' && !isSearchPage && (
+              <Link
+                href="/search"
+                aria-label="Search restaurants"
+                className="
+                  md:hidden relative p-2 rounded-full
+                  border border-white/10 hover:border-amber-400/30
+                  text-slate-400 hover:text-amber-400
+                  transition-all duration-200
+                "
+              >
+                <Search size={17} />
+              </Link>
+            )}
 
             {/* ── Cart icon (visible on non-slug pages when cart has items) ── */}
             {showNavCartIcon && (
@@ -294,11 +310,11 @@ export default function Navbar() {
                         <div className="py-1">
                           <Link href={ordersHref} role="menuitem" id="nav-mobile-vendor-portal" onClick={() => setMobileMenuOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-amber-400 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/5">
-                            <ClipboardList size={15} aria-hidden="true" className="text-slate-500" /> Partner Portal
+                            <ClipboardList size={15} aria-hidden="true" className="text-slate-500" /> Manage Store
                           </Link>
                           <Link href={profileHref} role="menuitem" id="nav-mobile-profile" onClick={() => setMobileMenuOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-amber-400 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/5">
-                            <User size={15} aria-hidden="true" className="text-slate-500" /> Profile
+                            <User size={15} aria-hidden="true" className="text-slate-500" /> My Shop
                           </Link>
                         </div>
                       )}
@@ -320,11 +336,12 @@ export default function Navbar() {
               (and session check is complete)
           ══════════════════════════════════════════ */}
             {!isPending && !user && (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <Link href="/tenant/login" id="nav-vendor-login">
-                  <GradientButton className="px-5 py-2.5 text-sm shadow-orange-900/30">
-                    <LogIn size={16} aria-hidden="true" />
-                    Partner Login
+                  <GradientButton className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm shadow-orange-900/30 font-medium">
+                    <LogIn size={15} aria-hidden="true" className="sm:w-4 sm:h-4 w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Partner Login</span>
+                    <span className="sm:hidden">Login</span>
                   </GradientButton>
                 </Link>
               </div>
@@ -338,12 +355,6 @@ export default function Navbar() {
           </div>
         </nav>
 
-        {/* ── Mobile Search (hidden on landing + search page) ── */}
-        {pathname !== '/' && !isSearchPage && (
-          <div className="md:hidden w-full px-4 pb-3">
-            <VendorSearchBar size="default" placeholder="Find restaurants..." className="w-full" />
-          </div>
-        )}
       </header>
 
       {/* Cart Drawer (rendered from Navbar so it's accessible on every page) */}

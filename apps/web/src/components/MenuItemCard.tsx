@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import { useState, useRef } from 'react';
 import { NummyGoBadge, InlineEditableField, BrandSwitch, GradientButton } from '@/components/ui';
-import { Minus, Plus, Trash2, UploadCloud, Loader2, Check } from 'lucide-react';
+import { getBadgeStyle } from '@/components/ui/NummyGoBadge';
+import { Minus, Plus, Trash2, UploadCloud, Loader2, Check, X } from 'lucide-react';
 import { cn } from '@nummygo/shared/ui';
 
 export interface MenuItem {
@@ -30,6 +31,7 @@ interface MenuItemCardProps {
 	onUpdateField?: (id: string, field: string, value: any) => void;
   onDraftSave?: (item: MenuItem) => Promise<void> | void;
   onDraftCancel?: () => void;
+  isClosed?: boolean;
 }
 
 export default function MenuItemCard({ 
@@ -43,7 +45,8 @@ export default function MenuItemCard({
   onDelete,
   onUpdateField,
   onDraftSave,
-  onDraftCancel
+  onDraftCancel,
+  isClosed = false
 }: MenuItemCardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -159,25 +162,6 @@ export default function MenuItemCard({
 		>
       {/* Background layer to trap overflow for image radius without cutting off absolute badges */}
       <div className="absolute inset-0 rounded-[2rem] overflow-hidden pointer-events-none -z-10"></div>
-      {/* Builder Hover Availability Switch & Modern Danger Pivot */}
-      {(mode === 'builder') && (
-        <div className="absolute -top-3 right-4 z-50 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
-          <div className="bg-[#0f151d] rounded-full shadow-[0_0_20px_rgba(0,0,0,0.6)] flex items-center px-2 py-1.5 border border-white/5">
-            <BrandSwitch 
-              checked={currentItem.isAvailable ?? true}
-              onChange={(val) => handleFieldChange('isAvailable', val)}
-              ariaLabel="Toggle availability"
-            />
-          </div>
-          <button 
-            onClick={() => setDeleteStatus('confirming')}
-            className="group/delete relative flex items-center gap-1.5 pl-2.5 pr-2.5 py-1.5 rounded-full bg-rose-500 border border-rose-400/80 hover:bg-rose-400 hover:shadow-[0_0_20px_rgba(244,63,94,0.4)] text-rose-950 transition-all duration-300 overflow-hidden"
-          >
-            <Trash2 size={16} strokeWidth={2.5} className="shrink-0" />
-            <span className="w-0 overflow-hidden group-hover/delete:w-10 group-hover/delete:ml-0.5 transition-all duration-300 text-[10px] font-black uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/delete:opacity-100">Drop</span>
-          </button>
-        </div>
-      )}
 
 			{/* Floating Plate Image - Inset deliberately for bento styling */}
 			<div className="p-3 pb-0 relative z-10">
@@ -219,10 +203,34 @@ export default function MenuItemCard({
 					/>
 
 					{/* Badge explicitly mounted inside the plate bounds */}
-					{currentItem.badge && (
-						<span className="absolute top-3 left-3 shadow-[0_0_20px_rgba(0,0,0,0.7)] rounded-full z-20 pointer-events-none">
-							<NummyGoBadge label={currentItem.badge} />
-						</span>
+					{(currentItem.badge || mode !== 'customer') && (
+						<div className="absolute top-3 left-3 z-40">
+              {mode === 'customer' ? (
+                <span className="shadow-[0_0_20px_rgba(0,0,0,0.7)] rounded-full pointer-events-none block">
+                  <NummyGoBadge label={currentItem.badge!} />
+                </span>
+              ) : (
+                <div className={cn("rounded-full shadow-[0_0_20px_rgba(0,0,0,0.7)] transition-all flex items-center relative overflow-hidden group/badge border border-transparent", getBadgeStyle(currentItem.badge))}>
+                  <InlineEditableField
+                    type="text"
+                    value={currentItem.badge || ''}
+                    onSave={(val) => handleFieldChange('badge', val || null)}
+                    placeholder="+ Add Badge"
+                    textClassName="text-[10px] uppercase font-black tracking-widest px-2.5 py-1 whitespace-nowrap outline-none flex-1 text-current brightness-150"
+                    inputClassName="text-[10px] uppercase font-black tracking-widest bg-transparent border-none px-2.5 py-1 w-24 outline-none placeholder-current caret-current !text-current brightness-150"
+                  />
+                  {currentItem.badge && (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); handleFieldChange('badge', null); }} 
+                      className="opacity-60 hover:opacity-100 mr-2.5 ml-0 cursor-pointer pointer-events-auto shrink-0 transition-opacity text-current brightness-150"
+                      title="Clear badge"
+                    >
+                      <X size={12} strokeWidth={3} />
+                    </button>
+                  )}
+                </div>
+              )}
+						</div>
 					)}
 
 					{/* Unavailable indicator inside image for builder mode */}
@@ -368,7 +376,11 @@ export default function MenuItemCard({
 				{/* Purely Morphing CTA Button Zone (Customer Mode Only) */}
 				{mode === 'customer' && (
 					<div className="mt-1 h-12 flex items-center justify-center w-full relative">
-						{cartQty > 0 ? (
+						{isClosed ? (
+							<div className="w-full h-full flex items-center justify-center rounded-[1.5rem] border border-white/5 bg-white/[0.02] text-slate-500 text-[0.7rem] font-bold uppercase tracking-widest pointer-events-none select-none shadow-inner">
+								Store Closed
+							</div>
+						) : cartQty > 0 ? (
 							<div className="w-full h-full flex items-center justify-between px-1.5 rounded-[1.5rem] border border-amber-500/40 bg-amber-500/10 shadow-[0_0_20px_rgba(245,158,11,0.15)] animate-in fade-in zoom-in duration-200">
 								<button 
 									onClick={decrement}
@@ -391,13 +403,40 @@ export default function MenuItemCard({
 						) : (
 							<button 
 								onClick={handleInitialAdd}
-								className="w-full h-full flex items-center justify-center gap-2.5 rounded-[1.5rem] border border-white/5 bg-white-[0.02] hover:bg-amber-500/20 hover:border-amber-500/40 hover:text-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] text-slate-300 text-sm font-semibold transition-all duration-300 group/btn"
+								className="w-full h-full flex items-center justify-center gap-2.5 rounded-[1.5rem] border border-white/5 bg-white/[0.02] hover:bg-amber-500/20 hover:border-amber-500/40 hover:text-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] text-slate-300 text-sm font-semibold transition-all duration-300 group/btn"
 							>
 								<span className="group-hover/btn:text-amber-400 transition-colors">Add to Cart</span>
 								<span className="w-1 h-1 rounded-full bg-slate-600 group-hover/btn:bg-amber-600 transition-colors" aria-hidden="true" />
 								<span className="text-amber-400 tracking-wide">${currentItem.price.toFixed(2)}</span>
 							</button>
 						)}
+					</div>
+				)}
+
+				{/* Builder Mode Persistent Action Toolbar */}
+				{mode === 'builder' && (
+					<div className="mt-2 pt-4 border-t border-white/5 flex items-center justify-between w-full">
+            <div className="flex items-center gap-3 bg-[rgba(0,0,0,0.2)] rounded-full px-1.5 py-1 pr-3 border border-white/5 shadow-inner backdrop-blur-md">
+               <BrandSwitch 
+                 checked={currentItem.isAvailable ?? true}
+                 onChange={(val) => handleFieldChange('isAvailable', val)}
+                 ariaLabel="Toggle availability"
+               />
+               <span className={cn(
+                 "text-[10px] font-black uppercase tracking-widest transition-colors w-12 text-center",
+                 (currentItem.isAvailable ?? true) ? "text-emerald-400" : "text-slate-500"
+               )}>
+                 {(currentItem.isAvailable ?? true) ? "Active" : "Hidden"}
+               </span>
+            </div>
+
+						<button 
+							onClick={() => setDeleteStatus('confirming')}
+							className="relative flex items-center justify-center h-8 px-3 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500 hover:text-rose-950 hover:shadow-[0_0_15px_rgba(244,63,94,0.4)] transition-all duration-300 group/btn gap-1.5"
+						>
+							<Trash2 size={14} strokeWidth={2.5} />
+              <span className="text-[10px] font-black uppercase tracking-widest">Drop</span>
+						</button>
 					</div>
 				)}
 			</div>

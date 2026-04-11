@@ -1,5 +1,6 @@
 import { MapPin, Phone, Mail, Clock, Map } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { formatPhoneNumber } from '@nummygo/shared';
 
 const DynamicVendorMap = dynamic(() => import('./VendorMap'), { 
   ssr: false, 
@@ -79,7 +80,7 @@ export default function VendorMapDivider({
                   href={`tel:${phone.replace(/\s/g, '')}`}
                   className="text-slate-300 hover:text-white transition-colors"
                 >
-                  {phone}
+                  {formatPhoneNumber(phone)}
                 </a>
               </InfoRow>
             )}

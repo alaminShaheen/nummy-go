@@ -125,13 +125,13 @@ export default function CartDrawer({ isOpen, onClose, anchor = 'top' }: CartDraw
 
         {/* ── Scrollable Body ── */}
         {cart.length === 0 ? (
-          <div className="flex flex-col items-center justify-center flex-1 gap-4 px-6 text-center">
-            <div className="w-24 h-24 rounded-full flex items-center justify-center border-2 border-dashed border-white/10 bg-white/[0.02]">
+          <div className="flex flex-col items-center justify-center flex-1 min-h-[320px] py-12 gap-5 px-6 text-center">
+            <div className="w-24 h-24 rounded-full flex items-center justify-center border-2 border-dashed border-white/10 bg-white/[0.02] shadow-inner mb-2">
               <ShoppingCart className="w-8 h-8 text-slate-600" />
             </div>
             <div>
-              <p className="text-slate-300 text-sm font-bold mb-1">Your cart is empty</p>
-              <p className="text-slate-500 text-xs text-center max-w-[200px]">Looks like you haven't added any delicious items yet.</p>
+              <p className="text-slate-200 text-base font-bold mb-1.5">Your cart is empty</p>
+              <p className="text-slate-500 text-sm text-center max-w-[220px] leading-relaxed">Looks like you haven't added any delicious items yet.</p>
             </div>
           </div>
         ) : (

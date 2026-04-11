@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { SearchX, ChevronLeft, LayoutGrid, Map as MapIcon, Search, Loader2 } from 'lucide-react';
 import { useVendorSearch } from '@/hooks/useVendorSearch';
 import { GradientButton } from '@/components/ui';
+import Navbar from '@/components/Navbar';
 import dynamic from 'next/dynamic';
 
 const DynamicGlobalSearchMap = dynamic(() => import('@/components/GlobalSearchMap'), {
@@ -55,36 +56,36 @@ function SearchNodeCard({ result, index }: { result: SearchResult; index: number
 
         <div className="flex-1 min-w-0">
           <h3 className="text-base sm:text-lg font-bold text-text-primary leading-tight truncate">
-          {result.name}
-        </h3>
+            {result.name}
+          </h3>
 
-        {/* Description */}
-        {result.description ? (
-          <p className="text-text-secondary text-xs mt-1 line-clamp-2 leading-relaxed">
-            {result.description}
-          </p>
-        ) : (
-          <p className="text-text-muted text-xs mt-1 italic">No description available</p>
-        )}
+          {/* Description */}
+          {result.description ? (
+            <p className="text-text-secondary text-xs mt-1 line-clamp-2 leading-relaxed">
+              {result.description}
+            </p>
+          ) : (
+            <p className="text-text-muted text-xs mt-1 italic">No description available</p>
+          )}
 
-        {/* Tags */}
-        {result.tags && result.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {result.tags.slice(0, 4).map((tag) => (
-              <span
-                key={tag}
-                className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20 uppercase tracking-wide"
-              >
-                {tag}
-              </span>
-            ))}
-            {result.tags.length > 4 && (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-border/30 text-slate-500 border border-brand-border">
-                +{result.tags.length - 4}
-              </span>
-            )}
-          </div>
-        )}
+          {/* Tags */}
+          {result.tags && result.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {result.tags.slice(0, 4).map((tag) => (
+                <span
+                  key={tag}
+                  className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20 uppercase tracking-wide"
+                >
+                  {tag}
+                </span>
+              ))}
+              {result.tags.length > 4 && (
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-border/30 text-slate-500 border border-brand-border">
+                  +{result.tags.length - 4}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Status badge */}
@@ -151,7 +152,7 @@ function SearchResults() {
   const [inputValue, setInputValue] = useState(initialQ);
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
 
-  const { results, isLoading, debouncedQuery, triggerSearch } = useVendorSearch(inputValue, 3, 30);
+  const { results, isLoading, debouncedQuery, triggerSearch } = useVendorSearch(inputValue, 0, 30);
 
   // Quick Filter State
   const [openNowOnly, setOpenNowOnly] = useState(false);
@@ -180,7 +181,7 @@ function SearchResults() {
     return results.filter(r => {
       // 1. Open Now check
       if (openNowOnly && !r.acceptsOrders) return false;
-      
+
       // 2. Tag match check (if any tags are selected, the vendor must have AT LEAST ONE of them to show)
       if (selectedTags.length > 0) {
         if (!r.tags || r.tags.length === 0) return false;
@@ -193,7 +194,7 @@ function SearchResults() {
   }, [results, openNowOnly, selectedTags]);
 
   const toggleTag = (tag: string) => {
-    setSelectedTags(prev => 
+    setSelectedTags(prev =>
       prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
     );
   };
@@ -222,14 +223,6 @@ function SearchResults() {
 
   return (
     <div className="bg-brand-bg min-h-screen">
-      {/* Keyframes */}
-      <style>{`
-        @keyframes radarSweep {
-          from { transform: translate(-50%, -50%) rotate(0deg); }
-          to   { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-      `}</style>
-
       {/* ── Radar background (grid-only) ── */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div
@@ -242,11 +235,6 @@ function SearchResults() {
         />
         <div
           className="absolute top-1/2 left-1/2 w-[200vw] h-[200vw] rounded-full"
-          style={{
-            transform: 'translate(-50%, -50%)',
-            background: 'conic-gradient(from 0deg, transparent 70%, rgba(245,158,11,0.08) 100%)',
-            animation: 'radarSweep 16s linear infinite',
-          }}
         />
         {/* Ambient orbs */}
         <div className="glow-amber" style={{ top: '-10%', right: '-5%', opacity: 0.6 }} />
@@ -254,7 +242,8 @@ function SearchResults() {
       </div>
 
       {/* ── Main content ── */}
-      <main className="relative z-10 min-h-screen flex flex-col px-4 sm:px-6 lg:px-8 pt-8 pb-20">
+      <Navbar />
+      <main className="relative z-10 min-h-screen flex flex-col px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         <div className="max-w-7xl mx-auto w-full flex flex-col flex-grow">
 
           {/* ── Top bar ── */}
@@ -277,9 +266,9 @@ function SearchResults() {
           </div>
 
           {/* ── Cinematic search bar ── */}
-          <div className="w-full max-w-3xl mx-auto mb-12 sm:mb-16">
+          <div className="w-full max-w-3xl mx-auto mb-12 sm:mb-16 search-glow rounded-full">
             <div
-              className="search-glow relative flex items-center h-14 sm:h-[72px] bg-brand-surface/90 border border-brand-border rounded-full px-5 sm:px-6 backdrop-blur-xl transition-all duration-300 focus-within:border-amber-400/40"
+              className="relative flex items-center h-14 sm:h-[72px] bg-brand-surface/80 border border-white/10 rounded-full px-5 sm:px-6 backdrop-blur-xl transition-all duration-300 focus-within:border-amber-400/40"
             >
               {/* Icon */}
               <div className="text-slate-500 flex-shrink-0 mr-3 sm:mr-4">
@@ -297,12 +286,8 @@ function SearchResults() {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="What are you craving?"
-                className="flex-1 h-full bg-transparent border-none outline-none ring-0 text-lg sm:text-2xl font-bold text-text-primary"
-                style={{ color: 'inherit' }}
+                className="flex-1 h-full bg-transparent border-none outline-none ring-0 text-lg sm:text-2xl font-bold text-slate-100 placeholder:text-slate-400"
               />
-              <style>{`
-                input::placeholder { color: rgba(148,163,184,0.7) !important; }
-              `}</style>
 
               {/* Search button — visible on sm+ */}
               <GradientButton
@@ -317,21 +302,19 @@ function SearchResults() {
               <div className="hidden sm:flex bg-brand-card rounded-full p-1 ml-3 border border-brand-border flex-shrink-0">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                    viewMode === 'grid'
-                      ? 'bg-brand-surface text-amber-400 border border-brand-border shadow'
-                      : 'text-slate-500 hover:text-slate-300'
-                  }`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${viewMode === 'grid'
+                    ? 'bg-brand-surface text-amber-400 border border-brand-border shadow'
+                    : 'text-slate-500 hover:text-slate-300'
+                    }`}
                 >
                   <LayoutGrid size={13} /> Grid
                 </button>
                 <button
                   onClick={() => setViewMode('map')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                    viewMode === 'map'
-                      ? 'bg-brand-surface text-amber-400 border border-brand-border shadow'
-                      : 'text-slate-500 hover:text-slate-300'
-                  }`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${viewMode === 'map'
+                    ? 'bg-brand-surface text-amber-400 border border-brand-border shadow'
+                    : 'text-slate-500 hover:text-slate-300'
+                    }`}
                 >
                   <MapIcon size={13} /> Map
                 </button>
@@ -350,21 +333,19 @@ function SearchResults() {
               <div className="flex bg-brand-card rounded-full p-1 border border-brand-border">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                    viewMode === 'grid'
-                      ? 'bg-brand-surface text-amber-400 border border-brand-border shadow'
-                      : 'text-slate-500'
-                  }`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${viewMode === 'grid'
+                    ? 'bg-brand-surface text-amber-400 border border-brand-border shadow'
+                    : 'text-slate-500'
+                    }`}
                 >
                   <LayoutGrid size={13} />
                 </button>
                 <button
                   onClick={() => setViewMode('map')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                    viewMode === 'map'
-                      ? 'bg-brand-surface text-amber-400 border border-brand-border shadow'
-                      : 'text-slate-500'
-                  }`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${viewMode === 'map'
+                    ? 'bg-brand-surface text-amber-400 border border-brand-border shadow'
+                    : 'text-slate-500'
+                    }`}
                 >
                   <MapIcon size={13} />
                 </button>
@@ -382,38 +363,36 @@ function SearchResults() {
           {/* ── Quick Filter Row (Only show if we have results to filter) ── */}
           {!isLoading && showResults && results.length > 0 && (
             <div className="w-full max-w-3xl mx-auto -mt-6 mb-12 sm:mb-14 px-2">
-               <div className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                 {/* Open Now Toggle */}
-                 <button 
+              <div className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {/* Open Now Toggle */}
+                <button
                   onClick={() => setOpenNowOnly(!openNowOnly)}
-                  className={`flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[11px] font-bold tracking-[0.06em] uppercase transition-all duration-200 border-2 ${
-                    openNowOnly
-                      ? 'bg-green-500/15 border-green-500 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
-                      : 'bg-green-500/5 border-green-500/20 text-green-500/70 hover:border-green-500/50 hover:bg-green-500/10'
-                  }`}
-                 >
-                   <span className={`w-1.5 h-1.5 rounded-full ${openNowOnly ? 'bg-green-400 shadow-[0_0_8px_#4ade80]' : 'bg-green-500/50'}`} />
-                   Open Now
-                 </button>
+                  className={`flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[11px] font-bold tracking-[0.06em] uppercase transition-all duration-200 border-2 ${openNowOnly
+                    ? 'bg-green-500/15 border-green-500 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
+                    : 'bg-green-500/5 border-green-500/20 text-green-500/70 hover:border-green-500/50 hover:bg-green-500/10'
+                    }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${openNowOnly ? 'bg-green-400 shadow-[0_0_8px_#4ade80]' : 'bg-green-500/50'}`} />
+                  Open Now
+                </button>
 
-                 {/* Dynamic Cuisine/Tag Pills */}
-                 {uniqueTags.map(tag => {
-                   const isActive = selectedTags.includes(tag);
-                   return (
-                     <button
-                       key={tag}
-                       onClick={() => toggleTag(tag)}
-                       className={`flex-shrink-0 px-3.5 py-2 rounded-lg text-[11px] font-bold tracking-[0.06em] uppercase transition-all duration-200 border-[1.5px] ${
-                         isActive
-                           ? 'bg-amber-500 border-amber-500 text-black shadow-[0_0_12px_rgba(245,158,11,0.6)]'
-                           : 'bg-amber-500/5 border-amber-500/30 text-amber-500 hover:bg-amber-500/15 hover:border-amber-500/60'
-                       }`}
-                     >
-                       {tag}
-                     </button>
-                   );
-                 })}
-               </div>
+                {/* Dynamic Cuisine/Tag Pills */}
+                {uniqueTags.map(tag => {
+                  const isActive = selectedTags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      onClick={() => toggleTag(tag)}
+                      className={`flex-shrink-0 px-3.5 py-2 rounded-lg text-[11px] font-bold tracking-[0.06em] uppercase transition-all duration-200 border-[1.5px] ${isActive
+                        ? 'bg-amber-500 border-amber-500 text-black shadow-[0_0_12px_rgba(245,158,11,0.6)]'
+                        : 'bg-amber-500/5 border-amber-500/30 text-amber-500 hover:bg-amber-500/15 hover:border-amber-500/60'
+                        }`}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -425,25 +404,25 @@ function SearchResults() {
                   {!showResults
                     ? 'Discover Local Kitchens'
                     : debouncedQuery
-                    ? <>Results for <span className="gradient-text">'{debouncedQuery}'</span></>
-                    : 'All Local Kitchens'}
+                      ? <>Results for <span className="gradient-text">'{debouncedQuery}'</span></>
+                      : 'All Local Kitchens'}
                 </h1>
-                <p className="text-text-secondary text-sm mt-1">
+                <div className="text-text-secondary text-sm mt-1">
                   {isLoading
                     ? 'Scanning for kitchens…'
                     : showResults
-                    ? (
-                      <div className="flex items-center gap-2">
-                        <span>{filteredResults.length} {filteredResults.length === 1 ? 'place' : 'places'} found</span>
-                        {(openNowOnly || selectedTags.length > 0) && (
-                          <span className="text-amber-400">
-                             — {openNowOnly ? 1 + selectedTags.length : selectedTags.length} filter{openNowOnly || selectedTags.length > 1 ? 's' : ''} active
-                          </span>
-                        )}
-                      </div>
-                    )
-                    : 'Start typing or click Search to discover restaurants near you'}
-                </p>
+                      ? (
+                        <div className="flex items-center gap-2">
+                          <span>{filteredResults.length} {filteredResults.length === 1 ? 'place' : 'places'} found</span>
+                          {(openNowOnly || selectedTags.length > 0) && (
+                            <span className="text-amber-400">
+                              — {openNowOnly ? 1 + selectedTags.length : selectedTags.length} filter{openNowOnly || selectedTags.length > 1 ? 's' : ''} active
+                            </span>
+                          )}
+                        </div>
+                      )
+                      : 'Start typing or click Search to discover restaurants near you'}
+                </div>
               </div>
             </div>
           )}
@@ -458,21 +437,6 @@ function SearchResults() {
                 </div>
               )}
 
-              {/* Empty: no search yet */}
-              {!isLoading && !showResults && (
-                <div className="flex flex-col items-center justify-center py-28 text-center">
-                  <div className="w-20 h-20 rounded-full bg-amber-400/10 border border-amber-400/20 flex items-center justify-center mb-6">
-                    <Search size={32} className="text-amber-400/70" />
-                  </div>
-                  <h2 className="text-xl font-bold text-text-primary mb-2">Find your next meal</h2>
-                  <p className="text-text-secondary max-w-sm text-sm">
-                    Search by restaurant name, or press Search to browse all available kitchens.
-                  </p>
-                  <GradientButton onClick={triggerSearch} className="mt-6 px-8 h-11 rounded-full text-sm py-0">
-                    Show all kitchens
-                  </GradientButton>
-                </div>
-              )}
 
               {/* Empty: searched but no results — animated kitchen wok */}
               {!isLoading && showResults && results.length === 0 && (
@@ -487,28 +451,28 @@ function SearchResults() {
                     `}</style>
 
                     {/* Steam wisps */}
-                    <svg className="absolute" style={{top:'-18px',left:'50%',transform:'translateX(-50%)',width:'72px',height:'36px'}} viewBox="0 0 72 36" fill="none">
-                      <path d="M18 30 C18 20 10 18 14 8" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" style={{animation:'steam1 2.2s ease-in-out infinite',opacity:0}} />
-                      <path d="M36 32 C36 22 28 20 32 10" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" style={{animation:'steam2 2.2s ease-in-out 0.4s infinite',opacity:0}} />
-                      <path d="M54 30 C54 20 46 18 50 8" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" style={{animation:'steam3 2.2s ease-in-out 0.8s infinite',opacity:0}} />
+                    <svg className="absolute" style={{ top: '-18px', left: '50%', transform: 'translateX(-50%)', width: '72px', height: '36px' }} viewBox="0 0 72 36" fill="none">
+                      <path d="M18 30 C18 20 10 18 14 8" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" style={{ animation: 'steam1 2.2s ease-in-out infinite', opacity: 0 }} />
+                      <path d="M36 32 C36 22 28 20 32 10" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" style={{ animation: 'steam2 2.2s ease-in-out 0.4s infinite', opacity: 0 }} />
+                      <path d="M54 30 C54 20 46 18 50 8" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" style={{ animation: 'steam3 2.2s ease-in-out 0.8s infinite', opacity: 0 }} />
                     </svg>
 
                     {/* Wok SVG */}
-                    <svg style={{animation:'wobble 3s ease-in-out infinite',width:'112px',height:'112px'}} viewBox="0 0 112 112" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg style={{ animation: 'wobble 3s ease-in-out infinite', width: '112px', height: '112px' }} viewBox="0 0 112 112" fill="none" xmlns="http://www.w3.org/2000/svg">
                       {/* Wok body */}
-                      <ellipse cx="56" cy="68" rx="36" ry="16" fill="#1a2130" stroke="#334155" strokeWidth="2"/>
-                      <path d="M20 68 Q20 92 56 92 Q92 92 92 68" fill="#1a2130" stroke="#334155" strokeWidth="2"/>
+                      <ellipse cx="56" cy="68" rx="36" ry="16" fill="#1a2130" stroke="#334155" strokeWidth="2" />
+                      <path d="M20 68 Q20 92 56 92 Q92 92 92 68" fill="#1a2130" stroke="#334155" strokeWidth="2" />
                       {/* Wok rim highlight */}
-                      <ellipse cx="56" cy="68" rx="36" ry="16" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeOpacity="0.4"/>
+                      <ellipse cx="56" cy="68" rx="36" ry="16" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeOpacity="0.4" />
                       {/* Handle left */}
-                      <rect x="10" y="65" width="14" height="6" rx="3" fill="#334155" stroke="#475569" strokeWidth="1.2"/>
+                      <rect x="10" y="65" width="14" height="6" rx="3" fill="#334155" stroke="#475569" strokeWidth="1.2" />
                       {/* Handle right */}
-                      <rect x="88" y="65" width="14" height="6" rx="3" fill="#334155" stroke="#475569" strokeWidth="1.2"/>
+                      <rect x="88" y="65" width="14" height="6" rx="3" fill="#334155" stroke="#475569" strokeWidth="1.2" />
                       {/* Amber glow dot */}
-                      <circle cx="56" cy="80" r="4" fill="#f59e0b" fillOpacity="0.3"/>
+                      <circle cx="56" cy="80" r="4" fill="#f59e0b" fillOpacity="0.3" />
                       {/* X mark inside wok */}
-                      <line x1="48" y1="74" x2="54" y2="80" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round"/>
-                      <line x1="54" y1="74" x2="48" y2="80" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round"/>
+                      <line x1="48" y1="74" x2="54" y2="80" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
+                      <line x1="54" y1="74" x2="48" y2="80" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                   </div>
 
@@ -546,8 +510,8 @@ function SearchResults() {
                     {isLoading
                       ? 'Mapping locations…'
                       : showResults
-                      ? `${results.length} location${results.length !== 1 ? 's' : ''} on map`
-                      : 'Click Search to load locations'}
+                        ? `${results.length} location${results.length !== 1 ? 's' : ''} on map`
+                        : 'Click Search to load locations'}
                   </span>
                 </div>
               </div>
