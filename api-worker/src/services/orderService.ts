@@ -380,20 +380,7 @@ export async function fetchCheckoutSession(env: Env, input: GetOrderGroupDto) {
     modificationThreshold: number;
   }> = {};
 
-  // Batch-fetch all unique tenant profiles
-  const tenantIds = [...new Set(orders.map((o) => o.tenantId))];
-  const tenantRows = await getTenantsByIds(tenantIds);
-  const tenantMap = new Map(tenantRows.map((t) => [t.id, t]));
 
-  // Build vendor info map
-  const vendorInfo: Record<string, {
-    name: string;
-    slug: string;
-    phoneNumber: string;
-    logoUrl: string | null;
-    address: string | null;
-    modificationThreshold: number;
-  }> = {};
 
   let tenantModificationThreshold = 30;
   for (const tenant of tenantRows) {
