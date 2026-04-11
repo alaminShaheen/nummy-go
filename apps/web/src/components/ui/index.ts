@@ -1,7 +1,7 @@
 /**
  * apps/web/src/components/ui/index.ts
  *
- * NummyGo design-system barrel export.
+ * nummyGo design-system barrel export.
  * Custom components and re-exports of shadcn primitives.
  * Import from '@/components/ui' throughout the web app.
  */
@@ -80,7 +80,7 @@ export {
 } from '@nummygo/shared/ui';
 export type { InputProps, VendorCardProps } from '@nummygo/shared/ui';
 
-// Custom NummyGo components
+// Custom nummyGo components
 export { GradientButton } from './GradientButton';
 export type { GradientButtonProps } from './GradientButton';
 
@@ -115,3 +115,5 @@ export { BrandSwitch } from './BrandSwitch';
 export { AddressAutocomplete } from './AddressAutocomplete';
 export { Toaster } from './toaster';
 export { ScrollToTop } from './ScrollToTop';
+export { DateTimePicker } from './DateTimePicker';
+export type { DateTimePickerProps } from './DateTimePicker';

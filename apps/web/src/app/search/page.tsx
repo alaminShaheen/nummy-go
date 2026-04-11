@@ -3,7 +3,7 @@ import SearchClient from '@/components/SearchClient';
 
 export const metadata: Metadata = {
   title: 'Discover Local Restaurants',
-  description: 'Search and explore local restaurants near you. Find exactly what you are craving, available for delivery and pickup on NummyGo.',
+  description: 'Search and explore local restaurants near you. Find exactly what you are craving, available for delivery and pickup on nummyGo.',
   openGraph: {
     title: 'Discover Local Restaurants',
     description: 'Search and explore local restaurants near you.',

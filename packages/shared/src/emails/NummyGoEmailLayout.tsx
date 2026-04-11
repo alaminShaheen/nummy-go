@@ -31,7 +31,7 @@ export function NummyGoEmailLayout({ children, previewText }: NummyGoLayoutProps
           {/* Footer */}
           <Hr style={styles.divider} />
           <Text style={styles.footer}>
-            © {new Date().getFullYear()} NummyGo. This is an automated transactional email.
+            © {new Date().getFullYear()} nummyGo. This is an automated transactional email.
           </Text>
         </Container>
       </Body>

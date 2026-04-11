@@ -60,9 +60,9 @@ export function AddressAutocomplete({ id, value, onChange, placeholder, error }:
 			// Free Nominatim API adhering to Rate-Limit usage (approx ~1 per second enforced by debounce).
 			const response = await fetch(
 				`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`,
-				{ headers: { 'User-Agent': 'NummyGo-App/1.0' } }
+				{ headers: { 'User-Agent': 'nummyGo-App/1.0' } }
 			);
-			
+
 			if (response.ok) {
 				const data = await response.json() as NominatimResult[];
 				setResults(data);
@@ -79,7 +79,7 @@ export function AddressAutocomplete({ id, value, onChange, placeholder, error }:
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const newVal = e.target.value;
 		setSearchText(newVal);
-		
+
 		// If they clear the text, clear parents immediately
 		if (!newVal.trim()) {
 			onChange('', undefined, undefined);
@@ -94,7 +94,7 @@ export function AddressAutocomplete({ id, value, onChange, placeholder, error }:
 	const handleSelect = (r: NominatimResult) => {
 		setSearchText(r.display_name);
 		setIsOpen(false);
-		
+
 		// Map back to parent precisely
 		onChange(r.display_name, parseFloat(r.lat), parseFloat(r.lon));
 	};
@@ -116,7 +116,7 @@ export function AddressAutocomplete({ id, value, onChange, placeholder, error }:
 			</div>
 
 			{isOpen && (searchText.trim().length >= 3) && (
-				<div 
+				<div
 					className="absolute z-50 w-full mt-2 rounded-xl border border-white/10 shadow-2xl overflow-hidden backdrop-blur-xl"
 					style={{ background: 'rgba(19,25,31,0.95)' }}
 				>

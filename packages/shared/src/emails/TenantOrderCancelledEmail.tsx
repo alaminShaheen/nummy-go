@@ -239,7 +239,7 @@ export function TenantOrderCancelledEmail({
             <Section className="mt-8">
               <Hr style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '0 0 16px 0' }} />
               <Text className="text-[11px] text-center m-0 leading-relaxed" style={{ color: '#475569' }}>
-                © {new Date().getFullYear()} NummyGo · Automated transactional email
+                © {new Date().getFullYear()} nummyGo · Automated transactional email
               </Text>
             </Section>
 

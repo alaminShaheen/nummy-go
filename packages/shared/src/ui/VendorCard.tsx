@@ -57,7 +57,7 @@ export function VendorCard({
     >
       <Card
         className={cn(
-          // Reset shadcn defaults, apply NummyGo brand styles
+          // Reset shadcn defaults, apply nummyGo brand styles
           'vendor-card gap-0 py-0 ring-0 border-0 cursor-pointer',
           'rounded-2xl',
         )}

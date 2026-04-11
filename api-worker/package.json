@@ -2,7 +2,7 @@
   "name": "api-worker",
   "version": "1.0.0",
   "private": true,
-  "description": "NummyGo Cloudflare Worker – tRPC API + Durable Objects for real-time order updates",
+  "description": "nummyGo Cloudflare Worker – tRPC API + Durable Objects for real-time order updates",
   "main": "./src/index.ts",
   "exports": {
     ".": {

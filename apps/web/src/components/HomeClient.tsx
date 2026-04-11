@@ -1,6 +1,6 @@
 /**
  * apps/web/src/app/page.tsx
- * NummyGo platform landing page — animated with aurora orbs, ember particles,
+ * nummyGo platform landing page — animated with aurora orbs, ember particles,
  * scrolling ticker, animated SVG cards and bento features grid.
  */
 'use client';
@@ -30,7 +30,7 @@ const CUSTOMER_BENEFITS = [
     icon: 'pot' as const,
     label: 'Freshly Prepared',
     title: 'Discover Your Neighbourhood Kitchen',
-    body: 'Every restaurant on NummyGo is a real local kitchen — not a ghost brand. Find the hidden gems your neighbours already love, one plate at a time.',
+    body: 'Every restaurant on nummyGo is a real local kitchen — not a ghost brand. Find the hidden gems your neighbours already love, one plate at a time.',
     accent: 'amber' as const,
     delay: 100,
   },
@@ -53,7 +53,7 @@ const TICKER_NAMES: string[] = [
 
 const POPULAR_NEAR_ME: Pick<Tenant, 'name' | 'slug'>[] = [
   { name: 'Authentic Dhakaiya', slug: 'authentic-dhakaiya' },
-  { name: 'Deshi Kitchen',      slug: 'deshi-kitchen' },
+  { name: 'Deshi Kitchen', slug: 'deshi-kitchen' },
 ];
 
 /* ─── Ember particle hook ───────────────────────────────────── */
@@ -176,18 +176,18 @@ export default function PlatformHome() {
         <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
           {/* Aurora orbs */}
           <div className="nummy-orb-1 absolute rounded-full pointer-events-none"
-            style={{ width:700, height:700, top:'-18%', left:'-12%', background:'radial-gradient(circle, rgba(245,158,11,0.18) 0%, transparent 70%)', filter:'blur(90px)', opacity:0.7 }}
+            style={{ width: 700, height: 700, top: '-18%', left: '-12%', background: 'radial-gradient(circle, rgba(245,158,11,0.18) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.7 }}
             aria-hidden="true" />
           <div className="nummy-orb-2 absolute rounded-full pointer-events-none"
-            style={{ width:650, height:650, bottom:'-20%', right:'-14%', background:'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)', filter:'blur(90px)', opacity:0.65 }}
+            style={{ width: 650, height: 650, bottom: '-20%', right: '-14%', background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.65 }}
             aria-hidden="true" />
           <div className="nummy-orb-3 absolute rounded-full pointer-events-none"
-            style={{ width:400, height:400, top:'50%', left:'50%', background:'radial-gradient(circle, rgba(234,88,12,0.12) 0%, transparent 70%)', filter:'blur(60px)', opacity:0.5 }}
+            style={{ width: 400, height: 400, top: '50%', left: '50%', background: 'radial-gradient(circle, rgba(234,88,12,0.12) 0%, transparent 70%)', filter: 'blur(60px)', opacity: 0.5 }}
             aria-hidden="true" />
 
           {/* Grid overlay */}
           <div className="absolute inset-0 opacity-[0.025]"
-            style={{ backgroundImage:'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize:'50px 50px' }}
+            style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize: '50px 50px' }}
             aria-hidden="true" />
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-24 pt-40">
@@ -232,12 +232,12 @@ export default function PlatformHome() {
 
           {/* Ember particles */}
           <div ref={emberRef} className="absolute bottom-0 left-0 right-0 h-64 pointer-events-none"
-            style={{ background:'linear-gradient(to top, rgba(245,158,11,0.04), transparent)' }}
+            style={{ background: 'linear-gradient(to top, rgba(245,158,11,0.04), transparent)' }}
             aria-hidden="true" />
 
           {/* Bottom fade */}
           <div className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
-            style={{ background:'linear-gradient(to bottom, transparent, #0D1117)' }}
+            style={{ background: 'linear-gradient(to bottom, transparent, #0D1117)' }}
             aria-hidden="true" />
         </section>
 
@@ -245,11 +245,11 @@ export default function PlatformHome() {
             TICKER STRIP
         ══════════════════════════════════════════════ */}
         <div className="relative overflow-hidden border-y"
-          style={{ borderColor:'rgba(255,255,255,0.05)', background:'rgba(255,255,255,0.015)', padding:'13px 0' }}>
+          style={{ borderColor: 'rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.015)', padding: '13px 0' }}>
           <div className="absolute top-0 left-0 bottom-0 w-24 z-10 pointer-events-none"
-            style={{ background:'linear-gradient(to right, #0D1117, transparent)' }} />
+            style={{ background: 'linear-gradient(to right, #0D1117, transparent)' }} />
           <div className="absolute top-0 right-0 bottom-0 w-24 z-10 pointer-events-none"
-            style={{ background:'linear-gradient(to left, #0D1117, transparent)' }} />
+            style={{ background: 'linear-gradient(to left, #0D1117, transparent)' }} />
           <div className="nummy-ticker-inner flex w-max" aria-hidden="true">
             {[...TICKER_NAMES, ...TICKER_NAMES].map((name, i) => (
               <div key={i} className="inline-flex items-center gap-2 px-8 text-[13px] font-semibold text-slate-500 whitespace-nowrap">
@@ -267,7 +267,7 @@ export default function PlatformHome() {
         ══════════════════════════════════════════════ */}
         <section id="customer-benefits" className="relative py-28 px-4 sm:px-6 lg:px-8">
           <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none"
-            style={{ background:'radial-gradient(circle, rgba(251,191,36,0.07) 0%, transparent 70%)', filter:'blur(40px)' }}
+            style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.07) 0%, transparent 70%)', filter: 'blur(40px)' }}
             aria-hidden="true" />
 
           <div className="max-w-7xl mx-auto relative z-10">
@@ -296,7 +296,7 @@ export default function PlatformHome() {
         ══════════════════════════════════════════════ */}
         <section id="vendor-benefits" className="relative py-28 px-4 sm:px-6 lg:px-8">
           <div className="absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
-            style={{ background:'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)', filter:'blur(50px)' }}
+            style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)', filter: 'blur(50px)' }}
             aria-hidden="true" />
 
           <div className="max-w-7xl mx-auto relative z-10">
@@ -304,7 +304,7 @@ export default function PlatformHome() {
               <SectionLabel className="mb-3">For Restaurants</SectionLabel>
               <h2 className="text-4xl sm:text-5xl font-black text-slate-100">
                 Everything Your Kitchen{' '}
-                <span style={{ background:'linear-gradient(135deg, #818cf8, #6366f1)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
+                <span style={{ background: 'linear-gradient(135deg, #818cf8, #6366f1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                   Actually Needs
                 </span>
               </h2>
@@ -319,7 +319,7 @@ export default function PlatformHome() {
             <div className="text-center mt-16" data-reveal>
               <Link href="/tenant/login">
                 <GradientButton className="text-base px-10 py-4">
-                  Open Your Kitchen on NummyGo
+                  Open Your Kitchen on nummyGo
                   <ArrowRight size={18} aria-hidden="true" />
                 </GradientButton>
               </Link>

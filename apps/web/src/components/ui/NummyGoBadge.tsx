@@ -1,7 +1,7 @@
 /**
  * NummyGoBadge
  * Brand-styled badge for menu item labels ("Popular", "New", "Chef's Pick").
- * Wraps shadcn Badge with NummyGo brand variants.
+ * Wraps shadcn Badge with nummyGo brand variants.
  */
 import * as React from 'react';
 import { Badge } from '@/components/ui';
@@ -10,7 +10,7 @@ import { cn } from '@/components/ui';
 export function getBadgeStyle(text: string | null | undefined): string {
   if (!text) return 'bg-black/50 border border-white/10 backdrop-blur-md text-white/50 hover:text-white/80';
   const lower = text.toLowerCase();
-  
+
   // Specific matchers
   if (lower.includes('spicy') || lower.includes('hot')) {
     return 'bg-gradient-to-r from-rose-600 to-red-500 text-white border-transparent';
@@ -27,7 +27,7 @@ export function getBadgeStyle(text: string | null | undefined): string {
   if (lower.includes('promo') || lower.includes('deal') || lower.includes('save') || lower.includes('%')) {
     return 'bg-gradient-to-r from-amber-500 to-amber-600 text-black border-transparent shadow-[0_0_15px_rgba(245,158,11,0.3)]';
   }
-  
+
   // Generic eye-catcher fallback (Popular, Must Try, etc)
   return 'bg-gradient-to-r from-orange-500 to-rose-500 text-white border-transparent';
 }

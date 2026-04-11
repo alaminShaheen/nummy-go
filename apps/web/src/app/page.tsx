@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Direct Local Restaurant Ordering',
   description: 'Order directly from your favorite local restaurants without third-party markups. Fast local pickup and delivery options available.',
   openGraph: {
-    title: 'NummyGo - Direct Local Restaurant Ordering',
+    title: 'nummyGo - Direct Local Restaurant Ordering',
     description: 'Order directly from your favorite local restaurants without third-party markups.',
   },
 };

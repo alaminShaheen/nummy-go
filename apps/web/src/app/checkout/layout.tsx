@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Secure Checkout | NummyGo',
-  description: 'Complete your NummyGo order securely.',
+  title: 'Secure Checkout',
+  description: 'Complete your nummyGo order securely.',
   robots: {
     index: false,
     follow: false,

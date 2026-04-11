@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | NummyGo Partner',
-    default: 'NummyGo Partner Dashboard',
+    template: '%s | nummyGo Partner',
+    default: 'nummyGo Partner Dashboard',
   },
   robots: {
     index: false,

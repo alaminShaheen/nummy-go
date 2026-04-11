@@ -34,7 +34,7 @@ export class EmailService {
         to: customerEmail,
         subject: `Order Confirmed: #${order.id.slice(-6).toUpperCase()}`,
         react: EmailTemplates.OrderConfirmationEmail({
-          tenantName: tenantInfo?.name || 'NummyGo Tenant',
+          tenantName: tenantInfo?.name || 'nummyGo Tenant',
           orderId: order.id,
           createdAt: order.createdAt,
           totalCents: order.totalAmount,
@@ -58,7 +58,7 @@ export class EmailService {
         to: customerEmail,
         subject: `Order Update: #${order.id.slice(-6).toUpperCase()}`,
         react: EmailTemplates.OrderDeclinedEmail({
-          tenantName: 'NummyGo Tenant',
+          tenantName: 'nummyGo Tenant',
           orderId: order.id,
           createdAt: order.createdAt,
           totalCents: order.totalAmount,
@@ -81,7 +81,7 @@ export class EmailService {
       return await this.resend.emails.send({
         from: EMAIL_FROM.NOTIFICATIONS,
         to: tenantEmail,
-        subject: `NummyGo: New Order #${order.id.slice(-6).toUpperCase()}`,
+        subject: `nummyGo: New Order #${order.id.slice(-6).toUpperCase()}`,
         react: EmailTemplates.TenantNewOrderEmail({
           tenantName,
           orderId: order.id,
@@ -105,7 +105,7 @@ export class EmailService {
       return await this.resend.emails.send({
         from: EMAIL_FROM.NOTIFICATIONS,
         to: tenantEmail,
-        subject: `NummyGo: Order Cancelled #${order.id.slice(-6).toUpperCase()}`,
+        subject: `nummyGo: Order Cancelled #${order.id.slice(-6).toUpperCase()}`,
         react: EmailTemplates.TenantOrderCancelledEmail({
           tenantName,
           orderId: order.id,

@@ -277,7 +277,7 @@ function VendorStorefrontContent({
       calories: item.calories || null,
       isAvailable: item.isAvailable,
     }))
-    : MENU_ITEMS;
+    : [];
 
   const handleAddToCart = (item: MenuItem, qty: number) => {
     addToCart(

@@ -2,7 +2,7 @@
   "name": "@nummygo/shared",
   "version": "1.0.0",
   "private": true,
-  "description": "Shared models, Zod schemas, shadcn/ui components, and Drizzle DB layer for NummyGo",
+  "description": "Shared models, Zod schemas, shadcn/ui components, and Drizzle DB layer for nummyGo",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -41,6 +41,10 @@
     "./db/queries": {
       "types": "./dist/db/queries/index.d.ts",
       "default": "./dist/db/queries/index.js"
+    },
+    "./lib/formatters": {
+      "types": "./dist/lib/formatters.d.ts",
+      "default": "./dist/lib/formatters.js"
     }
   },
   "scripts": {

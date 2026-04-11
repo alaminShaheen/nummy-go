@@ -32,7 +32,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
-    
+
     try {
         const tenant = await serverTRPC.tenant.getTenantBySlug.query({ slug });
         if (!tenant) return {};
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
                 title: tenant.name,
                 description: tenant.description || `Order ${tenant.name} online.`,
                 images: tenant.heroImageUrl ? [{ url: tenant.heroImageUrl }] : undefined,
-                siteName: 'NummyGo',
+                siteName: 'nummyGo',
                 type: 'website',
             },
             twitter: {

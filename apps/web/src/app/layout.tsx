@@ -9,23 +9,23 @@ import { Geist } from "next/font/google";
 import { cn, Toaster } from '@/components/ui';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | NummyGo',
-    default: 'NummyGo - Direct Restaurant Ordering',
+    template: '%s | nummyGo',
+    default: 'nummyGo - Direct Restaurant Ordering',
   },
   description: 'Order directly from your favorite local restaurants without third-party markups.',
   openGraph: {
-    title: 'NummyGo',
+    title: 'nummyGo',
     description: 'Order directly from your favorite local restaurants without third-party markups.',
-    siteName: 'NummyGo',
+    siteName: 'nummyGo',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NummyGo',
+    title: 'nummyGo',
     description: 'Order directly from your favorite local restaurants without third-party markups.',
   },
 };
