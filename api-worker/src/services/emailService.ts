@@ -2,7 +2,7 @@ import React from 'react';
 import { Resend } from 'resend';
 import { EmailTemplates, EMAIL_FROM } from '@nummygo/shared';
 import type { Env } from '../index';
-import type { Order } from '@nummygo/shared/models';
+import type { Order, Tenant } from '@nummygo/shared/models';
 
 export class EmailService {
   private resend: Resend;
@@ -22,7 +22,11 @@ export class EmailService {
 
   // ── CUSTOMER NOTIFICATIONS ───────────────────────────────────────────────
 
-  async sendOrderConfirmation(order: Order, customerEmail: string) {
+  async sendOrderConfirmation(
+    tenantInfo: { name?: string; email?: string | null; phoneNumber?: string | null } | undefined,
+    order: Order,
+    customerEmail: string
+  ) {
     if (!customerEmail) return null;
     try {
       return await this.resend.emails.send({
@@ -30,14 +34,14 @@ export class EmailService {
         to: customerEmail,
         subject: `Order Confirmed: #${order.id.slice(-6).toUpperCase()}`,
         react: EmailTemplates.OrderConfirmationEmail({
-          tenantName: 'NummyGo Tenant',
+          tenantName: tenantInfo?.name || 'NummyGo Tenant',
           orderId: order.id,
           createdAt: order.createdAt,
           totalCents: order.totalAmount,
-          customerName: order.customerName || 'Customer',
-          customerEmail,
-          customerPhone: order.customerPhone || undefined,
+          tenantEmail: tenantInfo?.email || 'support@nummygo.com',
+          tenantPhone: tenantInfo?.phoneNumber || '+1 (555) 123-4567',
           items: this.buildItems(order),
+          trackingUrl: `https://nummygo.ca/track/${order.checkoutSessionId}` || '#',
         }),
       });
     } catch (err) {
@@ -108,6 +112,8 @@ export class EmailService {
           createdAt: order.createdAt,
           totalCents: order.totalAmount,
           customerName: order.customerName || 'Customer',
+          customerEmail: order.customerEmail || 'Guest',
+          customerPhone: order.customerPhone || undefined,
           rejectionReason: order.rejectionReason || 'Cancelled by customer',
           items: this.buildItems(order),
         }),

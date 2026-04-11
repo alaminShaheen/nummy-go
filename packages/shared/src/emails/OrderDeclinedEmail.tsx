@@ -42,9 +42,6 @@ const tailwindConfig = {
 };
 
 const GRADIENT_TEXT: React.CSSProperties = {
-  background: 'linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #818cf8 100%)',
-  WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent',
   color: '#f59e0b',
 };
 
@@ -156,13 +153,16 @@ export function OrderDeclinedEmail({
                 <Text className="text-[18px] font-black m-0 mb-1" style={{ color: '#f1f5f9' }}>Order Summary</Text>
                 <Text className="text-[12px] m-0 mb-5" style={{ color: '#94a3b8' }}>{tenantName}</Text>
 
-                {/* Meta row */}
-                <Section className="rounded-xl mb-5 px-4 py-3" style={{ backgroundColor: '#0D1117', border: '1px solid rgba(255,255,255,0.04)' }}>
+                {/* Meta block */}
+                <Section className="rounded-xl mb-5 px-4 py-4" style={{ backgroundColor: '#0D1117', border: '1px solid rgba(255,255,255,0.04)' }}>
                   <Row>
-                    <Column>
+                    <Column style={{ paddingBottom: '12px' }}>
                       <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Date</Text>
                       <Text className="text-[12px] font-bold m-0" style={{ color: '#94a3b8' }}>{dateStr}</Text>
                     </Column>
+                  </Row>
+                  <Hr style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '0 0 12px 0' }} />
+                  <Row>
                     <Column>
                       <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Order #</Text>
                       <Text className="text-[12px] font-bold m-0" style={{ color: '#f43f5e' }}>#{shortId}</Text>
@@ -211,12 +211,7 @@ export function OrderDeclinedEmail({
             <Section className="mt-8">
               <Hr style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '0 0 16px 0' }} />
               <Text className="text-[11px] text-center m-0 leading-relaxed" style={{ color: '#475569' }}>
-                © {new Date().getFullYear()} NummyGo · Automated transactional email
-              </Text>
-              <Text className="text-[11px] text-center m-0 mt-2">
-                <Link href="#" style={{ color: '#64748b', textDecoration: 'underline' }}>Unsubscribe</Link>
-                <span style={{ color: '#252e3f' }}> · </span>
-                <Link href="#" style={{ color: '#64748b', textDecoration: 'underline' }}>Privacy</Link>
+                © {new Date().getFullYear()} nummyGo · Automated transactional email
               </Text>
             </Section>
 

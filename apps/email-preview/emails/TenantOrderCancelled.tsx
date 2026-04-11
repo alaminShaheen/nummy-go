@@ -11,6 +11,8 @@ export const PreviewProps = {
   createdAt: Date.now(),
   totalCents: 2450,
   customerName: "Alex Johnson",
+  customerEmail: "[EMAIL_ADDRESS]",
+  customerPhone: "123-456-7890",
   rejectionReason: "I accidentally ordered the wrong items, sorry!",
   items: [
     { name: "Smash Burger Deluxe", quantity: 2, priceCents: 1200 },

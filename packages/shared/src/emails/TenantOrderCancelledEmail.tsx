@@ -22,6 +22,8 @@ export interface TenantOrderCancelledEmailProps {
   createdAt: number;
   totalCents: number;
   customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
   rejectionReason: string;
   items: Array<{ name: string; quantity: number; priceCents: number }>;
 }
@@ -43,9 +45,6 @@ const tailwindConfig = {
 };
 
 const GRADIENT_TEXT: React.CSSProperties = {
-  background: 'linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #818cf8 100%)',
-  WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent',
   color: '#f59e0b',
 };
 
@@ -57,6 +56,8 @@ export function TenantOrderCancelledEmail({
   createdAt,
   totalCents,
   customerName,
+  customerEmail,
+  customerPhone,
   rejectionReason,
   items,
 }: TenantOrderCancelledEmailProps) {
@@ -85,17 +86,16 @@ export function TenantOrderCancelledEmail({
 
             {/* Hero */}
             <Section className="text-center mb-6 px-2">
-              {/* Status pill — amber/warning */}
               <table cellPadding="0" cellSpacing="0" role="presentation" style={{ margin: '0 auto 20px auto' }}>
                 <tr>
                   <td style={{
-                    backgroundColor: 'rgba(245, 158, 11, 0.08)',
-                    border: '1px solid rgba(245, 158, 11, 0.2)',
+                    backgroundColor: 'rgba(244, 63, 94, 0.08)',
+                    border: '1px solid rgba(244, 63, 94, 0.2)',
                     borderRadius: '999px',
                     padding: '5px 16px',
                   }}>
-                    <Text className="text-[11px] font-bold tracking-[0.1em] uppercase m-0" style={{ color: '#f59e0b' }}>
-                      ⚠️ Order Cancelled
+                    <Text className="text-[11px] font-bold tracking-[0.1em] uppercase m-0" style={{ color: '#f43f5e' }}>
+                      ✗ Cancelled
                     </Text>
                   </td>
                 </tr>
@@ -105,7 +105,7 @@ export function TenantOrderCancelledEmail({
                 Order cancelled
               </Text>
               <Text className="text-[15px] leading-[1.7] m-0 max-w-[440px] mx-auto" style={{ color: '#94a3b8' }}>
-                <strong style={{ color: '#f1f5f9' }}>{customerName}</strong> has cancelled their order.
+                <strong style={{ color: '#f1f5f9' }}>{customerName}</strong> has cancelled the order.
                 Please stop preparation if it has already started.
               </Text>
             </Section>
@@ -160,13 +160,16 @@ export function TenantOrderCancelledEmail({
                 <Text className="text-[18px] font-black m-0 mb-1" style={{ color: '#f1f5f9' }}>Cancelled Order</Text>
                 <Text className="text-[12px] m-0 mb-5" style={{ color: '#94a3b8' }}>{tenantName}</Text>
 
-                {/* Meta row */}
-                <Section className="rounded-xl mb-5 px-4 py-3" style={{ backgroundColor: '#0D1117', border: '1px solid rgba(255,255,255,0.04)' }}>
+                {/* Meta block */}
+                <Section className="rounded-xl mb-5 px-4 py-4" style={{ backgroundColor: '#0D1117', border: '1px solid rgba(255,255,255,0.04)' }}>
                   <Row>
-                    <Column>
+                    <Column style={{ paddingBottom: '12px' }}>
                       <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Time Placed</Text>
                       <Text className="text-[12px] font-bold m-0" style={{ color: '#94a3b8' }}>{dateStr}</Text>
                     </Column>
+                  </Row>
+                  <Hr style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '0 0 12px 0' }} />
+                  <Row>
                     <Column>
                       <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Order #</Text>
                       <Text className="text-[12px] font-bold m-0" style={{ color: '#f59e0b' }}>#{shortId}</Text>
@@ -208,6 +211,28 @@ export function TenantOrderCancelledEmail({
                 </Text>
               </Section>
               <div style={{ height: '2px', background: 'linear-gradient(90deg, rgba(251,191,36,0.3) 0%, rgba(129,140,248,0.3) 100%)' }} />
+            </Section>
+
+            <Section className="mb-8">
+              {/* Customer Info */}
+              <Section className="rounded-2xl p-5" style={{ backgroundColor: '#13191f', border: '1px solid #252e3f' }}>
+                <Text className="text-[9px] font-bold tracking-[2px] uppercase m-0 mb-5" style={{ color: '#f59e0b' }}>
+                  Customer Information
+                </Text>
+
+                <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Name</Text>
+                <Text className="text-[14px] font-semibold m-0 mb-4" style={{ color: '#f1f5f9' }}>{customerName}</Text>
+
+                <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Email</Text>
+                <Text className="text-[13px] font-medium m-0 mb-4" style={{ color: '#f1f5f9' }}>{customerEmail}</Text>
+
+                {customerPhone && (
+                  <>
+                    <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Phone</Text>
+                    <Text className="text-[13px] font-medium m-0" style={{ color: '#f1f5f9' }}>{customerPhone}</Text>
+                  </>
+                )}
+              </Section>
             </Section>
 
             {/* Footer */}

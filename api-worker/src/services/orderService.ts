@@ -228,7 +228,8 @@ export async function placeCheckoutOrder(
     // ── Customer confirmation email
     console.log('[Email] customerEmail =', order.customerEmail);
     if (order.customerEmail) {
-      const result = await emailService.sendOrderConfirmation(order, order.customerEmail);
+      const tenantInfo = tenantMap.get(order.tenantId);
+      const result = await emailService.sendOrderConfirmation(tenantInfo, order, order.customerEmail);
       console.log('[Email] sendOrderConfirmation result =', JSON.stringify(result));
     } else {
       console.log('[Email] SKIPPED confirmation — no customerEmail on order');
