@@ -355,7 +355,15 @@ export async function fetchTenantOrders(env: Env, input: GetOrdersByTenantDto): 
 export async function fetchCheckoutSession(env: Env, input: GetOrderGroupDto) {
   initDb(env);
   const rows = await getOrdersByCheckoutSession(input.checkoutSessionId);
-  const orders = rows.map(rowToOrder);
+  const baseOrders = rows.map(rowToOrder);
+
+  // Enriched orders with associated item lines for the tracking UI receipt panel
+  const orders = await Promise.all(
+    baseOrders.map(async (o) => {
+      const enriched = await getOrderWithItems(o.id);
+      return { ...o, items: enriched?.items ?? [] };
+    })
+  );
 
   // Batch-fetch all unique tenant profiles
   const tenantIds = [...new Set(orders.map((o) => o.tenantId))];
@@ -371,6 +379,8 @@ export async function fetchCheckoutSession(env: Env, input: GetOrderGroupDto) {
     address: string | null;
     modificationThreshold: number;
   }> = {};
+
+
 
   let tenantModificationThreshold = 30;
   for (const tenant of tenantRows) {

@@ -25,8 +25,8 @@ function getWsUrl(endpoint: string, type: 'tenant' | 'session' = 'tenant') {
 }
 
 interface UseWebSocketOptions {
-  onMessage:     (msg: WsMessage) => void;
-  onConnect?:    () => void;
+  onMessage: (msg: WsMessage) => void;
+  onConnect?: () => void;
   onDisconnect?: () => void;
 }
 
@@ -34,12 +34,19 @@ export function useWebSocket(
   endpointId: string | null,
   { onMessage, onConnect, onDisconnect, type = 'tenant' }: UseWebSocketOptions & { type?: 'tenant' | 'session' }
 ) {
-  const wsRef          = useRef<WebSocket | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const reconnectDelay = useRef(1000);
-  const unmountedRef   = useRef(false);
-  const onMessageRef   = useRef(onMessage);
+  const unmountedRef = useRef(false);
+
+  const onMessageRef = useRef(onMessage);
   onMessageRef.current = onMessage;
+
+  const onConnectRef = useRef(onConnect);
+  onConnectRef.current = onConnect;
+
+  const onDisconnectRef = useRef(onDisconnect);
+  onDisconnectRef.current = onDisconnect;
 
   const connect = useCallback(() => {
     if (!endpointId || unmountedRef.current) return;
@@ -48,12 +55,14 @@ export function useWebSocket(
     wsRef.current = ws;
 
     ws.onopen = () => {
+      if (wsRef.current !== ws) return;
       reconnectDelay.current = 1000;
       setIsConnected(true);
-      onConnect?.();
+      onConnectRef.current?.();
     };
 
     ws.onmessage = (event) => {
+      if (wsRef.current !== ws) return;
       try {
         const msg = JSON.parse(event.data as string) as WsMessage;
         onMessageRef.current(msg);
@@ -61,8 +70,9 @@ export function useWebSocket(
     };
 
     ws.onclose = () => {
+      if (wsRef.current !== ws) return;
       setIsConnected(false);
-      onDisconnect?.();
+      onDisconnectRef.current?.();
       if (!unmountedRef.current) {
         const delay = Math.min(reconnectDelay.current, 30_000);
         reconnectDelay.current = delay * 2;
@@ -71,7 +81,7 @@ export function useWebSocket(
     };
 
     ws.onerror = () => ws.close();
-  }, [endpointId, type, onConnect, onDisconnect]);
+  }, [endpointId, type]);
 
   useEffect(() => {
     unmountedRef.current = false;
@@ -90,7 +100,7 @@ export function useWebSocket(
 
     const handleOnline = () => {
       // If we are currently disconnected, connect immediately rather than waiting for next backoff
-      if (!isConnected || wsRef.current?.readyState !== WebSocket.OPEN) {
+      if (wsRef.current?.readyState !== WebSocket.OPEN) {
         connect();
       }
     };

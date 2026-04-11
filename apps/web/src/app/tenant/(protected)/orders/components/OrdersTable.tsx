@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import type { OrderTab } from './OrderFilterTabs';
 import { trpc } from '@/trpc/client';
 import { Loader2 } from 'lucide-react';
+import { formatPhoneNumber } from '@nummygo/shared/lib/formatters';
 
 // ── OrdersTable ──────────────────────────────────────────────────────────────
 
@@ -183,6 +184,19 @@ function OrderDetailPanel({ row }: { row: Order }) {
           className="p-4 rounded-lg space-y-3 text-sm"
           style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.04)' }}
         >
+          {/* Customer Contact */}
+          {(row.customerEmail || row.customerPhone) && (
+            <div>
+              <p className="text-[10px] font-bold uppercase text-slate-500 mb-1">Customer Contact</p>
+              <div
+                className="p-2.5 rounded-md space-y-0.5"
+                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
+              >
+                {row.customerEmail && <p className="text-[11px] text-slate-300">{row.customerEmail}</p>}
+                {row.customerPhone && <p className="text-[11px] text-slate-400">{formatPhoneNumber(row.customerPhone)}</p>}
+              </div>
+            </div>
+          )}
           {row.scheduledFor && (
             <div>
               <p className="text-[10px] font-bold uppercase text-amber-500 mb-1">Scheduled For</p>

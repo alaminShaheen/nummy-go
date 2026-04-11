@@ -17,7 +17,7 @@ export function OrderActions({ orderId, status }: OrderActionsProps) {
   const [rejectionReason, setRejectionReason] = useState('');
 
   const utils = trpc.useUtils();
-  
+
   const updateStatusMutation = trpc.order.updateOrderStatus.useMutation({
     onSuccess: () => {
       utils.order.getDashboardOrders.invalidate();
@@ -50,40 +50,40 @@ export function OrderActions({ orderId, status }: OrderActionsProps) {
         <>
           <button
             onClick={() => setRejecting(true)}
-            className="flex items-center justify-center w-8 h-8 rounded-full border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 transition-colors"
+            className="flex items-center justify-center w-8 h-8 text-xs font-semibold rounded-full border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 transition-colors"
             title="Reject Order"
           >
             <XCircle className="w-4 h-4" />
           </button>
-          <button 
+          <button
             onClick={() => handleUpdate('preparing')}
             disabled={isPending}
             className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all"
           >
-            {isPending ? <Loader2 className="w-3 h-3 animate-spin"/> : <ArrowRightCircle className="w-3 h-3" />}
+            {isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <ArrowRightCircle className="w-3 h-3" />}
             Prepare
           </button>
         </>
       )}
 
       {status === 'preparing' && (
-        <button 
+        <button
           onClick={() => handleUpdate('ready')}
           disabled={isPending}
           className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition-all"
         >
-          {isPending ? <Loader2 className="w-3 h-3 animate-spin"/> : <Check className="w-3 h-3" />}
+          {isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
           Mark Ready
         </button>
       )}
 
       {status === 'ready' && (
-        <button 
+        <button
           onClick={() => handleUpdate('completed')}
           disabled={isPending}
           className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20 transition-all"
         >
-          {isPending ? <Loader2 className="w-3 h-3 animate-spin"/> : <Check className="w-3 h-3" />}
+          {isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
           Complete
         </button>
       )}
@@ -98,9 +98,9 @@ export function OrderActions({ orderId, status }: OrderActionsProps) {
             </button>
             <h3 className="text-lg font-bold text-white mb-2">Reject Order</h3>
             <p className="text-sm text-slate-400 mb-4">Please provide a reason for cancelling this order.</p>
-            
+
             <FormField id="reject-reason" label="Rejection Reason">
-              <BrandInput 
+              <BrandInput
                 autoFocus
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}

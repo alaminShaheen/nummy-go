@@ -24,15 +24,15 @@ import { StatusBadge } from '@/components/ui';
 export const FulfillmentBadge = ({ method }: { method: 'pickup' | 'delivery' }) => {
   if (method === 'delivery') {
     return (
-      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-500 border border-amber-500/20 text-xs font-semibold">
-        <MapPin className="w-3 h-3" />
+      <div className="inline-flex items-center gap-1.5 text-amber-500 text-xs font-semibold">
+        <MapPin className="w-3.5 h-3.5" />
         Delivery
       </div>
     );
   }
   return (
-    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-xs font-semibold">
-      <Package className="w-3 h-3" />
+    <div className="inline-flex items-center gap-1.5 text-emerald-500 text-xs font-semibold">
+      <Package className="w-3.5 h-3.5" />
       Pickup
     </div>
   );
@@ -41,15 +41,15 @@ export const FulfillmentBadge = ({ method }: { method: 'pickup' | 'delivery' }) 
 export const PaymentBadge = ({ method }: { method: 'counter' | 'card' }) => {
   if (method === 'card') {
     return (
-      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold">
-        <CreditCard className="w-3 h-3" />
+      <div className="inline-flex items-center gap-1.5 text-indigo-400 text-xs font-semibold">
+        <CreditCard className="w-3.5 h-3.5" />
         Paid Online
       </div>
     );
   }
   return (
-    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-500/10 text-slate-400 border border-white/10 text-xs font-semibold">
-      <Store className="w-3 h-3" />
+    <div className="inline-flex items-center gap-1.5 text-slate-400 text-xs font-semibold">
+      <Store className="w-3.5 h-3.5" />
       Pay at Store
     </div>
   );
@@ -59,22 +59,22 @@ export const ModificationBadge = ({ status }: { status: Order['modificationStatu
   if (!status) return null;
   const configs = {
     pending: {
-      className: 'bg-amber-500/10 text-amber-400 border-amber-500/30 animate-pulse',
+      className: 'text-amber-400 animate-pulse',
       label: 'Mod Pending',
     },
     accepted: {
-      className: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+      className: 'text-emerald-400',
       label: 'Mod Accepted',
     },
     rejected: {
-      className: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+      className: 'text-rose-400',
       label: 'Mod Rejected',
     },
   } as const;
   const c = configs[status];
   return (
-    <div className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-semibold", c.className)}>
-      <Bell className="w-3 h-3" />
+    <div className={cn("inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide", c.className)}>
+      <Bell className="w-3.5 h-3.5" />
       {c.label}
     </div>
   );
