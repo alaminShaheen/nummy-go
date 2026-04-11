@@ -12,8 +12,22 @@ import { ScrollToTop } from '@/components/ui/ScrollToTop';
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: 'NummyGo',
-  description: 'Food ordering platform',
+  title: {
+    template: '%s | NummyGo',
+    default: 'NummyGo - Direct Restaurant Ordering',
+  },
+  description: 'Order directly from your favorite local restaurants without third-party markups.',
+  openGraph: {
+    title: 'NummyGo',
+    description: 'Order directly from your favorite local restaurants without third-party markups.',
+    siteName: 'NummyGo',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NummyGo',
+    description: 'Order directly from your favorite local restaurants without third-party markups.',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

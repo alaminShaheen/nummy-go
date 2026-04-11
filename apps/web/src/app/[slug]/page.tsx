@@ -2,6 +2,7 @@ import VendorStorefront from '@/components/VendorStorefront';
 import { Tenant } from '@nummygo/shared/models';
 import { serverTRPC } from '@/trpc/server';
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 
 /**
  * ISR Configuration for Cloudflare Pages (via OpenNext)
@@ -26,6 +27,35 @@ export async function generateStaticParams() {
     } catch (error) {
         console.error('Error in generateStaticParams:', (error as any)?.data);
         return [{ slug: '_' }]; // Fallback placeholder
+    }
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
+    
+    try {
+        const tenant = await serverTRPC.tenant.getTenantBySlug.query({ slug });
+        if (!tenant) return {};
+
+        return {
+            title: tenant.name,
+            description: tenant.description || `Order ${tenant.name} online. Freshly prepared and ready for delivery/pickup.`,
+            openGraph: {
+                title: tenant.name,
+                description: tenant.description || `Order ${tenant.name} online.`,
+                images: tenant.heroImageUrl ? [{ url: tenant.heroImageUrl }] : undefined,
+                siteName: 'NummyGo',
+                type: 'website',
+            },
+            twitter: {
+                card: 'summary_large_image',
+                title: tenant.name,
+                description: tenant.description || `Order ${tenant.name} online.`,
+                images: tenant.heroImageUrl ? [tenant.heroImageUrl] : undefined,
+            }
+        };
+    } catch {
+        return {};
     }
 }
 
