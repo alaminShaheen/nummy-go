@@ -157,7 +157,7 @@ export default function MenuItemCard({
 			className={cn(
         "relative flex flex-col overflow-visible group bg-[rgba(15,20,29,0.4)] backdrop-blur-2xl transition-all duration-500 rounded-[2rem]",
         mode === 'draft' ? 'border border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/20' : 'border border-white/5 shadow-[0_0_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(245,158,11,0.12)] hover:border-white/10',
-        mode === 'builder' && currentItem.isAvailable === false ? 'opacity-70 grayscale-[30%]' : ''
+        currentItem.isAvailable === false ? 'opacity-70 grayscale-[30%]' : ''
       )}
 		>
       {/* Background layer to trap overflow for image radius without cutting off absolute badges */}
@@ -233,8 +233,8 @@ export default function MenuItemCard({
 						</div>
 					)}
 
-					{/* Unavailable indicator inside image for builder mode */}
-					{mode === 'builder' && currentItem.isAvailable === false && (
+					{/* Unavailable indicator inside image */}
+					{currentItem.isAvailable === false && (
 						<span className="absolute top-3 right-3 shadow-[0_0_20px_rgba(0,0,0,0.7)] rounded-full z-20 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white bg-rose-500/80 backdrop-blur-md pointer-events-none">
 							Sold Out
 						</span>
@@ -265,26 +265,50 @@ export default function MenuItemCard({
 			{/* Typographic body bounds */}
 			<div className="flex flex-col flex-1 p-5 pt-4 gap-4 relative z-20">
 				<div className="flex-1 space-y-1">
-          {mode === 'customer' ? (
-            categoryName && (
-              <p className="text-[0.65rem] uppercase tracking-widest text-amber-500/80 mb-1 font-semibold">{categoryName}</p>
-            )
-          ) : (
-            <div className="mb-1 -ml-1">
-              <select 
-                value={currentItem.categoryId || 'uncategorized'}
-                onChange={(e) => handleFieldChange('categoryId', e.target.value === 'uncategorized' ? null : e.target.value)}
-                className="text-[0.65rem] uppercase tracking-[0.1em] text-amber-500/80 font-semibold bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 px-2 py-1 outline-none cursor-pointer rounded-full transition-colors appearance-none"
-              >
-                <option value="uncategorized" className="bg-slate-900 text-slate-400">❖ UNCATEGORIZED</option>
-                {categories?.map(c => (
-                  <option key={c.id} value={c.id} className="bg-slate-900 text-slate-200">
-                    {c.name.toUpperCase()}
-                  </option>
-                ))}
-              </select>
+          <div className="flex items-center justify-between mb-1 gap-2">
+            <div>
+              {mode === 'customer' ? (
+                categoryName && (
+                  <p className="text-[0.65rem] uppercase tracking-widest text-amber-500/80 font-semibold">{categoryName}</p>
+                )
+              ) : (
+                <div className="-ml-1">
+                  <select 
+                    value={currentItem.categoryId || 'uncategorized'}
+                    onChange={(e) => handleFieldChange('categoryId', e.target.value === 'uncategorized' ? null : e.target.value)}
+                    className="text-[0.65rem] uppercase tracking-[0.1em] text-amber-500/80 font-semibold bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 px-2 py-1 outline-none cursor-pointer rounded-full transition-colors appearance-none"
+                  >
+                    <option value="uncategorized" className="bg-slate-900 text-slate-400">❖ UNCATEGORIZED</option>
+                    {categories?.map(c => (
+                      <option key={c.id} value={c.id} className="bg-slate-900 text-slate-200">
+                        {c.name.toUpperCase()}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
-          )}
+
+            <div className="shrink-0 flex items-center justify-end">
+              {mode === 'customer' ? (
+                currentItem.calories && (
+                  <p className="text-slate-500/70 text-[0.65rem] font-black uppercase tracking-widest">
+                    {currentItem.calories} cal
+                  </p>
+                )
+              ) : (
+                <InlineEditableField 
+                  type="number"
+                  value={currentItem.calories ?? ''}
+                  onSave={(val) => handleFieldChange('calories', val ? parseInt(val, 10) : null)}
+                  placeholder="0"
+                  suffix="cal"
+                  textClassName="text-slate-500/70 text-[0.65rem] font-black uppercase tracking-widest text-right"
+                  inputClassName="text-right w-16 !text-[0.65rem]"
+                />
+              )}
+            </div>
+          </div>
           
           {mode === 'customer' ? (
             <>
@@ -310,22 +334,7 @@ export default function MenuItemCard({
             </>
           )}
 					
-					{mode === 'customer' && currentItem.calories && (
-						<p className="text-slate-500/80 text-[0.7rem] font-medium tracking-wide mt-2">
-							{currentItem.calories} cal
-						</p>
-					)}
 
-          {(mode === 'builder' || mode === 'draft') && (
-            <InlineEditableField 
-              type="number"
-              value={currentItem.calories ?? ''}
-              onSave={(val) => handleFieldChange('calories', val ? parseInt(val, 10) : null)}
-              placeholder="Calories"
-              suffix="cal"
-              textClassName="text-slate-500/80 text-[0.7rem] font-medium tracking-wide mt-2"
-            />
-          )}
 
           <div className="pt-2">
             {mode === 'customer' ? (
@@ -380,7 +389,11 @@ export default function MenuItemCard({
 							<div className="w-full h-full flex items-center justify-center rounded-[1.5rem] border border-white/5 bg-white/[0.02] text-slate-500 text-[0.7rem] font-bold uppercase tracking-widest pointer-events-none select-none shadow-inner">
 								Store Closed
 							</div>
-						) : cartQty > 0 ? (
+						) : currentItem.isAvailable === false ? (
+              <div className="w-full h-full flex items-center justify-center rounded-[1.5rem] border border-rose-500/20 bg-rose-500/5 text-rose-500/60 text-[0.7rem] font-bold uppercase tracking-widest pointer-events-none select-none shadow-inner">
+								Sold Out
+							</div>
+            ) : cartQty > 0 ? (
 							<div className="w-full h-full flex items-center justify-between px-1.5 rounded-[1.5rem] border border-amber-500/40 bg-amber-500/10 shadow-[0_0_20px_rgba(245,158,11,0.15)] animate-in fade-in zoom-in duration-200">
 								<button 
 									onClick={decrement}

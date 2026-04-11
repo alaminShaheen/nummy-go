@@ -275,6 +275,7 @@ function VendorStorefrontContent({
       badge: item.badge || undefined,
       categoryId: item.categoryId || null,
       calories: item.calories || null,
+      isAvailable: item.isAvailable,
     }))
     : MENU_ITEMS;
 
