@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Track Order | nummyGo',
+  title: 'Track Order',
   description: 'Live tracking for your nummyGo order.',
   robots: {
     index: false,
