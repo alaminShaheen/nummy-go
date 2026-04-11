@@ -32,7 +32,7 @@ export async function getMenuItemsByTenant(tenantId: string) {
   return getDb()
     .select()
     .from(menuItems)
-    .where(and(eq(menuItems.tenantId, tenantId), eq(menuItems.isAvailable, true)));
+    .where(eq(menuItems.tenantId, tenantId));
 }
 
 export async function getAllMenuItemsByTenant(tenantId: string) {
@@ -50,7 +50,6 @@ export async function getMenuItemsByCategory(tenantId: string, categoryId: strin
     .where(and(
       eq(menuItems.tenantId, tenantId),
       eq(menuItems.categoryId, categoryId),
-      eq(menuItems.isAvailable, true),
     ));
 }
 

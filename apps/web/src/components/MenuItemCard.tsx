@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import { useState, useRef } from 'react';
 import { NummyGoBadge, InlineEditableField, BrandSwitch, GradientButton } from '@/components/ui';
-import { Minus, Plus, Trash2, UploadCloud, Loader2, Check } from 'lucide-react';
+import { getBadgeStyle } from '@/components/ui/NummyGoBadge';
+import { Minus, Plus, Trash2, UploadCloud, Loader2, Check, X } from 'lucide-react';
 import { cn } from '@nummygo/shared/ui';
 
 export interface MenuItem {
@@ -12,7 +13,7 @@ export interface MenuItem {
 	description: string;
 	price: number;
 	image: string;
-	badge?: string;
+	badge?: string | null;
 	categoryId?: string | null;
 	calories?: number | null;
 	isAvailable?: boolean;
@@ -30,6 +31,7 @@ interface MenuItemCardProps {
 	onUpdateField?: (id: string, field: string, value: any) => void;
   onDraftSave?: (item: MenuItem) => Promise<void> | void;
   onDraftCancel?: () => void;
+  isClosed?: boolean;
 }
 
 export default function MenuItemCard({ 
@@ -43,7 +45,8 @@ export default function MenuItemCard({
   onDelete,
   onUpdateField,
   onDraftSave,
-  onDraftCancel
+  onDraftCancel,
+  isClosed = false
 }: MenuItemCardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -154,30 +157,11 @@ export default function MenuItemCard({
 			className={cn(
         "relative flex flex-col overflow-visible group bg-[rgba(15,20,29,0.4)] backdrop-blur-2xl transition-all duration-500 rounded-[2rem]",
         mode === 'draft' ? 'border border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/20' : 'border border-white/5 shadow-[0_0_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(245,158,11,0.12)] hover:border-white/10',
-        mode === 'builder' && currentItem.isAvailable === false ? 'opacity-70 grayscale-[30%]' : ''
+        currentItem.isAvailable === false ? 'opacity-70 grayscale-[30%]' : ''
       )}
 		>
       {/* Background layer to trap overflow for image radius without cutting off absolute badges */}
       <div className="absolute inset-0 rounded-[2rem] overflow-hidden pointer-events-none -z-10"></div>
-      {/* Builder Hover Availability Switch & Modern Danger Pivot */}
-      {(mode === 'builder') && (
-        <div className="absolute -top-3 right-4 z-50 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
-          <div className="bg-[#0f151d] rounded-full shadow-[0_0_20px_rgba(0,0,0,0.6)] flex items-center px-2 py-1.5 border border-white/5">
-            <BrandSwitch 
-              checked={currentItem.isAvailable ?? true}
-              onChange={(val) => handleFieldChange('isAvailable', val)}
-              ariaLabel="Toggle availability"
-            />
-          </div>
-          <button 
-            onClick={() => setDeleteStatus('confirming')}
-            className="group/delete relative flex items-center gap-1.5 pl-2.5 pr-2.5 py-1.5 rounded-full bg-rose-500 border border-rose-400/80 hover:bg-rose-400 hover:shadow-[0_0_20px_rgba(244,63,94,0.4)] text-rose-950 transition-all duration-300 overflow-hidden"
-          >
-            <Trash2 size={16} strokeWidth={2.5} className="shrink-0" />
-            <span className="w-0 overflow-hidden group-hover/delete:w-10 group-hover/delete:ml-0.5 transition-all duration-300 text-[10px] font-black uppercase tracking-widest whitespace-nowrap opacity-0 group-hover/delete:opacity-100">Drop</span>
-          </button>
-        </div>
-      )}
 
 			{/* Floating Plate Image - Inset deliberately for bento styling */}
 			<div className="p-3 pb-0 relative z-10">
@@ -219,14 +203,38 @@ export default function MenuItemCard({
 					/>
 
 					{/* Badge explicitly mounted inside the plate bounds */}
-					{currentItem.badge && (
-						<span className="absolute top-3 left-3 shadow-[0_0_20px_rgba(0,0,0,0.7)] rounded-full z-20 pointer-events-none">
-							<NummyGoBadge label={currentItem.badge} />
-						</span>
+					{(currentItem.badge || mode !== 'customer') && (
+						<div className="absolute top-3 left-3 z-40">
+              {mode === 'customer' ? (
+                <span className="shadow-[0_0_20px_rgba(0,0,0,0.7)] rounded-full pointer-events-none block">
+                  <NummyGoBadge label={currentItem.badge!} />
+                </span>
+              ) : (
+                <div className={cn("rounded-full shadow-[0_0_20px_rgba(0,0,0,0.7)] transition-all flex items-center relative overflow-hidden group/badge border border-transparent", getBadgeStyle(currentItem.badge))}>
+                  <InlineEditableField
+                    type="text"
+                    value={currentItem.badge || ''}
+                    onSave={(val) => handleFieldChange('badge', val || null)}
+                    placeholder="+ Add Badge"
+                    textClassName="text-[10px] uppercase font-black tracking-widest px-2.5 py-1 whitespace-nowrap outline-none flex-1 text-current brightness-150"
+                    inputClassName="text-[10px] uppercase font-black tracking-widest bg-transparent border-none px-2.5 py-1 w-24 outline-none placeholder-current caret-current !text-current brightness-150"
+                  />
+                  {currentItem.badge && (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); handleFieldChange('badge', null); }} 
+                      className="opacity-60 hover:opacity-100 mr-2.5 ml-0 cursor-pointer pointer-events-auto shrink-0 transition-opacity text-current brightness-150"
+                      title="Clear badge"
+                    >
+                      <X size={12} strokeWidth={3} />
+                    </button>
+                  )}
+                </div>
+              )}
+						</div>
 					)}
 
-					{/* Unavailable indicator inside image for builder mode */}
-					{mode === 'builder' && currentItem.isAvailable === false && (
+					{/* Unavailable indicator inside image */}
+					{currentItem.isAvailable === false && (
 						<span className="absolute top-3 right-3 shadow-[0_0_20px_rgba(0,0,0,0.7)] rounded-full z-20 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white bg-rose-500/80 backdrop-blur-md pointer-events-none">
 							Sold Out
 						</span>
@@ -257,26 +265,50 @@ export default function MenuItemCard({
 			{/* Typographic body bounds */}
 			<div className="flex flex-col flex-1 p-5 pt-4 gap-4 relative z-20">
 				<div className="flex-1 space-y-1">
-          {mode === 'customer' ? (
-            categoryName && (
-              <p className="text-[0.65rem] uppercase tracking-widest text-amber-500/80 mb-1 font-semibold">{categoryName}</p>
-            )
-          ) : (
-            <div className="mb-1 -ml-1">
-              <select 
-                value={currentItem.categoryId || 'uncategorized'}
-                onChange={(e) => handleFieldChange('categoryId', e.target.value === 'uncategorized' ? null : e.target.value)}
-                className="text-[0.65rem] uppercase tracking-[0.1em] text-amber-500/80 font-semibold bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 px-2 py-1 outline-none cursor-pointer rounded-full transition-colors appearance-none"
-              >
-                <option value="uncategorized" className="bg-slate-900 text-slate-400">❖ UNCATEGORIZED</option>
-                {categories?.map(c => (
-                  <option key={c.id} value={c.id} className="bg-slate-900 text-slate-200">
-                    {c.name.toUpperCase()}
-                  </option>
-                ))}
-              </select>
+          <div className="flex items-center justify-between mb-1 gap-2">
+            <div>
+              {mode === 'customer' ? (
+                categoryName && (
+                  <p className="text-[0.65rem] uppercase tracking-widest text-amber-500/80 font-semibold">{categoryName}</p>
+                )
+              ) : (
+                <div className="-ml-1">
+                  <select 
+                    value={currentItem.categoryId || 'uncategorized'}
+                    onChange={(e) => handleFieldChange('categoryId', e.target.value === 'uncategorized' ? null : e.target.value)}
+                    className="text-[0.65rem] uppercase tracking-[0.1em] text-amber-500/80 font-semibold bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 px-2 py-1 outline-none cursor-pointer rounded-full transition-colors appearance-none"
+                  >
+                    <option value="uncategorized" className="bg-slate-900 text-slate-400">❖ UNCATEGORIZED</option>
+                    {categories?.map(c => (
+                      <option key={c.id} value={c.id} className="bg-slate-900 text-slate-200">
+                        {c.name.toUpperCase()}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
-          )}
+
+            <div className="shrink-0 flex items-center justify-end">
+              {mode === 'customer' ? (
+                currentItem.calories && (
+                  <p className="text-slate-500/70 text-[0.65rem] font-black uppercase tracking-widest">
+                    {currentItem.calories} cal
+                  </p>
+                )
+              ) : (
+                <InlineEditableField 
+                  type="number"
+                  value={currentItem.calories ?? ''}
+                  onSave={(val) => handleFieldChange('calories', val ? parseInt(val, 10) : null)}
+                  placeholder="0"
+                  suffix="cal"
+                  textClassName="text-slate-500/70 text-[0.65rem] font-black uppercase tracking-widest text-right"
+                  inputClassName="text-right w-16 !text-[0.65rem]"
+                />
+              )}
+            </div>
+          </div>
           
           {mode === 'customer' ? (
             <>
@@ -302,22 +334,7 @@ export default function MenuItemCard({
             </>
           )}
 					
-					{mode === 'customer' && currentItem.calories && (
-						<p className="text-slate-500/80 text-[0.7rem] font-medium tracking-wide mt-2">
-							{currentItem.calories} cal
-						</p>
-					)}
 
-          {(mode === 'builder' || mode === 'draft') && (
-            <InlineEditableField 
-              type="number"
-              value={currentItem.calories ?? ''}
-              onSave={(val) => handleFieldChange('calories', val ? parseInt(val, 10) : null)}
-              placeholder="Calories"
-              suffix="cal"
-              textClassName="text-slate-500/80 text-[0.7rem] font-medium tracking-wide mt-2"
-            />
-          )}
 
           <div className="pt-2">
             {mode === 'customer' ? (
@@ -368,7 +385,15 @@ export default function MenuItemCard({
 				{/* Purely Morphing CTA Button Zone (Customer Mode Only) */}
 				{mode === 'customer' && (
 					<div className="mt-1 h-12 flex items-center justify-center w-full relative">
-						{cartQty > 0 ? (
+						{isClosed ? (
+							<div className="w-full h-full flex items-center justify-center rounded-[1.5rem] border border-white/5 bg-white/[0.02] text-slate-500 text-[0.7rem] font-bold uppercase tracking-widest pointer-events-none select-none shadow-inner">
+								Store Closed
+							</div>
+						) : currentItem.isAvailable === false ? (
+              <div className="w-full h-full flex items-center justify-center rounded-[1.5rem] border border-rose-500/20 bg-rose-500/5 text-rose-500/60 text-[0.7rem] font-bold uppercase tracking-widest pointer-events-none select-none shadow-inner">
+								Sold Out
+							</div>
+            ) : cartQty > 0 ? (
 							<div className="w-full h-full flex items-center justify-between px-1.5 rounded-[1.5rem] border border-amber-500/40 bg-amber-500/10 shadow-[0_0_20px_rgba(245,158,11,0.15)] animate-in fade-in zoom-in duration-200">
 								<button 
 									onClick={decrement}
@@ -391,13 +416,40 @@ export default function MenuItemCard({
 						) : (
 							<button 
 								onClick={handleInitialAdd}
-								className="w-full h-full flex items-center justify-center gap-2.5 rounded-[1.5rem] border border-white/5 bg-white-[0.02] hover:bg-amber-500/20 hover:border-amber-500/40 hover:text-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] text-slate-300 text-sm font-semibold transition-all duration-300 group/btn"
+								className="w-full h-full flex items-center justify-center gap-2.5 rounded-[1.5rem] border border-white/5 bg-white/[0.02] hover:bg-amber-500/20 hover:border-amber-500/40 hover:text-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] text-slate-300 text-sm font-semibold transition-all duration-300 group/btn"
 							>
 								<span className="group-hover/btn:text-amber-400 transition-colors">Add to Cart</span>
 								<span className="w-1 h-1 rounded-full bg-slate-600 group-hover/btn:bg-amber-600 transition-colors" aria-hidden="true" />
 								<span className="text-amber-400 tracking-wide">${currentItem.price.toFixed(2)}</span>
 							</button>
 						)}
+					</div>
+				)}
+
+				{/* Builder Mode Persistent Action Toolbar */}
+				{mode === 'builder' && (
+					<div className="mt-2 pt-4 border-t border-white/5 flex items-center justify-between w-full">
+            <div className="flex items-center gap-3 bg-[rgba(0,0,0,0.2)] rounded-full px-1.5 py-1 pr-3 border border-white/5 shadow-inner backdrop-blur-md">
+               <BrandSwitch 
+                 checked={currentItem.isAvailable ?? true}
+                 onChange={(val) => handleFieldChange('isAvailable', val)}
+                 ariaLabel="Toggle availability"
+               />
+               <span className={cn(
+                 "text-[10px] font-black uppercase tracking-widest transition-colors w-12 text-center",
+                 (currentItem.isAvailable ?? true) ? "text-emerald-400" : "text-slate-500"
+               )}>
+                 {(currentItem.isAvailable ?? true) ? "Active" : "Hidden"}
+               </span>
+            </div>
+
+						<button 
+							onClick={() => setDeleteStatus('confirming')}
+							className="relative flex items-center justify-center h-8 px-3 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500 hover:text-rose-950 hover:shadow-[0_0_15px_rgba(244,63,94,0.4)] transition-all duration-300 group/btn gap-1.5"
+						>
+							<Trash2 size={14} strokeWidth={2.5} />
+              <span className="text-[10px] font-black uppercase tracking-widest">Drop</span>
+						</button>
 					</div>
 				)}
 			</div>

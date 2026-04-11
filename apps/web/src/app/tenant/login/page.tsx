@@ -75,7 +75,7 @@ function VendorLoginContent() {
                     <div className="text-center mb-8">
                         <h1 className="text-2xl font-bold text-slate-100 mt-4">Partner Portal</h1>
                         <p className="text-slate-500 text-sm mt-2 max-w-xs mx-auto">
-                            Sign in to manage your restaurant, orders, and profile on NummyGo.
+                            Sign in to manage your restaurant, orders, and profile on nummyGo.
                         </p>
                     </div>
 
@@ -140,7 +140,7 @@ function VendorLoginContent() {
                             className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-amber-400 transition-colors duration-200"
                         >
                             <ArrowLeft size={14} aria-hidden="true" />
-                            Back to NummyGo
+                            Back to nummyGo
                         </Link>
                     </div>
                 </div>

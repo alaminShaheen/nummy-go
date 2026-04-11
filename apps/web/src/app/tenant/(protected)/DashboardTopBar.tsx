@@ -78,7 +78,7 @@ export function DashboardTopBar({ pathname }: DashboardTopBarProps) {
       <div className="flex items-center gap-2 min-w-0">
         <Link
           href="/"
-          title="Return to NummyGo Platform"
+          title="Return to nummyGo Platform"
           className="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-br from-amber-500/5 to-orange-600/5 hover:from-amber-500/10 hover:to-orange-600/10 border border-amber-500/10 hover:border-amber-400/30 transition-all shrink-0 hover:shadow-[0_0_15px_rgba(245,158,11,0.15)]"
         >
           <Flame className="h-4 w-4 text-amber-500 group-hover:text-amber-400 group-hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.8)] transition-all" />

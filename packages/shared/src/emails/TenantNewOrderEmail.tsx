@@ -10,7 +10,6 @@ import {
   Column,
   Text,
   Hr,
-  Link,
   Tailwind,
 } from '@react-email/components';
 
@@ -44,9 +43,6 @@ const tailwindConfig = {
 };
 
 const GRADIENT_TEXT: React.CSSProperties = {
-  background: 'linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #818cf8 100%)',
-  WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent',
   color: '#f59e0b',
 };
 
@@ -130,107 +126,103 @@ export function TenantNewOrderEmail({
               </table>
             </Section>
 
-            {/* ── Two-Column: Customer Details + Receipt ── */}
-            <Section>
-              <Row>
-                {/* LEFT: Customer Info */}
-                <Column className="w-[46%]" style={{ verticalAlign: 'top' }}>
-                  <Section className="rounded-2xl p-5" style={{ backgroundColor: '#13191f', border: '1px solid #252e3f' }}>
-                    <Text className="text-[9px] font-bold tracking-[2px] uppercase m-0 mb-5" style={{ color: '#f59e0b' }}>
-                      Customer Information
-                    </Text>
+            {/* ── Stacked: Receipt Card + Customer Details ── */}
+            <Section className="mb-6">
+              {/* Receipt */}
+              <Section
+                className="rounded-2xl overflow-hidden"
+                style={{
+                  backgroundColor: '#13191f',
+                  border: '1px solid #252e3f',
+                  boxShadow: '0 0 60px rgba(245, 158, 11, 0.06), 0 0 120px rgba(129, 140, 248, 0.04)',
+                }}
+              >
+                <div style={{ height: '3px', background: 'linear-gradient(90deg, #fbbf24 0%, #f97316 50%, #818cf8 100%)' }} />
+                <Section className="px-5 pt-6 pb-5">
+                  <Text className="text-[18px] font-black m-0 mb-1" style={{ color: '#f1f5f9' }}>Order Details</Text>
+                  <Text className="text-[12px] m-0 mb-5" style={{ color: '#94a3b8' }}>{tenantName}</Text>
 
-                    <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Name</Text>
-                    <Text className="text-[14px] font-semibold m-0 mb-4" style={{ color: '#f1f5f9' }}>{customerName}</Text>
-
-                    <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Email</Text>
-                    <Text className="text-[13px] font-medium m-0 mb-4" style={{ color: '#f1f5f9' }}>{customerEmail}</Text>
-
-                    {customerPhone && (
-                      <>
-                        <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Phone</Text>
-                        <Text className="text-[13px] font-medium m-0" style={{ color: '#f1f5f9' }}>{customerPhone}</Text>
-                      </>
-                    )}
+                  {/* Meta block */}
+                  <Section className="rounded-xl mb-5 px-4 py-4" style={{ backgroundColor: '#0D1117', border: '1px solid rgba(255,255,255,0.04)' }}>
+                    <Row>
+                      <Column style={{ paddingBottom: '12px' }}>
+                        <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Received</Text>
+                        <Text className="text-[12px] font-bold m-0" style={{ color: '#94a3b8' }}>{dateStr}</Text>
+                      </Column>
+                    </Row>
+                    <Hr style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '0 0 12px 0' }} />
+                    <Row>
+                      <Column>
+                        <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Order #</Text>
+                        <Text className="text-[12px] font-bold m-0" style={{ color: '#f59e0b' }}>#{shortId}</Text>
+                      </Column>
+                      <Column>
+                        <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Status</Text>
+                        <Text className="text-[12px] font-bold m-0" style={{ color: '#f59e0b' }}>Confirmed</Text>
+                      </Column>
+                    </Row>
                   </Section>
-                </Column>
 
-                {/* Gutter */}
-                <Column className="w-[4%]">&nbsp;</Column>
-
-                {/* RIGHT: Receipt */}
-                <Column className="w-[50%]" style={{ verticalAlign: 'top' }}>
-                  <Section
-                    className="rounded-2xl overflow-hidden"
-                    style={{
-                      backgroundColor: '#13191f',
-                      border: '1px solid #252e3f',
-                      boxShadow: '0 0 60px rgba(245, 158, 11, 0.06), 0 0 120px rgba(129, 140, 248, 0.04)',
-                    }}
-                  >
-                    <div style={{ height: '3px', background: 'linear-gradient(90deg, #fbbf24 0%, #f97316 50%, #818cf8 100%)' }} />
-                    <Section className="px-5 pt-6 pb-5">
-                      <Text className="text-[18px] font-black m-0 mb-1" style={{ color: '#f1f5f9' }}>Order Details</Text>
-                      <Text className="text-[12px] m-0 mb-5" style={{ color: '#94a3b8' }}>{tenantName}</Text>
-
-                      {/* Meta row */}
-                      <Section className="rounded-xl mb-5 px-4 py-3" style={{ backgroundColor: '#0D1117', border: '1px solid rgba(255,255,255,0.04)' }}>
-                        <Row>
-                          <Column>
-                            <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Received</Text>
-                            <Text className="text-[12px] font-bold m-0" style={{ color: '#94a3b8' }}>{dateStr}</Text>
-                          </Column>
-                          <Column>
-                            <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Order #</Text>
-                            <Text className="text-[12px] font-bold m-0" style={{ color: '#f59e0b' }}>#{shortId}</Text>
-                          </Column>
-                          <Column>
-                            <Text className="text-[8px] font-bold tracking-[1.5px] uppercase m-0 mb-1" style={{ color: '#475569' }}>Status</Text>
-                            <Text className="text-[12px] font-bold m-0" style={{ color: '#f59e0b' }}>Confirmed</Text>
-                          </Column>
-                        </Row>
-                      </Section>
-
-                      {/* Items */}
-                      {items.map((item, i) => (
-                        <React.Fragment key={i}>
-                          <Row className="mb-1">
-                            <Column>
-                              <Text className="text-[13px] font-bold m-0" style={{ color: '#f1f5f9' }}>{item.name}</Text>
-                              <Text className="text-[11px] m-0 mt-1" style={{ color: '#64748b' }}>Qty: {item.quantity}</Text>
-                            </Column>
-                            <Column style={{ textAlign: 'right', verticalAlign: 'top' }}>
-                              <Text className="text-[13px] font-extrabold m-0" style={{ color: '#94a3b8' }}>{fmt(item.priceCents)}</Text>
-                            </Column>
-                          </Row>
-                          {i < items.length - 1 && <Hr style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '10px 0' }} />}
-                        </React.Fragment>
-                      ))}
-
-                      <Hr style={{ borderTop: '1px dashed rgba(255,255,255,0.08)', margin: '16px 0 12px 0' }} />
-
-                      <Row>
-                        <Column><Text className="text-[15px] font-black m-0" style={{ color: '#f1f5f9' }}>Expected Revenue</Text></Column>
-                        <Column style={{ textAlign: 'right' }}>
-                          <Text className="text-[18px] font-black m-0" style={{ color: '#f59e0b' }}>{fmt(totalCents)}</Text>
+                  {/* Items */}
+                  {items.map((item, i) => (
+                    <React.Fragment key={i}>
+                      <Row className="mb-1">
+                        <Column>
+                          <Text className="text-[13px] font-bold m-0" style={{ color: '#f1f5f9' }}>{item.name}</Text>
+                          <Text className="text-[11px] m-0 mt-1" style={{ color: '#64748b' }}>Qty: {item.quantity}</Text>
+                        </Column>
+                        <Column style={{ textAlign: 'right', verticalAlign: 'top' }}>
+                          <Text className="text-[13px] font-extrabold m-0" style={{ color: '#94a3b8' }}>{fmt(item.priceCents)}</Text>
                         </Column>
                       </Row>
+                      {i < items.length - 1 && <Hr style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '10px 0' }} />}
+                    </React.Fragment>
+                  ))}
 
-                      <Text className="text-[11px] text-center m-0 mt-4" style={{ color: '#64748b', fontStyle: 'italic' }}>
-                        Please review and accept this order on your dashboard.
-                      </Text>
-                    </Section>
-                    <div style={{ height: '2px', background: 'linear-gradient(90deg, rgba(251,191,36,0.3) 0%, rgba(129,140,248,0.3) 100%)' }} />
-                  </Section>
-                </Column>
-              </Row>
+                  <Hr style={{ borderTop: '1px dashed rgba(255,255,255,0.08)', margin: '16px 0 12px 0' }} />
+
+                  <Row>
+                    <Column><Text className="text-[15px] font-black m-0" style={{ color: '#f1f5f9' }}>Expected Revenue</Text></Column>
+                    <Column style={{ textAlign: 'right' }}>
+                      <Text className="text-[18px] font-black m-0" style={{ color: '#f59e0b' }}>{fmt(totalCents)}</Text>
+                    </Column>
+                  </Row>
+
+                  <Text className="text-[11px] text-center m-0 mt-4" style={{ color: '#64748b', fontStyle: 'italic' }}>
+                    Please review and accept this order on your dashboard.
+                  </Text>
+                </Section>
+                <div style={{ height: '2px', background: 'linear-gradient(90deg, rgba(251,191,36,0.3) 0%, rgba(129,140,248,0.3) 100%)' }} />
+              </Section>
+            </Section>
+
+            <Section className="mb-8">
+              {/* Customer Info */}
+              <Section className="rounded-2xl p-5" style={{ backgroundColor: '#13191f', border: '1px solid #252e3f' }}>
+                <Text className="text-[9px] font-bold tracking-[2px] uppercase m-0 mb-5" style={{ color: '#f59e0b' }}>
+                  Customer Information
+                </Text>
+
+                <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Name</Text>
+                <Text className="text-[14px] font-semibold m-0 mb-4" style={{ color: '#f1f5f9' }}>{customerName}</Text>
+
+                <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Email</Text>
+                <Text className="text-[13px] font-medium m-0 mb-4" style={{ color: '#f1f5f9' }}>{customerEmail}</Text>
+
+                {customerPhone && (
+                  <>
+                    <Text className="text-[10px] font-semibold uppercase tracking-[1px] m-0 mb-1" style={{ color: '#475569' }}>Phone</Text>
+                    <Text className="text-[13px] font-medium m-0" style={{ color: '#f1f5f9' }}>{customerPhone}</Text>
+                  </>
+                )}
+              </Section>
             </Section>
 
             {/* Footer */}
             <Section className="mt-12">
               <Hr style={{ borderTop: '1px solid rgba(255,255,255,0.04)', margin: '0 0 16px 0' }} />
               <Text className="text-[11px] text-center m-0 leading-relaxed" style={{ color: '#475569' }}>
-                © {new Date().getFullYear()} NummyGo · Automated transactional email
+                © {new Date().getFullYear()} nummyGo · Automated transactional email
               </Text>
             </Section>
 

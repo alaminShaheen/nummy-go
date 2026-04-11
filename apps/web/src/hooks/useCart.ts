@@ -1,5 +1,5 @@
 import { useLocalStorage } from 'usehooks-ts';
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
 export interface CartItem {
   id: string; // menuItemId
@@ -15,8 +15,24 @@ export interface VendorCart {
   items: CartItem[];
 }
 
+const ULID_RE = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
+
 export function useCart() {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [cart, setCart] = useLocalStorage<VendorCart[]>('nummygo-cart', []);
+
+  // Sanitize stale / non-ULID items on first load
+  useEffect(() => {
+    setCart((prev) => {
+      const cleaned = prev
+        .map((v) => ({ ...v, items: v.items.filter((i) => ULID_RE.test(i.id)) }))
+        .filter((v) => v.items.length > 0);
+      // Only write back if something changed
+      if (JSON.stringify(cleaned) !== JSON.stringify(prev)) return cleaned;
+      return prev;
+    });
+    setIsLoaded(true);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const addToCart = useCallback(
     (tenantId: string, tenantName: string, item: Omit<CartItem, 'quantity'>, qty: number) => {
@@ -134,5 +150,6 @@ export function useCart() {
     loadFromOrderItems,
     totalItems,
     megaTotal,
+    isLoaded,
   };
 }

@@ -1,20 +1,20 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { trpc }         from '@/trpc/client';
-import { useOrders }    from '@/hooks/useOrders';
+import { trpc } from '@/trpc/client';
+import { useOrders } from '@/hooks/useOrders';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import type { Order, WsMessage } from '@nummygo/shared/models/types';
 import { Button, Input, Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { StatusBadge } from '@/components/ui';
 
 const DEMO_TENANT_ID = '00000000-0000-0000-0000-000000000001';
-const DEMO_USER_ID   = '00000000-0000-0000-0000-000000000002';
+const DEMO_USER_ID = '00000000-0000-0000-0000-000000000002';
 
 export default function CustomerPage() {
   const [liveOrders, setLiveOrders] = useState<Order[]>([]);
-  const [wsStatus, setWsStatus]     = useState<'connected' | 'disconnected'>('disconnected');
-  const [quantity, setQuantity]     = useState(1);
+  const [wsStatus, setWsStatus] = useState<'connected' | 'disconnected'>('disconnected');
+  const [quantity, setQuantity] = useState(1);
 
   const { orders: initialOrders, isLoading } = useOrders(DEMO_USER_ID);
 
@@ -35,8 +35,8 @@ export default function CustomerPage() {
   }, []);
 
   useWebSocket(DEMO_TENANT_ID, {
-    onMessage:    handleWsMessage,
-    onConnect:    () => setWsStatus('connected'),
+    onMessage: handleWsMessage,
+    onConnect: () => setWsStatus('connected'),
     onDisconnect: () => setWsStatus('disconnected'),
   });
 
@@ -58,7 +58,7 @@ export default function CustomerPage() {
 
   return (
     <main style={{ maxWidth: 720, margin: '0 auto', padding: '2rem' }}>
-      <h1>NummyGo – Customer</h1>
+      <h1>nummyGo – Customer</h1>
 
       {/* WebSocket status */}
       <p style={{ color: wsStatus === 'connected' ? '#10b981' : '#f59e0b' }}>

@@ -175,9 +175,19 @@ export const orderResponseSchema = z.object({
   completedAt:        timestampSchema.nullable(),
 });
 
+export const vendorInfoSchema = z.object({
+  name: z.string(),
+  slug: z.string(),
+  phoneNumber: z.string(),
+  logoUrl: z.string().nullable(),
+  address: z.string().nullable(),
+  modificationThreshold: z.number().int().nonnegative(),
+});
+
 export const checkoutGroupResponseSchema = z.object({
   orders: z.array(orderResponseSchema),
   tenantModificationThreshold: z.number().int().nonnegative(),
+  vendorInfo: z.record(z.string(), vendorInfoSchema),
 });
 
 export const orderModificationResponseSchema = z.object({

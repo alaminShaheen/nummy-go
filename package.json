@@ -2,7 +2,7 @@
 	"name": "nummygo",
 	"version": "1.0.0",
 	"private": true,
-	"description": "NummyGo – food-ordering monorepo (Next.js + Cloudflare Worker + Durable Objects)",
+	"description": "nummyGo – food-ordering monorepo (Next.js + Cloudflare Worker + Durable Objects)",
 	"scripts": {
 		"build:all": "pnpm --filter @nummygo/shared --filter web --filter api-worker run build",
 		"build:shared": "pnpm --filter @nummygo/shared build",

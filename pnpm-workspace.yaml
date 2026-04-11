@@ -1,5 +1,5 @@
 # pnpm-workspace.yaml
-# Defines all packages in the NummyGo monorepo.
+# Defines all packages in the nummyGo monorepo.
 # pnpm will hoist shared deps and link workspace packages automatically.
 packages:
   - 'apps/*'       # Next.js frontends (web)

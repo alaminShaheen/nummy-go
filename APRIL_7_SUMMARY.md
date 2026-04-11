@@ -1,13 +1,13 @@
-# NummyGo Platform — April 7 Technical Implementation Summary
+# nummyGo Platform — April 7 Technical Implementation Summary
 
-This document serves as the cohesive, master technical log of the features architected and integrated into the NummyGo Nx monorepo on **April 7**. The primary objective today was enabling multi-tenant payment systems, real-time checkout flows, building the live order tracking portal, and fortifying data transfers between the SQLite database and the UI layer.
+This document serves as the cohesive, master technical log of the features architected and integrated into the nummyGo Nx monorepo on **April 7**. The primary objective today was enabling multi-tenant payment systems, real-time checkout flows, building the live order tracking portal, and fortifying data transfers between the SQLite database and the UI layer.
 
 ---
 
 ## 1. Multi-Partner Cart Management
 
 ### Feature Description
-NummyGo allows customers to add items from *multiple different restaurants* into a single session cart. We engineered an isolated mapping system so each vendor defines their own Fulfillment Method (Pickup vs Delivery) and Payment Method (Pay at Store vs Card). The customer manages all of this gracefully in a unified side-drawer interface.
+nummyGo allows customers to add items from *multiple different restaurants* into a single session cart. We engineered an isolated mapping system so each vendor defines their own Fulfillment Method (Pickup vs Delivery) and Payment Method (Pay at Store vs Card). The customer manages all of this gracefully in a unified side-drawer interface.
 
 ### Files Edited
 - `apps/web/src/hooks/useCart.ts`

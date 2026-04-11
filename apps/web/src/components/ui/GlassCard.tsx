@@ -1,6 +1,6 @@
 /**
  * GlassCard
- * Glassmorphism card with gradient border for the NummyGo dark theme.
+ * Glassmorphism card with gradient border for the nummyGo dark theme.
  * Wraps the .gradient-border-card + .glass CSS classes as a reusable component.
  */
 import * as React from 'react';

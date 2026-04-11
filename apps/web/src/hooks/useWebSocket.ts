@@ -83,12 +83,33 @@ export function useWebSocket(
       }
     }, 20_000);
 
+    const handleOffline = () => {
+      // Immediately close to trigger the offline UI
+      wsRef.current?.close();
+    };
+
+    const handleOnline = () => {
+      // If we are currently disconnected, connect immediately rather than waiting for next backoff
+      if (!isConnected || wsRef.current?.readyState !== WebSocket.OPEN) {
+        connect();
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('offline', handleOffline);
+      window.addEventListener('online', handleOnline);
+    }
+
     return () => {
       unmountedRef.current = true;
       clearInterval(pingInterval);
       wsRef.current?.close();
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('offline', handleOffline);
+        window.removeEventListener('online', handleOnline);
+      }
     };
-  }, [connect]);
+  }, [connect, isConnected]);
 
   return {
     disconnect: () => wsRef.current?.close(),

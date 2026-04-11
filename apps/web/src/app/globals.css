@@ -438,7 +438,7 @@ button:hover .auth-avatar-ring {
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
 
-  /* ── NummyGo Sidebar tokens ────────────────────────────────────────────── */
+  /* ── nummyGo Sidebar tokens ────────────────────────────────────────────── */
   /* Background: brand-surface (#111820) */
   --sidebar: #111820;
   --sidebar-foreground: #f1f5f9;

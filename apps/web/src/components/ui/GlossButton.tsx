@@ -1,13 +1,13 @@
 /**
  * GlossButton
- * Glass/ghost-style secondary button for the NummyGo dark theme.
+ * Glass/ghost-style secondary button for the nummyGo dark theme.
  * Used for secondary actions: "About Us", "Google Sign-in", vendor edit links.
  */
 import * as React from 'react';
 import { cn } from '@/components/ui';
 
 export interface GlossButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> { }
 
 const GlossButton = React.forwardRef<HTMLButtonElement, GlossButtonProps>(
   ({ className, children, disabled, ...props }, ref) => (
