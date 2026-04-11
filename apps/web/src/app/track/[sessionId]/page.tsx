@@ -195,24 +195,31 @@ function OrbitalRing({
   );
 }
 
-// ── Vertical Timeline ──────────────────────────────────────────────────────
+// ── Responsive Order Timeline ────────────────────────────────────────────────
 
-function VerticalTimeline({ activeStage, isCompleted, isCancelled }: { activeStage: number; isCompleted: boolean; isCancelled: boolean }) {
+function OrderTimeline({ activeStage, isCompleted, isCancelled }: { activeStage: number; isCompleted: boolean; isCancelled: boolean }) {
   return (
-    <div className="flex flex-col gap-0 mt-4 sm:mt-6">
+    <div className="relative flex flex-col md:flex-row w-full mt-4 sm:mt-6 md:mt-2 justify-between items-start md:items-start">
+      {/* ── Desktop Horizontal Track ── */}
+      <div className="hidden md:block absolute top-[17px] left-[10%] right-[10%] h-px bg-white/10 z-0" />
+      <div 
+        className="hidden md:block absolute top-[17px] left-[10%] h-px bg-indigo-500/50 transition-all duration-1000 z-0"
+        style={{ width: `${Math.min(100, Math.max(0, (activeStage / (STATUS_STAGES.length - 1)) * 80))}%` }}
+      />
+
       {STATUS_STAGES.map((stage, idx) => {
         const isPast = idx < activeStage || isCompleted;
         const isCurrent = idx === activeStage && !isCompleted && !isCancelled;
 
         return (
-          <div key={stage.status} className="flex items-start gap-3">
-            {/* Node + connector */}
+          <div key={stage.status} className="flex md:flex-col items-start md:items-center relative z-10 w-full md:w-auto md:flex-1 gap-3 md:gap-2.5 mb-5 md:mb-0">
+            {/* Node + Mobile connector */}
             <div className="flex flex-col items-center">
               <div className={cn(
                 "w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center border-2 transition-all duration-500 shrink-0",
                 isCurrent && `border-${stage.color}-500 bg-${stage.color}-500/20 text-${stage.color}-400 shadow-[0_0_12px_rgba(245,158,11,0.2)]`,
                 isPast && "border-indigo-500 bg-indigo-500/20 text-indigo-400",
-                !isPast && !isCurrent && "border-white/10 bg-white/[0.03] text-slate-600",
+                !isPast && !isCurrent && "border-white/10 bg-[#0D1117] text-slate-600",
               )}
                 style={isCurrent ? {
                   borderColor: stage.color === 'amber' ? '#f59e0b' : stage.color === 'emerald' ? '#10b981' : '#6366f1',
@@ -227,18 +234,20 @@ function VerticalTimeline({ activeStage, isCompleted, isCancelled }: { activeSta
               >
                 {isPast ? <CheckCircle2 className="w-4 h-4" /> : stage.icon}
               </div>
+              
+              {/* Mobile vertical line */}
               {idx < STATUS_STAGES.length - 1 && (
                 <div className={cn(
-                  "w-px h-8 transition-all duration-500",
+                  "block md:hidden w-px h-8 transition-all duration-500 mt-1",
                   isPast ? "bg-indigo-500/40" : "bg-white/5",
                 )} />
               )}
             </div>
 
             {/* Label */}
-            <div className="pt-1.5">
+            <div className="pt-1.5 md:pt-0 md:text-center">
               <span className={cn(
-                "text-xs sm:text-sm font-semibold transition-colors duration-300",
+                "text-xs sm:text-sm font-semibold transition-colors duration-300 block",
                 isCurrent ? "text-white" : isPast ? "text-slate-300" : "text-slate-600",
               )}>
                 {stage.label}
@@ -506,18 +515,16 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
   let headingNode = <><span className="gradient-text">Live</span> Tracking</>;
 
   if (mainOrder) {
-    const customerFirstName = mainOrder.customerName ? mainOrder.customerName.split(' ')[0] : '';
-    const vendorName = vendorInfo[mainOrder.tenantId]?.name || 'The kitchen';
-    const nameStr = customerFirstName ? `, ${customerFirstName}` : '';
+    const customerFirstName = mainOrder.customerName ? mainOrder.customerName.split(' ')[0] : 'there';
 
     if (mainOrder.status === 'completed') {
-      headingNode = <>Enjoy your meal<span className="gradient-text">{nameStr}!</span></>;
+      headingNode = <>Enjoy your meal, <span className="gradient-text">{customerFirstName}!</span></>;
     } else if (mainOrder.status === 'cancelled') {
       headingNode = <><span className="text-rose-400">Order</span> Cancelled</>;
     } else if (mainOrder.status === 'ready') {
-      headingNode = <>Your order is <span className="text-emerald-400">ready</span>{nameStr}!</>;
+      headingNode = <>It&apos;s ready, <span className="text-emerald-400">{customerFirstName}!</span></>;
     } else {
-      headingNode = <><span className="gradient-text">{vendorName}</span> is preparing your order{nameStr}</>;
+      headingNode = <><span className="gradient-text">Cooking</span> for you, {customerFirstName}!</>;
     }
   }
 
@@ -576,11 +583,11 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
       <Navbar />
       <ConnectionBanner isConnected={isConnected} />
 
-      <main className="flex-1 max-w-3xl mx-auto w-full px-3 sm:px-6 py-6 sm:py-10 pt-20 sm:pt-24">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-3 sm:px-6 py-6 sm:py-10 pt-20 sm:pt-24">
         {/* ── Header ── */}
         <div className="mb-6 sm:mb-10 lg:mb-12">
           <div className="flex justify-between items-start gap-4">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-100 tracking-tight leading-tight max-w-2xl">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-100 tracking-tight leading-tight max-w-3xl">
               {headingNode}
             </h1>
             <div className="shrink-0 pt-1 sm:pt-2">
@@ -700,10 +707,10 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
                     </div>
 
                     {/* Right side: Timeline + Details */}
-                    <div className="flex-1 w-full sm:w-auto">
+                    <div className="flex-1 w-full sm:w-auto overflow-hidden px-2 pt-2 md:pt-5">
                       {/* Timeline */}
                       {!isCancelled && (
-                        <VerticalTimeline activeStage={activeStage} isCompleted={isCompleted} isCancelled={isCancelled} />
+                        <OrderTimeline activeStage={activeStage} isCompleted={isCompleted} isCancelled={isCancelled} />
                       )}
 
                       {/* Cancelled message */}

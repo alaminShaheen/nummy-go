@@ -23,6 +23,7 @@ export interface TenantNewOrderEmailProps {
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
+  dashboardUrl: string;
   items: Array<{ name: string; quantity: number; priceCents: number }>;
 }
 
@@ -56,6 +57,7 @@ export function TenantNewOrderEmail({
   customerName,
   customerEmail,
   customerPhone,
+  dashboardUrl,
   items,
 }: TenantNewOrderEmailProps) {
   const dateStr = new Date(createdAt).toLocaleDateString('en-US', {
@@ -188,9 +190,28 @@ export function TenantNewOrderEmail({
                     </Column>
                   </Row>
 
-                  <Text className="text-[11px] text-center m-0 mt-4" style={{ color: '#64748b', fontStyle: 'italic' }}>
+                  <Text className="text-[11px] text-center m-0 mt-4 leading-relaxed" style={{ color: '#64748b' }}>
                     Please review and accept this order on your dashboard.
                   </Text>
+
+                  <Section className="text-center mt-6 mb-2">
+                    <a
+                      href={dashboardUrl}
+                      style={{
+                        display: 'inline-block',
+                        backgroundColor: '#f59e0b',
+                        color: '#13191f',
+                        padding: '12px 28px',
+                        borderRadius: '8px',
+                        fontWeight: 900,
+                        fontSize: '14px',
+                        textDecoration: 'none',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      View Order Dashboard
+                    </a>
+                  </Section>
                 </Section>
                 <div style={{ height: '2px', background: 'linear-gradient(90deg, rgba(251,191,36,0.3) 0%, rgba(129,140,248,0.3) 100%)' }} />
               </Section>
