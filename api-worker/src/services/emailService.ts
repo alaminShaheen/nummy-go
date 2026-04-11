@@ -92,7 +92,7 @@ export class EmailService {
           customerName: order.customerName || 'Customer',
           customerEmail: order.customerEmail || 'Guest',
           customerPhone: order.customerPhone || undefined,
-          dashboardUrl: this.env.FRONTEND_URL ? `${this.env.FRONTEND_URL}/tenant/orders` : 'https://nummygo.ca/tenant/orders',
+          dashboardUrl: this.env.CUSTOMER_WEB_URL ? `${this.env.CUSTOMER_WEB_URL}/tenant/orders` : 'https://nummygo.ca/tenant/orders',
           items: this.buildItems(order),
         }),
       });
