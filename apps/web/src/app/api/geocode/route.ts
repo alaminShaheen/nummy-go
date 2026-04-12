@@ -10,12 +10,8 @@ export async function GET(request: Request) {
 
   try {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5`,
+      `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=5`,
       {
-        headers: {
-          'User-Agent': 'nummyGo-App/1.0',
-        },
-        // Don't cache geocoding in Next.js aggressive cache to prevent stale bounds
         cache: 'no-store',
       }
     );
@@ -25,7 +21,28 @@ export async function GET(request: Request) {
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
+    
+    // Map Photon GeoJSON features to Nominatim format to keep frontend unchanged
+    const transformed = (data.features || []).map((f: any, i: number) => {
+      const p = f.properties;
+      const parts = [
+        p.housenumber && (p.street || p.name) ? `${p.housenumber} ${p.street || p.name}` : (p.name || p.street),
+        p.district,
+        p.city || p.locality,
+        p.state,
+        p.country
+      ];
+      const displayName = Array.from(new Set(parts.filter(Boolean))).join(', ');
+      
+      return {
+        place_id: p.osm_id || i,
+        lat: f.geometry.coordinates[1].toString(),
+        lon: f.geometry.coordinates[0].toString(),
+        display_name: displayName || 'Unknown Location'
+      };
+    });
+
+    return NextResponse.json(transformed);
   } catch (error) {
     console.error('Geocoding Proxy Error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

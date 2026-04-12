@@ -387,11 +387,8 @@ export default function CheckoutPage() {
 
           {/* ── Page Header ── */}
           <div className="mb-6 sm:mb-10">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-amber-100 to-amber-300 tracking-tight">
-              CHECKOUT
-            </h1>
             <h1 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-orange-400 flex items-center gap-3">
-              LIVE ORDERS
+              CHECKOUT
             </h1>
             <div className="w-12 sm:w-16 h-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 mt-2 sm:mt-3" />
           </div>
@@ -439,203 +436,203 @@ export default function CheckoutPage() {
                         placeholder="alex@example.com"
                       />
                     </FormField>
-                    </div>
+                  </div>
                 </section>
 
-              {/* ── Stepper connector ── */}
-              <div className="flex items-center pl-4 sm:pl-5">
-                <div className="w-px h-6 sm:h-8 bg-gradient-to-b from-amber-500/30 to-transparent" />
-              </div>
+                {/* ── Stepper connector ── */}
+                <div className="flex items-center pl-4 sm:pl-5">
+                  <div className="w-px h-6 sm:h-8 bg-gradient-to-b from-amber-500/30 to-transparent" />
+                </div>
 
-              {/* ── Step 2: Order Review (editable) ── */}
-              <section>
-                <StepIndicator step={2} label="ORDER REVIEW" icon={<Utensils className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />} />
+                {/* ── Step 2: Order Review (editable) ── */}
+                <section>
+                  <StepIndicator step={2} label="ORDER REVIEW" icon={<Utensils className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />} />
 
-                <div className="space-y-4 sm:space-y-5">
-                  {cart.map((vendor) => {
-                    const vendorSubtotal = vendor.items.reduce((s, i) => s + i.price * i.quantity, 0);
+                  <div className="space-y-4 sm:space-y-5">
+                    {cart.map((vendor) => {
+                      const vendorSubtotal = vendor.items.reduce((s, i) => s + i.price * i.quantity, 0);
 
-                    return (
-                      <div key={vendor.tenantId} className="rounded-2xl border border-white/[0.06] bg-[rgba(19,25,31,0.5)] backdrop-blur-md overflow-hidden">
-                        {/* Vendor Header */}
-                        <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-white/5 flex items-center justify-between">
-                          <div className="flex items-center gap-2 sm:gap-3">
+                      return (
+                        <div key={vendor.tenantId} className="rounded-2xl border border-white/[0.06] bg-[rgba(19,25,31,0.5)] backdrop-blur-md overflow-hidden">
+                          {/* Vendor Header */}
+                          <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-white/5 flex items-center justify-between">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                              <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" />
+                              <h3 className="font-bold text-white text-sm sm:text-base">{vendor.tenantName}</h3>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => router.push('/search')}
+                              className="flex items-center gap-1 text-[10px] sm:text-xs text-indigo-400 hover:text-indigo-300 transition-colors font-semibold uppercase tracking-wider"
+                            >
+                              <Plus className="w-3 h-3" />
+                              <span className="hidden sm:inline">Add items</span>
+                              <span className="sm:hidden">Add</span>
+                            </button>
+                          </div>
+
+                          {/* Editable Item Rows */}
+                          <div className="divide-y divide-white/[0.04]">
+                            {vendor.items.map((item) => (
+                              <div key={item.id} className="flex items-center gap-2 sm:gap-4 px-3 sm:px-5 py-3 group hover:bg-white/[0.02] transition-colors">
+                                {/* Thumbnail */}
+                                <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden border border-white/10 bg-slate-900 shrink-0">
+                                  {item.image ? (
+                                    <Image
+                                      src={item.image}
+                                      alt={item.name}
+                                      fill
+                                      className="object-cover"
+                                      sizes="48px"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                      <Utensils className="w-4 h-4 text-slate-600" />
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Name + unit price */}
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs sm:text-sm font-semibold text-slate-200 truncate">{item.name}</p>
+                                  <p className="text-[10px] sm:text-xs text-slate-500 tabular-nums">${item.price.toFixed(2)} each</p>
+                                </div>
+
+                                {/* Qty Stepper */}
+                                <QtyStepper
+                                  qty={item.quantity}
+                                  onIncrease={() => updateItemQuantity(vendor.tenantId, item.id, item.quantity + 1)}
+                                  onDecrease={() => updateItemQuantity(vendor.tenantId, item.id, item.quantity - 1)}
+                                  onRemove={() => updateItemQuantity(vendor.tenantId, item.id, 0)}
+                                />
+
+                                {/* Line total */}
+                                <span className="text-xs sm:text-sm text-slate-300 font-semibold tabular-nums w-14 sm:w-16 text-right">
+                                  ${(item.price * item.quantity).toFixed(2)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Vendor subtotal */}
+                          <div className="px-4 sm:px-5 py-3 border-t border-white/5 bg-white/[0.01] flex justify-between">
+                            <span className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider font-semibold">Subtotal</span>
+                            <span className="text-xs sm:text-sm text-amber-300/80 font-bold tabular-nums">${vendorSubtotal.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                {/* ── Stepper connector ── */}
+                <div className="flex items-center pl-4 sm:pl-5">
+                  <div className="w-px h-6 sm:h-8 bg-gradient-to-b from-amber-500/30 to-transparent" />
+                </div>
+
+                {/* ── Step 3: Preferences ── */}
+                <section>
+                  <StepIndicator step={3} label="PREFERENCES" icon={<FileText className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />} />
+
+                  <div className="space-y-4 sm:space-y-5">
+                    {cart.map((vendor) => {
+                      const settings = vendorSettings[vendor.tenantId];
+                      if (!settings) return null;
+
+                      const updateSetting = (patch: Partial<typeof settings>) => {
+                        setVendorSettings(prev => {
+                          const existing = prev[vendor.tenantId];
+                          if (!existing) return prev;
+                          return { ...prev, [vendor.tenantId]: { ...existing, ...patch } };
+                        });
+                      };
+
+                      return (
+                        <div key={vendor.tenantId} className="rounded-2xl border border-white/[0.06] bg-[rgba(19,25,31,0.5)] backdrop-blur-md p-4 sm:p-6 space-y-4 sm:space-y-5">
+                          <div className="flex items-center gap-2 sm:gap-3 pb-3 sm:pb-4 border-b border-white/5">
                             <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" />
                             <h3 className="font-bold text-white text-sm sm:text-base">{vendor.tenantName}</h3>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => router.push('/search')}
-                            className="flex items-center gap-1 text-[10px] sm:text-xs text-indigo-400 hover:text-indigo-300 transition-colors font-semibold uppercase tracking-wider"
-                          >
-                            <Plus className="w-3 h-3" />
-                            <span className="hidden sm:inline">Add items</span>
-                            <span className="sm:hidden">Add</span>
-                          </button>
-                        </div>
 
-                        {/* Editable Item Rows */}
-                        <div className="divide-y divide-white/[0.04]">
-                          {vendor.items.map((item) => (
-                            <div key={item.id} className="flex items-center gap-2 sm:gap-4 px-3 sm:px-5 py-3 group hover:bg-white/[0.02] transition-colors">
-                              {/* Thumbnail */}
-                              <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden border border-white/10 bg-slate-900 shrink-0">
-                                {item.image ? (
-                                  <Image
-                                    src={item.image}
-                                    alt={item.name}
-                                    fill
-                                    className="object-cover"
-                                    sizes="48px"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <Utensils className="w-4 h-4 text-slate-600" />
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Name + unit price */}
-                              <div className="flex-1 min-w-0">
-                                <p className="text-xs sm:text-sm font-semibold text-slate-200 truncate">{item.name}</p>
-                                <p className="text-[10px] sm:text-xs text-slate-500 tabular-nums">${item.price.toFixed(2)} each</p>
-                              </div>
-
-                              {/* Qty Stepper */}
-                              <QtyStepper
-                                qty={item.quantity}
-                                onIncrease={() => updateItemQuantity(vendor.tenantId, item.id, item.quantity + 1)}
-                                onDecrease={() => updateItemQuantity(vendor.tenantId, item.id, item.quantity - 1)}
-                                onRemove={() => updateItemQuantity(vendor.tenantId, item.id, 0)}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                            <div className="space-y-2">
+                              <label className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <ShoppingBag className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Fulfillment
+                              </label>
+                              <SegmentedControl
+                                value={settings.fulfillmentMethod}
+                                onChange={(v) => updateSetting({ fulfillmentMethod: v })}
+                                options={[
+                                  { label: 'Pickup', value: 'pickup', icon: <ShoppingBag className="w-3.5 h-3.5" /> },
+                                  { label: 'Delivery', value: 'delivery', icon: <MapPin className="w-3.5 h-3.5" /> }
+                                ]}
                               />
-
-                              {/* Line total */}
-                              <span className="text-xs sm:text-sm text-slate-300 font-semibold tabular-nums w-14 sm:w-16 text-right">
-                                ${(item.price * item.quantity).toFixed(2)}
-                              </span>
+                              {settings.fulfillmentMethod === 'delivery' && (
+                                <div className="animate-in fade-in slide-in-from-top-2 duration-200 mt-3 pt-3 border-t border-white/5">
+                                  <label className="text-[10px] sm:text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                                    <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Delivery Address
+                                  </label>
+                                  <Controller
+                                    name="globalDeliveryAddress"
+                                    control={control}
+                                    render={({ field }) => (
+                                      <AddressAutocomplete
+                                        id="globalDeliveryAddress"
+                                        value={field.value ?? ''}
+                                        onChange={(address) => field.onChange(address)}
+                                        placeholder="123 Artisan Ave, Apt 4B"
+                                        error={!!errors.globalDeliveryAddress?.message}
+                                      />
+                                    )}
+                                  />
+                                </div>
+                              )}
                             </div>
-                          ))}
-                        </div>
-
-                        {/* Vendor subtotal */}
-                        <div className="px-4 sm:px-5 py-3 border-t border-white/5 bg-white/[0.01] flex justify-between">
-                          <span className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider font-semibold">Subtotal</span>
-                          <span className="text-xs sm:text-sm text-amber-300/80 font-bold tabular-nums">${vendorSubtotal.toFixed(2)}</span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-
-              {/* ── Stepper connector ── */}
-              <div className="flex items-center pl-4 sm:pl-5">
-                <div className="w-px h-6 sm:h-8 bg-gradient-to-b from-amber-500/30 to-transparent" />
-              </div>
-
-              {/* ── Step 3: Preferences ── */}
-              <section>
-                <StepIndicator step={3} label="PREFERENCES" icon={<FileText className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />} />
-
-                <div className="space-y-4 sm:space-y-5">
-                  {cart.map((vendor) => {
-                    const settings = vendorSettings[vendor.tenantId];
-                    if (!settings) return null;
-
-                    const updateSetting = (patch: Partial<typeof settings>) => {
-                      setVendorSettings(prev => {
-                        const existing = prev[vendor.tenantId];
-                        if (!existing) return prev;
-                        return { ...prev, [vendor.tenantId]: { ...existing, ...patch } };
-                      });
-                    };
-
-                    return (
-                      <div key={vendor.tenantId} className="rounded-2xl border border-white/[0.06] bg-[rgba(19,25,31,0.5)] backdrop-blur-md p-4 sm:p-6 space-y-4 sm:space-y-5">
-                        <div className="flex items-center gap-2 sm:gap-3 pb-3 sm:pb-4 border-b border-white/5">
-                          <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" />
-                          <h3 className="font-bold text-white text-sm sm:text-base">{vendor.tenantName}</h3>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                          <div className="space-y-2">
-                            <label className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                              <ShoppingBag className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Fulfillment
-                            </label>
-                            <SegmentedControl
-                              value={settings.fulfillmentMethod}
-                              onChange={(v) => updateSetting({ fulfillmentMethod: v })}
-                              options={[
-                                { label: 'Pickup', value: 'pickup', icon: <ShoppingBag className="w-3.5 h-3.5" /> },
-                                { label: 'Delivery', value: 'delivery', icon: <MapPin className="w-3.5 h-3.5" /> }
-                              ]}
-                            />
-                            {settings.fulfillmentMethod === 'delivery' && (
-                              <div className="animate-in fade-in slide-in-from-top-2 duration-200 mt-3 pt-3 border-t border-white/5">
-                                <label className="text-[10px] sm:text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5 mb-2">
-                                  <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Delivery Address
-                                </label>
-                                <Controller
-                                  name="globalDeliveryAddress"
-                                  control={control}
-                                  render={({ field }) => (
-                                    <AddressAutocomplete
-                                      id="globalDeliveryAddress"
-                                      value={field.value ?? ''}
-                                      onChange={(address) => field.onChange(address)}
-                                      placeholder="123 Artisan Ave, Apt 4B"
-                                      error={!!errors.globalDeliveryAddress?.message}
-                                    />
-                                  )}
-                                />
-                              </div>
-                            )}
+                            <div className="space-y-2">
+                              <label className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <CreditCard className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Payment
+                              </label>
+                              <SegmentedControl
+                                value={settings.paymentMethod}
+                                onChange={(v) => updateSetting({ paymentMethod: v })}
+                                options={[
+                                  { label: 'At Store', value: 'counter', icon: <Store className="w-3.5 h-3.5" /> },
+                                  { label: 'Online', value: 'card', icon: <CreditCard className="w-3.5 h-3.5" /> }
+                                ]}
+                              />
+                            </div>
                           </div>
-                          <div className="space-y-2">
-                            <label className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                              <CreditCard className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Payment
+
+                          {/* Scheduling */}
+                          <div className="pt-3 border-t border-white/5">
+                            <label className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-3">
+                              <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Ready Time
                             </label>
-                            <SegmentedControl
-                              value={settings.paymentMethod}
-                              onChange={(v) => updateSetting({ paymentMethod: v })}
-                              options={[
-                                { label: 'At Store', value: 'counter', icon: <Store className="w-3.5 h-3.5" /> },
-                                { label: 'Online', value: 'card', icon: <CreditCard className="w-3.5 h-3.5" /> }
-                              ]}
+                            <ScheduleTimePicker
+                              value={settings.scheduledFor}
+                              onChange={(v) => updateSetting({ scheduledFor: v })}
+                            />
+                          </div>
+
+                          {/* Special instructions */}
+                          <div className="pt-3 border-t border-white/5">
+                            <label className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-3">
+                              <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Special Instructions
+                            </label>
+                            <textarea
+                              placeholder="Allergies, special requests..."
+                              value={settings.specialInstruction}
+                              onChange={(e) => updateSetting({ specialInstruction: e.target.value })}
+                              rows={2}
+                              className="w-full bg-black/40 border border-white/5 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/30 transition-colors resize-none"
                             />
                           </div>
                         </div>
-
-                        {/* Scheduling */}
-                        <div className="pt-3 border-t border-white/5">
-                          <label className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-3">
-                            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Ready Time
-                          </label>
-                          <ScheduleTimePicker
-                            value={settings.scheduledFor}
-                            onChange={(v) => updateSetting({ scheduledFor: v })}
-                          />
-                        </div>
-
-                        {/* Special instructions */}
-                        <div className="pt-3 border-t border-white/5">
-                          <label className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-3">
-                            <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Special Instructions
-                          </label>
-                          <textarea
-                            placeholder="Allergies, special requests..."
-                            value={settings.specialInstruction}
-                            onChange={(e) => updateSetting({ specialInstruction: e.target.value })}
-                            rows={2}
-                            className="w-full bg-black/40 border border-white/5 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/30 transition-colors resize-none"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-             </form>
+                      );
+                    })}
+                  </div>
+                </section>
+              </form>
             </div>
 
             {/* ══════════════════════════════════════════════════════════════
