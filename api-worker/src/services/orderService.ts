@@ -57,6 +57,7 @@ function initDb(env: Env) {
 type BroadcastPayload =
   | { type: 'ORDER_CREATED'; order: Order }
   | { type: 'ORDER_UPDATED'; order: Order }
+  | { type: 'ORDER_DELAYED'; order: Order }
   | { type: 'MODIFICATION_REQUESTED'; order: Order; modification: OrderModification }
   | { type: 'MODIFICATION_REVIEWED'; order: Order; modification: OrderModification };
 
@@ -467,7 +468,7 @@ export async function delayOrder(env: Env, input: { orderId: string, delayMinute
   }
 
   const eventPayload = {
-    type: 'ORDER_DELAYED',
+    type: 'ORDER_DELAYED' as const,
     order,
   };
 

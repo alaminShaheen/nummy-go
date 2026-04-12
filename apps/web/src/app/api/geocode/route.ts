@@ -20,7 +20,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Geocoding upstream error' }, { status: response.status });
     }
 
-    const data = await response.json();
+    const data: any = await response.json();
     
     // Map Photon GeoJSON features to Nominatim format to keep frontend unchanged
     const transformed = (data.features || []).map((f: any, i: number) => {
