@@ -53,7 +53,7 @@ export function ScrollToTop() {
     <button
       onClick={scrollToTop}
       className={cn(
-        "fixed right-6 sm:right-10 z-[100] p-4 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-indigo-400 hover:text-white shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] transition-all duration-300 group animate-in fade-in zoom-in-50 slide-in-from-bottom flex items-center justify-center backdrop-blur-md",
+        "fixed right-6 sm:right-10 z-[70] p-4 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-gradient-to-r hover:from-indigo-500 hover:to-indigo-400 hover:text-white shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] transition-all duration-300 group animate-in fade-in zoom-in-50 slide-in-from-bottom flex items-center justify-center backdrop-blur-md",
         // Elevate slightly higher on tenant pages for mobile nav, and on storefronts to clear the CartFab
         pathname.startsWith('/tenant') ? "bottom-20 sm:bottom-12" : "bottom-28 sm:bottom-24"
       )}

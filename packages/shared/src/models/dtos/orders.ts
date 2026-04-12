@@ -68,6 +68,12 @@ export const updateOrderStatusSchema = z.object({
   { message: 'Rejection reason is required when cancelling', path: ['rejectionReason'] }
 );
 
+export const delayOrderSchema = z.object({
+  orderId: ulidSchema,
+  delayMinutes: z.number().int().min(1).max(180),
+  delayMessage: z.string().trim().max(500).optional(),
+});
+
 export const getOrdersByTenantSchema = z.object({
   tenantId: ulidSchema,
   status:   orderStatusEnum.optional(),
@@ -169,6 +175,8 @@ export const orderResponseSchema = z.object({
   specialInstruction: z.string().nullable(),
   rejectionReason:    z.string().nullable(),
   scheduledFor:       timestampSchema.nullable(),
+  delayMinutes:       z.number(),
+  delayMessage:       z.string().nullable(),
   modificationStatus: orderModificationStatusEnum.nullable(),
   createdAt:          timestampSchema,
   updatedAt:          timestampSchema.nullable(),

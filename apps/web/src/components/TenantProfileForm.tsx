@@ -14,6 +14,7 @@ import { AlertCircle, Building2, CheckCircle2, ChevronRight, Clock, Globe, Loade
 import type { SocialLinks } from '@nummygo/shared/models/types';
 import { clsx } from 'clsx';
 import { TimePicker } from '@/components/TimePicker';
+import { formatPhoneNumber } from '@nummygo/shared/lib/formatters';
 
 // ─── TenantProfileForm Props ──────────────────────────────────────────────────
 type TenantFormValues = RegisterTenantDto | UpdateTenantDto;
@@ -405,8 +406,12 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 									id="phoneNumber"
 									type="tel"
 									{...field}
-									value={(field.value as string) ?? ''}
-									placeholder="+1 (416) 555-0100"
+									value={formatPhoneNumber(field.value as string)}
+									onChange={(e) => {
+										const numeric = e.target.value.replace(/\D/g, '');
+										field.onChange(numeric);
+									}}
+									placeholder="(416) 555-0100"
 								/>
 							</FormField>
 						)}
@@ -518,6 +523,33 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 										<option value={30} className="bg-[#141A23]">30 minutes</option>
 										<option value={45} className="bg-[#141A23]">45 minutes</option>
 										<option value={60} className="bg-[#141A23]">60 minutes</option>
+									</select>
+								</FormField>
+							)}
+						/>
+
+						<Controller
+							name={'estimatedPrepTime' as Path<T>}
+							control={control}
+							render={({ field }) => (
+								<FormField
+									id="estimatedPrepTime"
+									label="Estimated Prep Time (Minutes)"
+									hint="Displayed to customers on your storefront to set wait time expectations."
+								>
+									<select
+										id="estimatedPrepTime"
+										// @ts-ignore
+										value={(field.value as number) || 20}
+										onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+										className="w-full rounded-lg bg-[#141A23] border border-white/10 text-slate-200 text-sm px-3 py-2.5 focus:outline-none focus:border-amber-400/60 transition-colors appearance-none"
+									>
+										<option value={10} className="bg-[#141A23]">10 Minutes</option>
+										<option value={15} className="bg-[#141A23]">15 Minutes</option>
+										<option value={20} className="bg-[#141A23]">20 Minutes</option>
+										<option value={30} className="bg-[#141A23]">30 Minutes</option>
+										<option value={45} className="bg-[#141A23]">45 Minutes</option>
+										<option value={60} className="bg-[#141A23]">60 Minutes</option>
 									</select>
 								</FormField>
 							)}

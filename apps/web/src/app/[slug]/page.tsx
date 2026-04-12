@@ -5,30 +5,13 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 
 /**
- * ISR Configuration for Cloudflare Pages (via OpenNext)
- *
- * - generateStaticParams: Pre-generates pages for existing vendors at build time
- * - revalidate: Regenerates pages every hour (3600 seconds)
- * - dynamicParams: Allows new vendor slugs not in generateStaticParams to be
- *   generated on-demand when first requested
+ * Force dynamic rendering for storefront pages to ensure
+ * live changes (menu availability, shop open/close, profile edits)
+ * are immediately visible to customers and vendors.
  */
+export const dynamic = 'force-dynamic';
 
-// Revalidate pages every hour (ISR)
-export const revalidate = 3600;
 
-// Allow dynamic slugs that weren't pre-generated
-export const dynamicParams = true;
-
-// Pre-generate pages for existing vendors at build time
-export async function generateStaticParams() {
-    try {
-        const slugs = await serverTRPC.tenant.allTenantSlugs.query();
-        return slugs;
-    } catch (error) {
-        console.error('Error in generateStaticParams:', (error as any)?.data);
-        return [{ slug: '_' }]; // Fallback placeholder
-    }
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;

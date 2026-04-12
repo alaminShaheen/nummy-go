@@ -12,7 +12,8 @@ import {
     orderIdParamSchema,
     checkoutSessionIdParamSchema,
     checkoutGroupResponseSchema,
-    cancelOrderRequestSchema
+    cancelOrderRequestSchema,
+    delayOrderSchema
 } from '@nummygo/shared/models/dtos';
 import {
     changeOrderStatus,
@@ -25,7 +26,8 @@ import {
     fetchCheckoutSession,
     requestOrderModification,
     fetchOrderDetails,
-    cancelOrderAsCustomer
+    cancelOrderAsCustomer,
+    delayOrder
 } from '../../services/orderService';
 import { getTenantProfile } from '../../services/tenantService';
 import { z } from 'zod';
@@ -152,6 +154,12 @@ export const orderRouter = router({
         .input(updateOrderStatusSchema)
         .mutation(async ({ input, ctx }) => {
             return await changeOrderStatus(ctx.env, input);
+        }),
+
+    delayOrder: tenantProcedure
+        .input(delayOrderSchema)
+        .mutation(async ({ input, ctx }) => {
+            return await delayOrder(ctx.env, input);
         }),
 
     reviewModification: tenantProcedure

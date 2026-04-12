@@ -30,6 +30,8 @@ export const orderSchema = z.object({
   rejectionReason:     z.string().nullable(),
   /** Unix ms timestamp of when the order should be ready / delivered. Null = ASAP. */
   scheduledFor:        timestampSchema.nullable(),
+  delayMinutes:        z.number().int().min(0),
+  delayMessage:        z.string().nullable(),
   /** Tracks the latest pending/accepted/rejected customer modification request. */
   modificationStatus:  orderModificationStatusEnum.nullable(),
   createdAt:           timestampSchema,

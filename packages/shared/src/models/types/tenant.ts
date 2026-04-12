@@ -54,6 +54,7 @@ export const tenantSchema = z.object({
 		z.literal(45),
 		z.literal(60),
 	]).default(30),
+	estimatedPrepTime: z.number().int().min(0).max(120).default(20),
 	createdAt: timestampSchema,
 	updatedAt: timestampSchema.nullable(),
 });

@@ -42,10 +42,12 @@ export default function MenuSection({ items, categories = [], onAddToCart, onUpd
               <h2 className="text-4xl font-black text-slate-100">Our Menu</h2>
             </div>
           </div>
+        </div>
 
-          {/* Category pills */}
-          {categories.length > 0 && (
-            <div className="flex gap-2 flex-wrap" role="tablist" aria-label="Menu categories">
+        {/* Category Sticky Navigation Rail */}
+        {categories.length > 0 && (
+          <div className="sticky top-[64px] z-[40] -mx-4 px-4 sm:mx-0 sm:px-0 py-4 mb-6 bg-[#0D1117]/80 backdrop-blur-md border-b border-white/5 shadow-2xl">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar whitespace-nowrap" role="tablist" aria-label="Menu categories">
               <Button
                 role="tab"
                 id="cat-all"
@@ -54,8 +56,8 @@ export default function MenuSection({ items, categories = [], onAddToCart, onUpd
                 size="sm"
                 className={
                   activeCategory === 'ALL'
-                    ? 'rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-white border-transparent hover:opacity-90'
-                    : 'rounded-full bg-white/5 text-slate-400 border-white/10 hover:border-amber-400/30 hover:text-amber-400 dark:bg-white/5 dark:border-white/10'
+                    ? 'rounded-full px-5 bg-gradient-to-r from-amber-500 to-orange-600 text-white border-transparent hover:opacity-90 shadow-lg shadow-amber-500/20'
+                    : 'rounded-full px-5 bg-white/5 text-slate-400 border-white/10 hover:border-amber-400/30 hover:text-amber-400 dark:bg-white/5 dark:border-white/10'
                 }
               >
                 All
@@ -70,16 +72,16 @@ export default function MenuSection({ items, categories = [], onAddToCart, onUpd
                   size="sm"
                   className={
                     activeCategory === cat.id
-                      ? 'rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-white border-transparent hover:opacity-90'
-                      : 'rounded-full bg-white/5 text-slate-400 border-white/10 hover:border-amber-400/30 hover:text-amber-400 dark:bg-white/5 dark:border-white/10'
+                      ? 'rounded-full px-5 bg-gradient-to-r from-amber-500 to-orange-600 text-white border-transparent hover:opacity-90 shadow-lg shadow-amber-500/20'
+                      : 'rounded-full px-5 bg-white/5 text-slate-400 border-white/10 hover:border-amber-400/30 hover:text-amber-400 dark:bg-white/5 dark:border-white/10'
                   }
                 >
                   {cat.name}
                 </Button>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

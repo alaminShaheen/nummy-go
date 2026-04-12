@@ -18,6 +18,7 @@ export const registerTenantSchema = z.object({
 	businessHours: businessHoursSchema,
 	promotionalHeading: z.string().optional().or(z.literal('')),
 	description: z.string().optional().or(z.literal('')),
+	estimatedPrepTime: z.number().int().min(0).max(120).optional(),
 });
 
 export const updateTenantSchema = registerTenantSchema.partial().extend({
@@ -36,6 +37,7 @@ export const updateTenantSchema = registerTenantSchema.partial().extend({
 		z.literal(45),
 		z.literal(60),
 	]).optional(),
+	estimatedPrepTime: z.number().int().min(0).max(120).optional(),
 });
 
 export const checkTenantSlugSchema = z.object({
@@ -66,6 +68,7 @@ export const createTenantRecordSchema = z.object({
 	heroImageUrl: z.string().optional().or(z.literal('')),
 	businessHours: businessHoursSchema.optional(), // serialized JSON string for DB
 	onboardingCompleted: z.boolean(),
+	estimatedPrepTime: z.number().int().min(0).max(120).optional(),
 	createdAt: timestampSchema,
 	updatedAt: timestampSchema,
 });
