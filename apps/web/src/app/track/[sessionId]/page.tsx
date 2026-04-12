@@ -496,7 +496,7 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
   const { isConnected } = useWebSocket(sessionId, {
     type: 'session',
     onMessage: (msg: any) => {
-      if (['ORDER_UPDATED', 'ORDER_CREATED', 'MODIFICATION_REQUESTED', 'MODIFICATION_REVIEWED'].includes(msg.type)) {
+      if (['ORDER_UPDATED', 'ORDER_CREATED', 'MODIFICATION_REQUESTED', 'MODIFICATION_REVIEWED', 'ORDER_DELAYED'].includes(msg.type)) {
         queryClient.invalidateQueries({
           queryKey: [['order', 'getCheckoutGroup'], { input: { checkoutSessionId: sessionId }, type: 'query' }],
         });
@@ -684,6 +684,27 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
                   </div>
                 )}
 
+                {/* ── Kitchen Delay Banner ── */}
+                {order.delayMinutes > 0 && !isCompleted && !isCancelled && (
+                  <div className="px-4 sm:px-6 pt-4">
+                    <div className="relative rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 overflow-hidden shadow-[0_0_20px_rgba(245,158,11,0.15)]">
+                      <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-amber-400 to-orange-500" />
+                      <div className="flex items-start gap-4 ml-2">
+                        <div className="p-2 bg-amber-500/20 rounded-lg shrink-0 rounded-full text-amber-400">
+                          <AlertCircle className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-sm font-bold text-amber-400 uppercase tracking-widest mb-1">Kitchen Update</h4>
+                          <p className="text-sm text-slate-300 font-medium">We need a little more time. The chef has added <span className="text-white font-black">{order.delayMinutes} mins</span> to your original estimate.</p>
+                          {order.delayMessage && (
+                            <p className="text-xs text-amber-300/80 mt-2 italic bg-black/20 p-2 rounded-md border border-amber-500/10">"{order.delayMessage}"</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* ── Main Content ── */}
                 <div className="p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8">
@@ -698,10 +719,15 @@ export default function TrackingPage({ params }: { params: Promise<{ sessionId: 
                       />
 
                       {/* Schedule badge */}
-                      {order.scheduledFor && (
-                        <div className="flex items-center gap-1.5 text-xs text-amber-400/80 mt-3 bg-amber-500/5 border border-amber-500/15 rounded-lg px-3 py-1.5">
-                          <CalendarClock className="w-3.5 h-3.5" />
-                          {format(new Date(order.scheduledFor), 'MMM d, h:mm a')}
+                      {(order.scheduledFor || order.delayMinutes > 0) && (
+                        <div className="flex flex-col items-center gap-1 mt-3">
+                          <div className={cn("flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border", 
+                            order.delayMinutes > 0 ? "bg-amber-500/10 border-amber-500/30 text-amber-400 font-bold" : "text-amber-400/80 bg-amber-500/5 border-amber-500/15"
+                          )}>
+                            <CalendarClock className="w-3.5 h-3.5" />
+                            {order.scheduledFor ? format(new Date(order.scheduledFor), 'MMM d, h:mm a') : 'ASAP'}
+                            {order.delayMinutes > 0 && <span className="ml-1 text-orange-400">+ {order.delayMinutes}m</span>}
+                          </div>
                         </div>
                       )}
                     </div>

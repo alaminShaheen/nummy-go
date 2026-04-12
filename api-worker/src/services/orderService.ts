@@ -10,6 +10,7 @@ import {
   getOrderById,
   getOrderWithItems,
   updateOrderStatus,
+  updateOrderDelay,
   updateOrderModificationStatus,
   updateOrderAfterModification,
   getMenuItemById,
@@ -447,6 +448,38 @@ export async function changeOrderStatus(env: Env, input: UpdateOrderStatusDto): 
   return order;
 }
 
+// ── delayOrder ─────────────────────────────────────────────────────────────
+
+export async function delayOrder(env: Env, input: { orderId: string, delayMinutes: number, delayMessage?: string }): Promise<Order> {
+  initDb(env);
+
+  const existing = await getOrderById(input.orderId);
+  if (!existing) throw new Error(`Order ${input.orderId} not found`);
+
+  // Persist delay
+  const row = await updateOrderDelay(input.orderId, input.delayMinutes, input.delayMessage || null);
+  const order = rowToOrder(row);
+
+  // Broadcast
+  const tags = [`tenant:${order.tenantId}`];
+  if (order.checkoutSessionId) {
+    tags.push(`session:${order.checkoutSessionId}`);
+  }
+
+  const eventPayload = {
+    type: 'ORDER_DELAYED',
+    order,
+  };
+
+  await broadcastToDO(env, order.tenantId, tags, eventPayload);
+  
+  if (order.checkoutSessionId) {
+    await broadcastToDO(env, `session:${order.checkoutSessionId}`, [`session:${order.checkoutSessionId}`], eventPayload);
+  }
+
+  return order;
+}
+
 // ── cancelOrderAsCustomer ──────────────────────────────────────────────────
 
 export async function cancelOrderAsCustomer(
@@ -737,6 +770,8 @@ function rowToOrder(row: typeof import('@nummygo/shared/db/schema').orders.$infe
     specialInstruction: row.specialInstruction ?? null,
     rejectionReason: row.rejectionReason ?? null,
     scheduledFor: row.scheduledFor ?? null,
+    delayMinutes: row.delayMinutes ?? 0,
+    delayMessage: row.delayMessage ?? null,
     modificationStatus: (row.modificationStatus as Order['modificationStatus']) ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt ?? null,

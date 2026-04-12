@@ -124,7 +124,7 @@ export function UrgentQueueRadar({ orders, estimatedPrepTime = 20, onOrderClick 
                 key={order.id}
                 onClick={() => onOrderClick?.(order.id)}
                 className={cn(
-                  "shrink-0 snap-start w-64 rounded-2xl p-4 border backdrop-blur-md flex flex-col items-center justify-between text-left transition-all hover:scale-[1.02]",
+                  "shrink-0 snap-start w-64 rounded-2xl p-4 border backdrop-blur-md flex flex-col items-center justify-between text-left transition-all hover:scale-[1.02] cursor-pointer",
                   themeColors.bg,
                   themeColors.glow
                 )}
@@ -171,7 +171,7 @@ export function UrgentQueueRadar({ orders, estimatedPrepTime = 20, onOrderClick 
                       {order.status}
                     </span>
                     <Users className="w-3.5 h-3.5 ml-1" />
-                    <span className="tabular-nums">{order.totalItems || 1}</span>
+                    <span className="tabular-nums">{(order as any).totalItems || 1}</span>
                   </div>
                 </div>
               </button>
