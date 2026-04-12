@@ -12,6 +12,7 @@ import {
   type SortingState,
 } from '@tanstack/react-table';
 import { buildColumns } from './components/columns';
+import { UrgentQueueRadar } from './components/UrgentQueueRadar';
 import { GlassCard, Skeleton } from '@/components/ui';
 import {
   ClipboardList,
@@ -402,6 +403,17 @@ export default function TenantDashboardOrders() {
           </div>
         </div>
       </div>
+
+      {orders && <UrgentQueueRadar 
+        orders={orders} 
+        estimatedPrepTime={tenant?.estimatedPrepTime}
+        onOrderClick={(id) => {
+          // Expand the specific order in the table
+          const r = table.getRowModel().rows.find(r => r.original.id === id);
+          if (r) r.toggleExpanded();
+          // Optional: smooth scroll it into view
+        }} 
+      />}
 
       <GlassCard className="border border-indigo-500/10 overflow-hidden">
         <div className="w-full overflow-x-auto">

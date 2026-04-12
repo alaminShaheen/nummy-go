@@ -11,7 +11,7 @@ import type { FulfillmentMethod, PaymentMethod } from '@nummygo/shared/models/en
 import { trpc } from '@/trpc/client';
 import { formatPhoneNumber } from '@nummygo/shared/lib/formatters';
 import { useCart } from '@/hooks/useCart';
-import { GlassCard, GradientButton, FormField, BrandInput, Button, DateTimePicker, AddressAutocomplete, SegmentedControl } from '@/components/ui';
+import { GlassCard, GradientButton, FormField, BrandInput, Button, DateTimePicker, AddressAutocomplete } from '@/components/ui';
 import {
   MapPin, User, CreditCard, Store,
   ShoppingBag, X, Loader2, Clock, ChevronRight, ChevronUp,
