@@ -14,6 +14,7 @@ import { AlertCircle, Building2, CheckCircle2, ChevronRight, Clock, Globe, Loade
 import type { SocialLinks } from '@nummygo/shared/models/types';
 import { clsx } from 'clsx';
 import { TimePicker } from '@/components/TimePicker';
+import { formatPhoneNumber } from '@nummygo/shared/lib/formatters';
 
 // ─── TenantProfileForm Props ──────────────────────────────────────────────────
 type TenantFormValues = RegisterTenantDto | UpdateTenantDto;
@@ -405,8 +406,12 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 									id="phoneNumber"
 									type="tel"
 									{...field}
-									value={(field.value as string) ?? ''}
-									placeholder="+1 (416) 555-0100"
+									value={formatPhoneNumber(field.value as string)}
+									onChange={(e) => {
+										const numeric = e.target.value.replace(/\D/g, '');
+										field.onChange(numeric);
+									}}
+									placeholder="(416) 555-0100"
 								/>
 							</FormField>
 						)}
