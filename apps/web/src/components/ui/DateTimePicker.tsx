@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
 import {
   ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, X,
@@ -269,18 +270,15 @@ export function DateTimePicker({
     }
   }, [isOpen]);
 
-  // Lock body scroll when mobile sheet is open
+  // Lock body scroll ONLY for the mobile/tablet sheet
   useEffect(() => {
-    if (isOpen) {
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
+    const isMobileSheet = typeof window !== 'undefined' && window.innerWidth < 1024;
+    
+    if (isOpen && isMobileSheet) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
       return () => {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        window.scrollTo(0, scrollY);
+        document.body.style.overflow = originalOverflow;
       };
     }
   }, [isOpen]);
@@ -405,16 +403,16 @@ export function DateTimePicker({
         )}
       </button>
 
-      {/* ── Desktop Dropdown (hidden on mobile) ── */}
+      {/* ── Desktop Dropdown (hidden below lg) ── */}
       {isOpen && (
-        <div className="hidden sm:block absolute z-50 mt-2 w-full min-w-[300px] rounded-xl border border-white/10 bg-[rgba(15,19,26,0.97)] backdrop-blur-xl shadow-2xl shadow-black/40 animate-in fade-in slide-in-from-top-2 duration-150 overflow-hidden">
+        <div className="hidden lg:block absolute z-50 mt-2 w-full min-w-[300px] rounded-xl border border-white/10 bg-[rgba(15,19,26,0.97)] backdrop-blur-xl shadow-2xl shadow-black/40 animate-in fade-in slide-in-from-top-2 duration-150 overflow-hidden">
           <CalendarContent {...sharedProps} isMobileSheet={false} />
         </div>
       )}
 
-      {/* ── Mobile Bottom Sheet ── */}
-      {isOpen && (
-        <div className="sm:hidden fixed inset-0 z-[110]">
+      {/* ── Mobile/Tablet Bottom Sheet ── */}
+      {isOpen && typeof document !== 'undefined' && createPortal(
+        <div className="lg:hidden fixed inset-0" style={{ zIndex: 9999 }}>
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
@@ -441,7 +439,8 @@ export function DateTimePicker({
 
             <CalendarContent {...sharedProps} isMobileSheet={true} />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

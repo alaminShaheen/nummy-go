@@ -25,8 +25,10 @@ export const orders = sqliteTable('orders', {
   specialInstruction: text('special_instruction'),
   rejectionReason: text('rejection_reason'),
 
-  // Scheduling
+  // Scheduling & Delays
   scheduledFor: integer('scheduled_for', { mode: 'number' }), // nullable unix timestamp
+  delayMinutes: integer('delay_minutes').notNull().default(0),
+  delayMessage: text('delay_message'),
 
   // Modification requests
   modificationStatus: text('modification_status', { enum: ORDER_MODIFICATION_STATUS }),

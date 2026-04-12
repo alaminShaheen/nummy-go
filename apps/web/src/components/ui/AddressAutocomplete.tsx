@@ -59,8 +59,7 @@ export function AddressAutocomplete({ id, value, onChange, placeholder, error }:
 		try {
 			// Free Nominatim API adhering to Rate-Limit usage (approx ~1 per second enforced by debounce).
 			const response = await fetch(
-				`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`,
-				{ headers: { 'User-Agent': 'nummyGo-App/1.0' } }
+				`/api/geocode?q=${encodeURIComponent(query)}`
 			);
 
 			if (response.ok) {
@@ -80,9 +79,11 @@ export function AddressAutocomplete({ id, value, onChange, placeholder, error }:
 		const newVal = e.target.value;
 		setSearchText(newVal);
 
-		// If they clear the text, clear parents immediately
+		// Synchronize the raw text with the parent form instantly
+		onChange(newVal, undefined, undefined);
+
+		// If they clear the text, clear results immediately
 		if (!newVal.trim()) {
-			onChange('', undefined, undefined);
 			setResults([]);
 			setIsOpen(false);
 			return;

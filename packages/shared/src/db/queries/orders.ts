@@ -67,6 +67,21 @@ export async function updateOrderModificationStatus(
   return row;
 }
 
+export async function updateOrderDelay(
+  id: string,
+  delayMinutes: number,
+  delayMessage: string | null
+) {
+  const result = await getDb()
+    .update(orders)
+    .set({ delayMinutes, delayMessage, updatedAt: Date.now() })
+    .where(eq(orders.id, id))
+    .returning();
+  const row = result[0];
+  if (!row) throw new Error(`Order ${id} not found`);
+  return row;
+}
+
 export async function updateOrderAfterModification(
   id: string,
   data: {

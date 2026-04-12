@@ -20,6 +20,7 @@ import { OrderFilterTabs, type OrderTab } from '../orders/components/OrderFilter
 import { ColumnCustomizer } from '../orders/components/ColumnCustomizer';
 import { ReviewModificationDialog } from '../orders/components/ReviewModificationDialog';
 import { OrdersTable } from '../orders/components/OrdersTable';
+import { UrgentQueueRadar } from '../orders/components/UrgentQueueRadar';
 import { Skeleton, Input } from '@/components/ui';
 import { Bell, Wifi, WifiOff, Search } from 'lucide-react';
 import type { Order } from '@nummygo/shared/models/types';
@@ -70,6 +71,7 @@ export default function TenantDashboardPage() {
   });
 
   // ── Sorted orders ───────────────────────────────────────────────────────────
+  const prepTime = tenant?.estimatedPrepTime || 20;
   const STATUS_WEIGHT: Record<string, number> = { accepted: 1, preparing: 2, ready: 3, completed: 4, cancelled: 5 };
 
   const sortedOrders = useMemo(() => {
@@ -81,9 +83,15 @@ export default function TenantDashboardPage() {
       if (aHasMod !== bHasMod) return aHasMod - bHasMod;
       const wa = STATUS_WEIGHT[a.status] ?? 99;
       const wb = STATUS_WEIGHT[b.status] ?? 99;
-      return wa !== wb ? wa - wb : b.createdAt - a.createdAt;
+      if (wa === wb) {
+        // Tie-breaker: nearest target delivery time first
+        const tgtA = (a.scheduledFor ? new Date(a.scheduledFor).getTime() : a.createdAt + (prepTime * 60000)) + (a.delayMinutes * 60000);
+        const tgtB = (b.scheduledFor ? new Date(b.scheduledFor).getTime() : b.createdAt + (prepTime * 60000)) + (b.delayMinutes * 60000);
+        return tgtA - tgtB;
+      }
+      return wa - wb;
     });
-  }, [orders]);
+  }, [orders, prepTime]);
 
   // ── Tab counts ──────────────────────────────────────────────────────────────
   const counts = useMemo(() => ({
@@ -131,7 +139,8 @@ export default function TenantDashboardPage() {
       setLoadingModOrderId(order.id);
     },
     loadingOrderId: loadingModOrderId,
-  }), [loadingModOrderId]);
+    estimatedPrepTime: prepTime,
+  }), [loadingModOrderId, prepTime]);
 
   const table = useReactTable({
     data: filteredOrders,
@@ -237,6 +246,17 @@ export default function TenantDashboardPage() {
 
       {/* ── KPI Cards ──────────────────────────────────────────────────────── */}
       <KpiCards orders={sortedOrders} />
+
+      {/* ── Urgent Queue Radar ─────────────────────────────────────────────── */}
+      {orders && <UrgentQueueRadar
+        orders={orders}
+        estimatedPrepTime={tenant?.estimatedPrepTime}
+        onOrderClick={(id) => {
+          // Prefill order ID search box to filter the table
+          table.getColumn('id')?.setFilterValue(id);
+          setActiveTab('all');
+        }}
+      />}
 
       {/* ── Filter bar ─────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-wrap justify-between">

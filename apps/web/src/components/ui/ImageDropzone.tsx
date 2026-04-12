@@ -75,7 +75,7 @@ export function ImageDropzone({ value, onChange, label, isAvatar, hint }: ImageD
 					<div className="absolute inset-0 bg-[#0D1117]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-sm">
 						<button 
 							type="button" 
-							onClick={() => onChange(undefined)}
+							onClick={() => onChange('')}
 							className="p-2.5 bg-rose-500/90 rounded-full text-white hover:scale-110 transition-transform shadow-lg"
 						>
 							<Trash2 className="size-4" />

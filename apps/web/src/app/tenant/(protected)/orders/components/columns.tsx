@@ -85,9 +85,11 @@ export const ModificationBadge = ({ status }: { status: Order['modificationStatu
 export function buildColumns({
   onReviewModification,
   loadingOrderId,
+  estimatedPrepTime = 20,
 }: {
   onReviewModification: (order: Order) => void;
   loadingOrderId?: string | null;
+  estimatedPrepTime?: number;
 }): ColumnDef<Order>[] {
   return [
     {
@@ -125,6 +127,41 @@ export function buildColumns({
               {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
             <span className="text-xs text-slate-500">{date.toLocaleDateString()}</span>
+          </div>
+        );
+      },
+    },
+    {
+      id: 'targetTime',
+      accessorFn: (row) => row.scheduledFor ? new Date(row.scheduledFor).getTime() : row.createdAt + (estimatedPrepTime * 60000),
+      header: ({ column }) => (
+        <button
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          className="flex items-center text-xs font-bold uppercase tracking-wider text-amber-400 hover:text-amber-300"
+        >
+          Target Time
+          <ArrowUpDown className="ml-2 h-3 w-3" />
+        </button>
+      ),
+      cell: ({ row, getValue }) => {
+        const order = row.original;
+        const ts = getValue() as number;
+        
+        // Add active kitchen delay to formatting, if any
+        const effectiveTs = ts + (order.delayMinutes * 60000);
+        const date = new Date(effectiveTs);
+        
+        const isLate = effectiveTs < Date.now() && order.status !== 'ready' && order.status !== 'completed' && order.status !== 'cancelled';
+
+        return (
+          <div className="flex flex-col">
+            <span className={cn("text-sm font-black", isLate ? "text-rose-400 animate-pulse" : "text-amber-400")}>
+              {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
+            <span className="text-xs font-semibold text-slate-500">
+              {order.scheduledFor ? 'Scheduled' : 'ASAP'}
+              {order.delayMinutes > 0 && ` (+${order.delayMinutes}m)`}
+            </span>
           </div>
         );
       },
