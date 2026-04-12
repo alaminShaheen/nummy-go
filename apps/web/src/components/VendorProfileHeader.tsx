@@ -11,6 +11,7 @@ interface VendorProfileHeaderProps {
   logoUrl?: string | null;
   acceptsOrders: boolean;
   socialLinks?: SocialLinks | null;
+  estimatedPrepTime?: number;
 }
 
 export default function VendorProfileHeader({
@@ -20,6 +21,7 @@ export default function VendorProfileHeader({
   logoUrl,
   acceptsOrders,
   socialLinks,
+  estimatedPrepTime = 20,
 }: VendorProfileHeaderProps) {
   return (
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-20">
@@ -49,13 +51,22 @@ export default function VendorProfileHeader({
           <div className="flex flex-col gap-3">
              <div className="flex flex-col gap-1 items-start">
                {/* Status Badge */}
-               <div className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-full border text-[10px] sm:text-xs font-semibold uppercase tracking-widest ${
-                  acceptsOrders 
-                    ? 'bg-amber-400/10 border-amber-400/20 text-amber-400' 
-                    : 'bg-red-500/10 border-red-500/20 text-red-500'
-               }`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${acceptsOrders ? 'bg-amber-400 animate-pulse' : 'bg-red-500'}`} />
-                  {acceptsOrders ? 'Taking Orders' : 'Closed'}
+               <div className="flex items-center gap-2">
+                 <div className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-full border text-[10px] sm:text-xs font-semibold uppercase tracking-widest ${
+                    acceptsOrders 
+                      ? 'bg-amber-400/10 border-amber-400/20 text-amber-400' 
+                      : 'bg-red-500/10 border-red-500/20 text-red-500'
+                 }`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${acceptsOrders ? 'bg-amber-400 animate-pulse' : 'bg-red-500'}`} />
+                    {acceptsOrders ? 'Taking Orders' : 'Closed'}
+                 </div>
+                 
+                 {acceptsOrders && (
+                   <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/50 text-[10px] sm:text-xs font-semibold text-slate-300">
+                     <span>🕒</span>
+                     {estimatedPrepTime} min prep
+                   </div>
+                 )}
                </div>
                
                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-100 tracking-tight leading-none mt-1">

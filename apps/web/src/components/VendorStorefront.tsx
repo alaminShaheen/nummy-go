@@ -349,6 +349,7 @@ function VendorStorefrontContent({
           logoUrl={tenant.logoUrl}
           acceptsOrders={tenant.acceptsOrders ?? true}
           socialLinks={tenant.socialLinks}
+          estimatedPrepTime={tenant.estimatedPrepTime}
         />
 
         <VendorMapDivider

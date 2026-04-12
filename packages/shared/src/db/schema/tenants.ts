@@ -31,6 +31,7 @@ export const tenants = sqliteTable('tenants', {
   onboardingCompleted: integer('onboarding_completed', { mode: 'boolean' }).notNull().default(false),
   /** Minutes after order creation the customer may request modifications: 15 | 30 | 45 | 60 */
   orderModificationThreshold: integer('order_modification_threshold').notNull().default(30),
+  estimatedPrepTime: integer('estimated_prep_time').notNull().default(20),
   createdAt: integer('created_at', { mode: 'number' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'number' }).notNull(),
 }, (table) => ({

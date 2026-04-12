@@ -11,7 +11,7 @@ import type { FulfillmentMethod, PaymentMethod } from '@nummygo/shared/models/en
 import { trpc } from '@/trpc/client';
 import { formatPhoneNumber } from '@nummygo/shared/lib/formatters';
 import { useCart } from '@/hooks/useCart';
-import { GlassCard, GradientButton, FormField, BrandInput, Button, DateTimePicker } from '@/components/ui';
+import { GlassCard, GradientButton, FormField, BrandInput, Button, DateTimePicker, AddressAutocomplete, SegmentedControl } from '@/components/ui';
 import {
   MapPin, User, CreditCard, Store,
   ShoppingBag, X, Loader2, Clock, ChevronRight, ChevronUp,
@@ -390,6 +390,9 @@ export default function CheckoutPage() {
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-amber-100 to-amber-300 tracking-tight">
               CHECKOUT
             </h1>
+            <h1 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-orange-400 flex items-center gap-3">
+              LIVE ORDERS
+            </h1>
             <div className="w-12 sm:w-16 h-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 mt-2 sm:mt-3" />
           </div>
 
@@ -399,12 +402,11 @@ export default function CheckoutPage() {
                 LEFT COLUMN — Stepper Flow
                ══════════════════════════════════════════════════════════════ */}
             <div className="lg:col-span-7 space-y-6 sm:space-y-8">
+              <form id="checkout-form" onSubmit={handleSubmit(onValidSubmit)} className="space-y-6 sm:space-y-8 w-full">
+                {/* ── Step 1: Your Details ── */}
+                <section>
+                  <StepIndicator step={1} label="YOUR DETAILS" icon={<User className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />} />
 
-              {/* ── Step 1: Your Details ── */}
-              <section>
-                <StepIndicator step={1} label="YOUR DETAILS" icon={<User className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />} />
-
-                <form id="checkout-form" onSubmit={handleSubmit(onValidSubmit)} className="space-y-4 sm:space-y-5">
                   <div className="rounded-2xl border border-white/[0.06] bg-[rgba(19,25,31,0.5)] backdrop-blur-md p-4 sm:p-6 space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField id="checkout-name" label="Full Name" error={errors.customerName?.message}>
@@ -437,28 +439,8 @@ export default function CheckoutPage() {
                         placeholder="alex@example.com"
                       />
                     </FormField>
-
-                    {/* Delivery address */}
-                    <div className={cn(
-                      "rounded-xl p-3 sm:p-4 border transition-all duration-300",
-                      needsDelivery
-                        ? "border-amber-500/30 bg-amber-950/20 shadow-[0_0_20px_rgba(245,158,11,0.05)]"
-                        : "border-white/5 bg-white/[0.02]"
-                    )}>
-                      <div className={cn("flex items-center gap-2 mb-2 sm:mb-3 text-xs font-bold uppercase tracking-wider", needsDelivery ? "text-amber-400" : "text-slate-500")}>
-                        <MapPin className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Delivery Address</span>
-                        <span className="sm:hidden">Address</span>
-                        {!needsDelivery && <span className="text-slate-600 normal-case font-normal hidden sm:inline">(only for delivery)</span>}
-                      </div>
-                      <BrandInput
-                        {...register('globalDeliveryAddress')}
-                        placeholder="123 Artisan Ave, Apt 4B"
-                      />
                     </div>
-                  </div>
-                </form>
-              </section>
+                </section>
 
               {/* ── Stepper connector ── */}
               <div className="flex items-center pl-4 sm:pl-5">
@@ -588,6 +570,26 @@ export default function CheckoutPage() {
                                 { label: 'Delivery', value: 'delivery', icon: <MapPin className="w-3.5 h-3.5" /> }
                               ]}
                             />
+                            {settings.fulfillmentMethod === 'delivery' && (
+                              <div className="animate-in fade-in slide-in-from-top-2 duration-200 mt-3 pt-3 border-t border-white/5">
+                                <label className="text-[10px] sm:text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                                  <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Delivery Address
+                                </label>
+                                <Controller
+                                  name="globalDeliveryAddress"
+                                  control={control}
+                                  render={({ field }) => (
+                                    <AddressAutocomplete
+                                      id="globalDeliveryAddress"
+                                      value={field.value ?? ''}
+                                      onChange={(address) => field.onChange(address)}
+                                      placeholder="123 Artisan Ave, Apt 4B"
+                                      error={!!errors.globalDeliveryAddress?.message}
+                                    />
+                                  )}
+                                />
+                              </div>
+                            )}
                           </div>
                           <div className="space-y-2">
                             <label className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -633,6 +635,7 @@ export default function CheckoutPage() {
                   })}
                 </div>
               </section>
+             </form>
             </div>
 
             {/* ══════════════════════════════════════════════════════════════
