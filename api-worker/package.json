@@ -15,16 +15,21 @@
   },
   "scripts": {
     "dev": "pnpm run cf-typegen && wrangler dev --port 8787 --env local",
+    "build": "tsc",
+    "generate": "drizzle-kit generate",
+    "cf-typegen": "wrangler types --env-interface Env",
+    
     "deploy:staging": "wrangler deploy --env staging",
     "deploy:prod": "wrangler deploy --env production",
-    "cf-typegen": "wrangler types --env-interface Env",
-    "generate": "drizzle-kit generate",
-    "migrate:local": "wrangler d1 migrations apply nummygo-db-staging --remote --env local",
     "db:studio": "drizzle-kit studio",
     "auth:generate": "better-auth generate --config src/auth.cli.ts",
+
+    "migrate:local": "wrangler d1 migrations apply nummygo-db-dev --remote --env local",
     "migrate:staging": "wrangler d1 migrations apply nummygo-db-staging --remote --env staging",
     "migrate:prod": "wrangler d1 migrations apply nummygo-db-staging --remote --env production",
-    "build": "tsc"
+    
+    "nuke:tenant": "./scripts/nuke-tenant.sh",
+    "nuke:tenant:prod": "./scripts/nuke-tenant.sh --env production"
   },
   "dependencies": {
     "@nummygo/shared": "workspace:*",

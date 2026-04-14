@@ -1,1 +1,0 @@
-ALTER TABLE `tenants` ADD `estimated_prep_time` integer DEFAULT 20 NOT NULL;

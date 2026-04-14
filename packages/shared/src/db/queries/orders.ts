@@ -116,19 +116,21 @@ export async function getOrderWithItems(orderId: string) {
 
   if (lines.length === 0) return { order, items: [] };
 
-  const menuItemIds = lines.map((l) => l.menuItemId);
-  const menuRows = await getDb()
-    .select({ id: menuItems.id, name: menuItems.name, price: menuItems.price, imageUrl: menuItems.imageUrl })
-    .from(menuItems)
-    .where(inArray(menuItems.id, menuItemIds));
+  const menuItemIds = lines.map((l) => l.menuItemId).filter((id): id is string => id !== null);
+  const menuRows = menuItemIds.length > 0
+    ? await getDb()
+        .select({ id: menuItems.id, name: menuItems.name, price: menuItems.price, imageUrl: menuItems.imageUrl })
+        .from(menuItems)
+        .where(inArray(menuItems.id, menuItemIds))
+    : [];
 
   const menuMap = new Map(menuRows.map((m) => [m.id, m]));
 
   const enriched = lines.map((line) => {
-    const mi = menuMap.get(line.menuItemId);
+    const mi = line.menuItemId ? menuMap.get(line.menuItemId) : undefined;
     return {
       menuItemId: line.menuItemId,
-      name: mi?.name ?? 'Unknown Item',
+      name: mi?.name ?? 'Deleted Item',
       /** Already in dollars (output layer) */
       price: mi ? parseFloat((mi.price / 100).toFixed(2)) : 0,
       imageUrl: mi?.imageUrl ?? null,
