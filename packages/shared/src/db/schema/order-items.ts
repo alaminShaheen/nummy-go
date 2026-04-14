@@ -6,9 +6,9 @@ import { menuItems } from './menu-items';
 
 export const orderItems = sqliteTable('order_items', {
   id: text('id').primaryKey(),
-  tenantId: text('tenant_id').notNull().references(() => tenants.id),
-  orderId: text('order_id').notNull().references(() => orders.id),
-  menuItemId: text('menu_item_id').notNull().references(() => menuItems.id),
+  tenantId: text('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
+  orderId: text('order_id').notNull().references(() => orders.id, { onDelete: 'cascade' }),
+  menuItemId: text('menu_item_id').references(() => menuItems.id, { onDelete: 'set null' }),
   quantity: integer('quantity').notNull(),
   totalPrice: integer('total_price').notNull(),
   createdAt: integer('created_at', { mode: 'number' }).notNull(),

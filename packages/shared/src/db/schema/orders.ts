@@ -5,8 +5,8 @@ import { ORDER_STATUS, PAYMENT_METHOD, ORDER_MODIFICATION_STATUS } from './enums
 
 export const orders = sqliteTable('orders', {
   id: text('id').primaryKey(),
-  userId: text('user_id').references(() => users.id),
-  tenantId: text('tenant_id').notNull().references(() => tenants.id),
+  userId: text('user_id').references(() => users.id, { onDelete: 'set null' }),
+  tenantId: text('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
   checkoutSessionId: text('checkout_session_id'),
   
   // Guest / Customer details
