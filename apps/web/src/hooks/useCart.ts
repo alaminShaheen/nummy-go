@@ -112,15 +112,18 @@ export function useCart() {
     (
       tenantId: string,
       tenantName: string,
-      orderItems: Array<{ menuItemId: string; name: string; price: number; imageUrl: string | null; quantity: number }>,
+      orderItems: Array<{ menuItemId: string | null; name: string; price: number; imageUrl: string | null; quantity: number }>,
     ) => {
-      const items: CartItem[] = orderItems.map((i) => ({
-        id: i.menuItemId,
-        name: i.name,
-        price: i.price,
-        quantity: i.quantity,
-        image: i.imageUrl ?? undefined,
-      }));
+      // Filter out deleted menu items (null menuItemId) — they can't be re-ordered
+      const items: CartItem[] = orderItems
+        .filter((i): i is typeof i & { menuItemId: string } => i.menuItemId !== null)
+        .map((i) => ({
+          id: i.menuItemId,
+          name: i.name,
+          price: i.price,
+          quantity: i.quantity,
+          image: i.imageUrl ?? undefined,
+        }));
 
       setCart((prev) => {
         const cloned = prev.filter((v) => v.tenantId !== tenantId);

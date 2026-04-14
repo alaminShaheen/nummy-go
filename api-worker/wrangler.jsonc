@@ -28,8 +28,8 @@
         {
           "remote": true,
           "binding": "DB",
-          "database_name": "nummygo-db-staging",
-          "database_id": "2fc180c7-53ae-4bcd-956c-81713b20c53d",
+          "database_name": "nummygo-db-dev",
+          "database_id": "a6c02363-2d5f-4c99-ad5f-25a8e33b7758",
           "migrations_dir": "drizzle/migrations"
         }
       ],
@@ -51,8 +51,8 @@
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "nummygo-db-staging",
-          "database_id": "2fc180c7-53ae-4bcd-956c-81713b20c53d",
+          "database_name": "nummygo-db-dev",
+          "database_id": "a6c02363-2d5f-4c99-ad5f-25a8e33b7758",
           "migrations_dir": "drizzle/migrations"
         }
       ],
@@ -73,8 +73,8 @@
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "nummygo-db-production",
-          "database_id": "2fc180c7-53ae-4bcd-956c-81713b20c53d",
+          "database_name": "nummygo-db-dev",
+          "database_id": "a6c02363-2d5f-4c99-ad5f-25a8e33b7758",
           "migrations_dir": "drizzle/migrations"
         }
       ],
