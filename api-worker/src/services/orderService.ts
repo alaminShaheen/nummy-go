@@ -870,7 +870,7 @@ export async function fetchModificationDetails(
   const requestedItems = Array.isArray(parsed.items) ? parsed.items : [];
 
   // 4. Batch-fetch menu items for any IDs not already in the current items
-  const currentIds = new Set(orderWithItems.items.map(i => i.menuItemId));
+  const currentIds = new Set(orderWithItems.items.map(i => i.menuItemId).filter((id): id is string => id !== null));
   const extraIds = requestedItems.map(i => i.menuItemId).filter(id => !currentIds.has(id));
   const extraMenuItems = await getMenuItemsByIds(extraIds);
   const extraMap = new Map(extraMenuItems.map(m => [
@@ -878,8 +878,12 @@ export async function fetchModificationDetails(
     { name: m.name, price: parseFloat((m.price / 100).toFixed(2)), imageUrl: m.imageUrl },
   ]));
 
-  // Use the already-enriched data from getOrderWithItems for current items
-  const currentMap = new Map(orderWithItems.items.map(i => [i.menuItemId, i]));
+  // Use the already-enriched data from getOrderWithItems for current items (filter null menuItemIds)
+  const currentMap = new Map(
+    orderWithItems.items
+      .filter((i): i is typeof i & { menuItemId: string } => i.menuItemId !== null)
+      .map(i => [i.menuItemId, i])
+  );
 
   // 5. Build requested items (enriched)
   const enrichedRequested: EnrichedItem[] = requestedItems.map(r => {
@@ -901,7 +905,7 @@ export async function fetchModificationDetails(
   const diff: DiffEntry[] = [];
   for (const id of allIds) {
     const currentQty = currentMap.get(id)?.quantity ?? 0;
-    const requestedQty = requestedMap.get(id) ?? 0;
+    const requestedQty = requestedMap.get(id as string) ?? 0;
     if (currentQty === requestedQty) continue; // unchanged
 
     let change: DiffEntry['change'];
@@ -910,13 +914,14 @@ export async function fetchModificationDetails(
     else if (requestedQty > currentQty) change = 'increased';
     else change = 'decreased';
 
-    const fromCurrent = currentMap.get(id);
-    const fromExtra = extraMap.get(id);
+    const idStr = id as string;
+    const fromCurrent = currentMap.get(idStr);
+    const fromExtra = extraMap.get(idStr);
     const name = fromCurrent?.name ?? fromExtra?.name ?? 'Unknown Item';
     const price = fromCurrent?.price ?? fromExtra?.price ?? 0;
     const imageUrl = fromCurrent?.imageUrl ?? fromExtra?.imageUrl ?? null;
 
-    diff.push({ menuItemId: id, name, price, imageUrl, currentQty, requestedQty, delta: requestedQty - currentQty, change });
+    diff.push({ menuItemId: idStr, name, price, imageUrl, currentQty, requestedQty, delta: requestedQty - currentQty, change });
   }
 
   return {

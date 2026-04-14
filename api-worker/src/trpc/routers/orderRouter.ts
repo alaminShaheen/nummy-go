@@ -114,7 +114,7 @@ export const orderRouter = router({
         .output(z.object({
             order: orderResponseSchema,
             items: z.array(z.object({
-                menuItemId: z.string(),
+                menuItemId: z.string().nullable(),
                 name: z.string(),
                 price: z.number(),
                 imageUrl: z.string().nullable(),

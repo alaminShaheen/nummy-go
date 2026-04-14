@@ -201,7 +201,7 @@ function VendorStorefrontContent({
   const loaded = useRef(false);
   const [showReplaceModal, setShowReplaceModal] = useState(false);
   const [pendingOrderData, setPendingOrderData] = useState<{
-    items: Array<{ menuItemId: string; name: string; price: number; imageUrl: string | null; quantity: number }>;
+    items: Array<{ menuItemId: string | null; name: string; price: number; imageUrl: string | null; quantity: number }>;
     createdAt: number;
   } | null>(null);
 
@@ -238,7 +238,7 @@ function VendorStorefrontContent({
   }, [orderDetails]);
 
   const doLoadCart = (
-    items: Array<{ menuItemId: string; name: string; price: number; imageUrl: string | null; quantity: number }>,
+    items: Array<{ menuItemId: string | null; name: string; price: number; imageUrl: string | null; quantity: number }>,
     createdAt: number,
   ) => {
     loaded.current = true;
