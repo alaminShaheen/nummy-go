@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui';
 import { SectionLabel } from '@/components/ui';
 import MenuItemCard, { type MenuItem } from './MenuItemCard';
+import { CookingPot } from 'lucide-react';
 
 interface MenuSectionProps {
   items: MenuItem[];
@@ -99,9 +100,39 @@ export default function MenuSection({ items, categories = [], onAddToCart, onUpd
           })}
         </div>
 
+        {/* Empty State */}
         {filteredItems.length === 0 && (
-          <div className="py-12 text-center text-slate-500">
-            No items found in this category.
+          <div className="py-24 px-4 flex flex-col items-center justify-center text-center animate-slide-up">
+            <div className="relative mb-8 animate-float">
+              {/* Subtle stove-fire glow behind the pot */}
+              <div className="absolute inset-0 bg-amber-500/10 blur-xl rounded-full" />
+              <div className="relative w-24 h-24 bg-gradient-to-b from-[#1a2130] to-[#13191f] border border-white/5 rounded-full flex items-center justify-center shadow-2xl">
+                <CookingPot className="w-10 h-10 text-amber-500 opacity-80" />
+                {/* Decorative "steam" dots */}
+                <div className="absolute -top-2 left-1/2 -translate-x-4 w-1.5 h-1.5 bg-slate-400 rounded-full animate-ping" style={{ animationDuration: '2s' }} />
+                <div className="absolute -top-4 left-1/2 translate-x-2 w-1.5 h-1.5 bg-slate-400 rounded-full animate-ping" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }} />
+              </div>
+            </div>
+            
+            <h3 className="text-2xl font-black text-slate-100 mb-3 tracking-tight">
+              {activeCategory === 'ALL' ? "The ovens are warming up!" : "Fresh out of these right now!"}
+            </h3>
+            
+            <p className="text-base text-slate-400 max-w-sm mx-auto leading-relaxed">
+              {activeCategory === 'ALL'
+                ? "Our kitchen is still putting the final touches on our online menu. We'll be serving up something delicious here very soon."
+                : "Looks like we don't have any items in this specific category today. Why not take a peek at what else is cooking?"}
+            </p>
+            
+            {activeCategory !== 'ALL' && (
+              <Button
+                variant="outline"
+                onClick={() => setActiveCategory('ALL')}
+                className="mt-8 rounded-full px-8 py-6 text-sm font-bold border-amber-500/20 bg-amber-500/5 text-amber-400 hover:text-amber-300 hover:border-amber-400/40 hover:bg-amber-400/10 transition-all shadow-[0_0_20px_rgba(245,158,11,0.05)] backdrop-blur-md"
+              >
+                See Full Menu
+              </Button>
+            )}
           </div>
         )}
       </div>
