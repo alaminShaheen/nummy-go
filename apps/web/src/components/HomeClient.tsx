@@ -13,7 +13,7 @@ import RestaurantBentoFeatures from '@/components/RestaurantBentoFeatures';
 import { GradientButton, GradientDivider, SectionLabel } from '@/components/ui';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { Tenant } from '@nummygo/shared/models';
+import { trpc } from '@/trpc/client';
 
 /* ─── Static data ───────────────────────────────────────────── */
 
@@ -49,11 +49,6 @@ const TICKER_NAMES: string[] = [
   '🌮 El Fuego', '🍛 Bombay Palace', '🥗 The Green Bowl', '🍕 Napoli Express',
   '🍜 Pho 888', '🥩 Prime Cuts', '🧆 Falafel King', '🍱 Bento Box',
   '🥘 Authentic Dhakaiya', '🍲 Deshi Kitchen',
-];
-
-const POPULAR_NEAR_ME: Pick<Tenant, 'name' | 'slug'>[] = [
-  { name: 'Authentic Dhakaiya', slug: 'authentic-dhakaiya' },
-  { name: 'Deshi Kitchen', slug: 'deshi-kitchen' },
 ];
 
 /* ─── Ember particle hook ───────────────────────────────────── */
@@ -116,6 +111,11 @@ export default function PlatformHome() {
   const emberRef = useRef<HTMLDivElement>(null);
   useEmbers(emberRef);
   useScrollReveal('[data-reveal]');
+
+  // TODO: This logic will change later. Currently fetching the first 2 tenants by default.
+  // We need to implement an algorithm to show pages based on user's shared location.
+  const { data: serverTenants } = trpc.tenant.searchTenants.useQuery({ query: '', limit: 2 });
+  const popularTenants = serverTenants || [];
 
   return (
     <>
@@ -211,19 +211,21 @@ export default function PlatformHome() {
 
               {/* Search with shimmer */}
               <div className="nummy-search-shimmer w-full max-w-2xl rounded-full">
-                <VendorSearchBar size="large" placeholder="Search for a restaurant near you…" />
+                <VendorSearchBar size="large" placeholder="Who's cooking tonight? (Spoiler: Not you)..." />
               </div>
 
               {/* Popular links */}
-              <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-slate-500">
-                <span>Popular near you:</span>
-                {POPULAR_NEAR_ME.map((v) => (
-                  <Link key={v.slug} href={`/${v.slug}`}
-                    className="text-amber-400/70 hover:text-amber-400 transition-colors underline-offset-2 hover:underline">
-                    {v.name}
-                  </Link>
-                ))}
-              </div>
+              {popularTenants.length > 0 && (
+                <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-slate-500">
+                  <span>Popular near you:</span>
+                  {popularTenants.map((v) => (
+                    <Link key={v.slug} href={`/${v.slug}`}
+                      className="text-amber-400/70 hover:text-amber-400 transition-colors underline-offset-2 hover:underline">
+                      {v.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

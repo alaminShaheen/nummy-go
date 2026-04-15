@@ -32,7 +32,7 @@ export default function VendorMapDivider({
     <section className="relative w-full border-y border-white/5 my-12 py-12 flex items-center overflow-hidden bg-[#0a0d14]" style={{ minHeight: '550px' }}>
       
       {/* Absolute Map Background */}
-      <div className="absolute inset-0 z-0 opacity-80 pointer-events-none md:pointer-events-auto">
+      <div className="absolute inset-0 z-0 pointer-events-none md:pointer-events-auto">
         {latitude && longitude ? (
           <DynamicVendorMap 
             latitude={latitude}
@@ -49,8 +49,8 @@ export default function VendorMapDivider({
         )}
       </div>
 
-      {/* Mesh Gradations for Reading Legibility */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#0D1117] via-[#0D1117]/80 to-transparent pointer-events-none" />
+      {/* Mesh Gradations for edge blending, specifically fading out BEFORE the map center */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#0a0d14] from-20% via-[#0a0d14]/50 via-40% to-transparent pointer-events-none" />
 
       {/* Content Container tightly bounded left */}
       <div className="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center pointer-events-none">
