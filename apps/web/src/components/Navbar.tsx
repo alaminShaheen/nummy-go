@@ -121,7 +121,7 @@ export default function Navbar() {
           {/* ── Desktop Center Search (hidden on landing + search page) ── */}
           {pathname !== '/' && !isSearchPage && (
             <div className="hidden md:flex flex-1 max-w-md mx-6">
-              <VendorSearchBar size="default" placeholder="Find restaurants..." className="w-full" />
+              <VendorSearchBar size="default" placeholder="What are you hungry for?..." className="w-full" />
             </div>
           )}
 

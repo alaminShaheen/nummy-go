@@ -252,7 +252,7 @@ interface BentoCardProps {
   icon: React.ReactNode;
   eyebrow: string;
   title: string;
-  body: string;
+  body: React.ReactNode;
   size?: 'default' | 'wide' | 'tall';
   accentColor?: string;
   delay?: number;
@@ -314,9 +314,9 @@ function BentoCard({ icon, eyebrow, title, body, size = 'default', accentColor =
         <h3 className={`font-black text-slate-100 leading-tight ${isTall ? 'text-2xl' : 'text-xl'}`}>
           {title}
         </h3>
-        <p className={`text-slate-400 leading-relaxed ${isTall ? 'text-[15px]' : 'text-sm'}`}>
+        <div className={`text-slate-400 leading-relaxed ${isTall ? 'text-[15px]' : 'text-sm'}`}>
           {body}
-        </p>
+        </div>
       </div>
     </div>
   );
@@ -359,12 +359,12 @@ export default function RestaurantBentoFeatures() {
         delay={200}
       />
 
-      {/* 4 — Default: Wok / Cooking */}
+      {/* 4 — Default: Flexible Pricing */}
       <BentoCard
         icon={<WokIcon />}
-        eyebrow="Zero Commission on Day One"
-        title="Start Earning Immediately"
-        body="No upfront fees, no monthly subscription. Open your storefront today and begin taking real orders within the hour."
+        eyebrow="Made For Your Kitchen"
+        title="Grow At Your Own Pace"
+        body="Start small with a digital menu, or track live orders from day one. Mix and match only what you need, without expensive contracts."
         accentColor="#ea580c"
         delay={300}
       />
