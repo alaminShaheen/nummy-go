@@ -5,11 +5,14 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 
 /**
- * Force dynamic rendering for storefront pages to ensure
- * live changes (menu availability, shop open/close, profile edits)
- * are immediately visible to customers and vendors.
+ * ISR – serve a cached page shell and revalidate in the background.
+ * The client-side TRPC queries inside VendorStorefrontContent will
+ * always refetch fresh data after hydration, so customers still see
+ * live menu/availability changes. The 60-second window keeps the
+ * server-rendered HTML fresh enough for SEO crawlers and first paint
+ * without hitting the DB on every single request.
  */
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 
 

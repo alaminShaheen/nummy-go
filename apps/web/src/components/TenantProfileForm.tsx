@@ -416,7 +416,7 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 									{...field}
 									value={formatPhoneNumber(field.value as string)}
 									onChange={(e) => {
-										const numeric = e.target.value.replace(/\D/g, '');
+										const numeric = e.target.value.replace(/\D/g, '').slice(0, 10);
 										field.onChange(numeric);
 									}}
 									placeholder="(416) 555-0100"
