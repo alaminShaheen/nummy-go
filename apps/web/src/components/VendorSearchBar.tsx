@@ -135,7 +135,7 @@ export default function VendorSearchBar({
               }
             `}
           >
-            Search
+            Let's Eat
           </GradientButton>
         </div>
       </form>

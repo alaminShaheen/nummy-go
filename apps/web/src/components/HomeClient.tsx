@@ -211,7 +211,7 @@ export default function PlatformHome() {
 
               {/* Search with shimmer */}
               <div className="nummy-search-shimmer w-full max-w-2xl rounded-full">
-                <VendorSearchBar size="large" placeholder="Search for a restaurant near you…" />
+                <VendorSearchBar size="large" placeholder="Who's cooking tonight? (Spoiler: Not you)..." />
               </div>
 
               {/* Popular links */}
