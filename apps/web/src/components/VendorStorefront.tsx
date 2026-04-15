@@ -336,7 +336,7 @@ function VendorStorefrontContent({
 
       <Navbar />
 
-      <main className="overflow-x-hidden w-full relative">
+      <main className="w-full relative">
         <HeroBanner
           promotionalHeading={tenant.promotionalHeading}
           heroImageUrl={tenant.heroImageUrl}
