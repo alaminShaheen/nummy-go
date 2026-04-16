@@ -24,26 +24,47 @@ export class EmailService {
 
   // ── CUSTOMER NOTIFICATIONS ───────────────────────────────────────────────
 
+  /**
+   * Send a single consolidated order confirmation email per checkout session.
+   * Groups all vendor orders into one email with a single tracking link.
+   */
   async sendOrderConfirmation(
-    tenantInfo: { name?: string; email?: string | null; phoneNumber?: string | null } | undefined,
-    order: Order,
-    customerEmail: string
+    checkoutSessionId: string,
+    orders: Order[],
+    tenantMap: Map<string, { name?: string; email?: string | null; phoneNumber?: string | null }>,
+    customerEmail: string,
   ) {
-    if (!customerEmail) return null;
+    if (!customerEmail || orders.length === 0) return null;
+
+    const grandTotal = orders.reduce((sum, o) => sum + o.totalAmount, 0);
+
+    const vendorOrders = orders.map((order) => {
+      const info = tenantMap.get(order.tenantId);
+      return {
+        orderId: order.id,
+        tenantName: info?.name || 'nummyGo Tenant',
+        tenantEmail: info?.email || undefined,
+        tenantPhone: info?.phoneNumber || undefined,
+        fulfillmentMethod: (order.fulfillmentMethod || 'pickup') as 'pickup' | 'delivery',
+        paymentMethod: order.paymentMethod || 'Cash',
+        items: this.buildItems(order),
+        totalCents: order.totalAmount,
+      };
+    });
+
+    const shortId = checkoutSessionId.slice(-6).toUpperCase();
+
     try {
       return await this.resend.emails.send({
         from: EMAIL_FROM.ORDERS,
         to: customerEmail,
-        subject: `Order Confirmed: #${order.id.slice(-6).toUpperCase()}`,
+        subject: `Order Confirmed: #${shortId}`,
         react: EmailTemplates.OrderConfirmationEmail({
-          tenantName: tenantInfo?.name || 'nummyGo Tenant',
-          orderId: order.id,
-          createdAt: order.createdAt,
-          totalCents: order.totalAmount,
-          tenantEmail: tenantInfo?.email || 'support@nummygo.com',
-          tenantPhone: tenantInfo?.phoneNumber || '+1 (555) 123-4567',
-          items: this.buildItems(order),
-          trackingUrl: `https://nummygo.ca/track/${order.checkoutSessionId}` || '#',
+          checkoutSessionId,
+          createdAt: orders[0]!.createdAt,
+          totalCents: grandTotal,
+          trackingUrl: `https://nummygo.ca/track/${checkoutSessionId}`,
+          vendorOrders,
         }),
       });
     } catch (err) {

@@ -227,17 +227,7 @@ export async function placeCheckoutOrder(
 
     const emailService = new EmailService(env);
 
-    // ── Customer confirmation email
-    console.log('[Email] customerEmail =', order.customerEmail);
-    if (order.customerEmail) {
-      const tenantInfo = tenantMap.get(order.tenantId);
-      const result = await emailService.sendOrderConfirmation(tenantInfo, order, order.customerEmail);
-      console.log('[Email] sendOrderConfirmation result =', JSON.stringify(result));
-    } else {
-      console.log('[Email] SKIPPED confirmation — no customerEmail on order');
-    }
-
-    // ── Tenant notification email
+    // ── Tenant notification email (per-vendor — stays in loop)
     const tenant = tenantMap.get(vendorCart.tenantId);
     const user = tenant ? await getUserById(tenant.userId) : null;
     const resolvedTenantEmail = tenant?.email || user?.email;
@@ -256,6 +246,22 @@ export async function placeCheckoutOrder(
       type: 'ORDER_CREATED',
       order,
     });
+  }
+
+  // ── Customer confirmation email (1 consolidated email per checkout session)
+  const customerEmail = createdOrders[0]?.customerEmail;
+  console.log('[Email] customerEmail =', customerEmail);
+  if (customerEmail) {
+    const emailService = new EmailService(env);
+    const result = await emailService.sendOrderConfirmation(
+      sessionId,
+      createdOrders,
+      tenantMap,
+      customerEmail,
+    );
+    console.log('[Email] sendOrderConfirmation result =', JSON.stringify(result));
+  } else {
+    console.log('[Email] SKIPPED confirmation — no customerEmail on orders');
   }
 
   return { checkoutSessionId: sessionId };
