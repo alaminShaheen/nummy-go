@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { UploadCloud, Trash2, Camera } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useTheme } from '@/lib/themes';
 
 interface ImageDropzoneProps {
 	value?: string | null;
@@ -16,6 +17,8 @@ interface ImageDropzoneProps {
 export function ImageDropzone({ value, onChange, label, isAvatar, hint }: ImageDropzoneProps) {
 	const [isDragging, setIsDragging] = useState(false);
 	const [errorMsg, setErrorMsg] = useState('');
+	const { theme } = useTheme();
+	const isLight = theme.name === 'light';
 
 	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent) => {
 		e.preventDefault();
@@ -60,8 +63,8 @@ export function ImageDropzone({ value, onChange, label, isAvatar, hint }: ImageD
 
 	return (
 		<div>
-			<label className="block text-[13px] font-semibold text-[#f1f5f9] mb-1.5 px-0.5">{label}</label>
-			{hint && <p className="text-[11px] text-[#64748b] mb-3 px-0.5">{hint}</p>}
+			<label className="block text-[13px] font-semibold mb-1.5 px-0.5" style={{ color: theme.text.primary }}>{label}</label>
+			{hint && <p className="text-[11px] mb-3 px-0.5" style={{ color: theme.text.muted }}>{hint}</p>}
 			{errorMsg && <p className="text-xs text-rose-500 mb-2">{errorMsg}</p>}
 
 			{value ? (
@@ -93,11 +96,13 @@ export function ImageDropzone({ value, onChange, label, isAvatar, hint }: ImageD
 					}}
 					className={clsx(
 						"border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all duration-300 relative group overflow-hidden",
-						isAvatar ? "w-28 h-28 rounded-full" : "w-full h-32 rounded-xl",
-						isDragging 
-							? "border-amber-500 bg-amber-500/5 text-amber-400 scale-[1.02]" 
-							: "border-white/10 hover:border-amber-500/40 bg-white/5 text-slate-500 hover:text-slate-300"
+						isAvatar ? "w-28 h-28 rounded-full" : "w-full h-32 rounded-xl"
 					)}
+					style={{
+						borderColor: isDragging ? theme.accent.amberHover : theme.card.border,
+						background: isDragging ? 'rgba(245,158,11,0.05)' : (isLight ? theme.surface : 'rgba(255,255,255,0.05)'),
+						color: isDragging ? theme.accent.amber : theme.text.muted,
+					}}
 				>
 					<div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-t from-amber-500/10 to-transparent transition-opacity" />
 					

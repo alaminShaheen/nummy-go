@@ -44,7 +44,89 @@ The platform must deviate from standard, flat SAAS designs and embrace a highly 
 
 ---
 
-## 5. AI Prompt for UX/UI Generation
+## 5. Adaptive Hero Banner Typography
+
+### Context
+The Hero Banner overlay dynamically inherits the theme's background color (`theme.bg`). Previously, the headline text was hardcoded to `text-white`. In Light Theme, `theme.bg` creates a light frosted overlay, washing out white text entirely. 
+
+### Decision
+We use dynamic typography color classes based on the theme context rather than forcing heavy contrast overlays. 
+
+- **Light Mode:** The hero text uses `text-slate-900` to sharply pop over the light frosted overlay.
+- **Dark Mode:** The hero text uses `text-white` to pop against the deep navy overlay.
+
+This pattern avoids using inline styling (avoiding `style={{ color: ... }}`) by leveraging Tailwind utility classes and our Next.js Theme system state (`theme.name === 'light'`).
+
+---
+
+## 6. Button Component Architecture
+
+The shared `Button` component (`packages/shared/src/ui/button.tsx`) is the **single source of truth** for all button patterns across the platform. It uses `class-variance-authority` (CVA) for type-safe variant management.
+
+### Variants
+
+| Variant | Purpose | Visual |
+|---------|---------|--------|
+| `default` | Standard shadcn primary button | Solid primary fill |
+| `destructive` | Destructive actions | Red fill |
+| `outline` | Secondary with border | Bordered, transparent |
+| `secondary` | Muted secondary | Secondary fill |
+| `ghost` | Minimal, no bg | No background, hover fill |
+| `link` | Text-only link style | Underline on hover |
+| **`gradient`** | **Primary CTA** (amber→orange) | Rounded-full, gradient, scale hover, shadow |
+| **`glass`** | **Frosted secondary** | Rounded-full, border, translucent |
+| **`destructive-outline`** | **Cancel/danger modals** | Rose bg, white text |
+
+### Sizes
+
+| Size | Purpose | Dimensions |
+|------|---------|------------|
+| `default` | Standard | `h-10 px-4 py-2` |
+| `sm` | Compact | `h-9 px-3` |
+| `lg` | Large | `h-11 px-8` |
+| `icon` | Icon-only | `h-10 w-10` |
+| **`pill`** | Navbar pill | `px-5 py-2.5 text-xs` |
+| **`cta`** | Full-width CTA | `h-12 w-full px-7 py-3.5` |
+
+### Theme-Aware Wrapper: `GlassButton`
+
+The `glass` variant base styles live in the shared package, but **theme-aware** styling (light/dark border, background, text color) is handled by a thin wrapper component in `apps/web/src/components/ui/GlassButton.tsx`. This wrapper:
+- Imports `Button` from `@nummygo/shared/ui`
+- Passes `variant="glass"` 
+- Applies dynamic `style` props via `useTheme()` for light/dark differences
+
+### Usage Rules
+1. **Always use `<Button variant="gradient">` for primary CTAs** — never create ad-hoc gradient buttons.
+2. **Use `<GlassButton>` for secondary frosted actions** — it wraps `Button variant="glass"` with theme styles.
+3. **Contextual overrides** (sizing, spacing) go in `className` — never duplicate the core variant styles.
+4. **Functional icon buttons** (qty steppers, close ×, toggles) use raw `<button>` — they are interactive controls, not CTAs.
+
+---
+
+## 6. Figma-Ready Typography System (Tailwind v4)
+
+To bridge the gap between Figma Design Tokens and our frontend architecture, we leverage **Tailwind CSS v4's `@theme` directive** in `globals.css`. 
+
+### How it works
+In our global CSS, we expose semantic font families, sizing, and line heights. When Figma Tokens (via Tokens Studio or similar plugins) output standard W3C JSON tokens, they can be directly compiled into these CSS variables, and Tailwind automatically generates the corresponding utility classes.
+
+### The Tokens
+
+**Font Families**
+- `--font-display`: Used for massive hero titles (`font-display`)
+- `--font-body`: Used for generic interfaces (`font-body`)
+- `--font-mono`: Used for technical data (`font-mono`)
+
+**Semantic Scales**
+- `--text-display-*`: Over-sized marketing typography
+- `--text-h1` through `--text-h3`: Standard application headers
+- `--text-body-*`: Interface text
+
+*Any changes in Figma can be mapped directly to update the `--text-*` variables in `globals.css`.*
+
+---
+
+## 7. AI Prompt for UX/UI Generation
 
 **Copy and paste the prompt below into your preferred AI UI/UX generator or pass it to a designer.**
 

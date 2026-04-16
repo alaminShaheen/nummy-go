@@ -2,10 +2,11 @@
 
 import Image from 'next/image';
 import { useState, useRef } from 'react';
-import { NummyGoBadge, InlineEditableField, BrandSwitch, GradientButton } from '@/components/ui';
+import { NummyGoBadge, InlineEditableField, BrandSwitch, Button } from '@/components/ui';
 import { getBadgeStyle } from '@/components/ui/NummyGoBadge';
 import { Minus, Plus, Trash2, UploadCloud, Loader2, Check, X } from 'lucide-react';
 import { cn } from '@nummygo/shared/ui';
+import { useTheme } from '@/lib/themes';
 
 export interface MenuItem {
 	id: string;
@@ -50,6 +51,7 @@ export default function MenuItemCard({
 }: MenuItemCardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { theme } = useTheme();
 
   // Local state modeling
   const [draftState, setDraftState] = useState<MenuItem>(item);
@@ -155,10 +157,15 @@ export default function MenuItemCard({
 		<article
 			id={`menu-item-${currentItem.id}`}
 			className={cn(
-        "relative flex flex-col overflow-visible group bg-[rgba(15,20,29,0.4)] backdrop-blur-2xl transition-all duration-500 rounded-[2rem]",
-        mode === 'draft' ? 'border border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/20' : 'border border-white/5 shadow-[0_0_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(245,158,11,0.12)] hover:border-white/10',
+        "relative flex flex-col overflow-visible group backdrop-blur-2xl transition-all duration-500 rounded-[2rem]",
+        mode === 'draft' ? 'border border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/20' : 'hover:-translate-y-1',
         currentItem.isAvailable === false ? 'opacity-70 grayscale-[30%]' : ''
       )}
+      style={{
+        background: mode === 'draft' ? undefined : theme.card.bg,
+        border: mode === 'draft' ? undefined : `1px solid ${theme.card.border}`,
+        boxShadow: mode === 'draft' ? undefined : theme.card.shadow,
+      }}
 		>
       {/* Background layer to trap overflow for image radius without cutting off absolute badges */}
       <div className="absolute inset-0 rounded-[2rem] overflow-hidden pointer-events-none -z-10"></div>
@@ -189,7 +196,7 @@ export default function MenuItemCard({
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 bg-white/[0.02]">
+            <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ color: theme.text.muted }}>
               <UploadCloud size={32} className="mb-2 opacity-50" />
               <p className="text-xs font-semibold uppercase tracking-widest">No Image</p>
             </div>
@@ -269,14 +276,18 @@ export default function MenuItemCard({
             <div>
               {mode === 'customer' ? (
                 categoryName && (
-                  <p className="text-[0.65rem] uppercase tracking-widest text-amber-500/80 font-semibold">{categoryName}</p>
+                  <p
+                    className="text-[0.65rem] uppercase tracking-widest font-semibold"
+                    style={{ color: theme.name === 'light' ? '#ea580c' : 'rgba(245,158,11,0.8)' }}
+                  >{categoryName}</p>
                 )
               ) : (
                 <div className="-ml-1">
                   <select 
                     value={currentItem.categoryId || 'uncategorized'}
                     onChange={(e) => handleFieldChange('categoryId', e.target.value === 'uncategorized' ? null : e.target.value)}
-                    className="text-[0.65rem] uppercase tracking-[0.1em] text-amber-500/80 font-semibold bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 px-2 py-1 outline-none cursor-pointer rounded-full transition-colors appearance-none"
+                    className="text-[0.65rem] uppercase tracking-[0.1em] font-semibold bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 px-2 py-1 outline-none cursor-pointer rounded-full transition-colors appearance-none"
+                    style={{ color: theme.name === 'light' ? '#ea580c' : 'rgba(245,158,11,0.9)' }}
                   >
                     <option value="uncategorized" className="bg-slate-900 text-slate-400">❖ UNCATEGORIZED</option>
                     {categories?.map(c => (
@@ -292,7 +303,7 @@ export default function MenuItemCard({
             <div className="shrink-0 flex items-center justify-end">
               {mode === 'customer' ? (
                 currentItem.calories && (
-                  <p className="text-slate-500/70 text-[0.65rem] font-black uppercase tracking-widest">
+                  <p style={{ color: theme.text.muted }} className="text-[0.65rem] font-black uppercase tracking-widest">
                     {currentItem.calories} cal
                   </p>
                 )
@@ -303,7 +314,8 @@ export default function MenuItemCard({
                   onSave={(val) => handleFieldChange('calories', val ? parseInt(val, 10) : null)}
                   placeholder="0"
                   suffix="cal"
-                  textClassName="text-slate-500/70 text-[0.65rem] font-black uppercase tracking-widest text-right"
+                  textClassName="text-[0.65rem] font-black uppercase tracking-widest text-right"
+                  textStyle={{ color: theme.text.muted }}
                   inputClassName="text-right w-16 !text-[0.65rem]"
                 />
               )}
@@ -312,8 +324,8 @@ export default function MenuItemCard({
           
           {mode === 'customer' ? (
             <>
-              <h3 className="font-bold text-slate-100 text-[1.05rem] leading-tight tracking-tight">{currentItem.name}</h3>
-					    <p className="text-slate-400 text-sm mt-1.5 leading-relaxed line-clamp-2">{currentItem.description}</p>
+              <h3 className="font-bold text-[1.05rem] leading-tight tracking-tight" style={{ color: theme.text.primary }}>{currentItem.name}</h3>
+					    <p className="text-sm mt-1.5 leading-relaxed line-clamp-2" style={{ color: theme.text.secondary }}>{currentItem.description}</p>
             </>
           ) : (
             <>
@@ -322,14 +334,16 @@ export default function MenuItemCard({
                 value={currentItem.name}
                 onSave={(val) => handleFieldChange('name', val)}
                 placeholder="Dish Name..."
-                textClassName="font-bold text-slate-100 text-[1.05rem] leading-tight tracking-tight"
+                textClassName="font-bold text-[1.05rem] leading-tight tracking-tight"
+                textStyle={{ color: theme.text.primary }}
               />
               <InlineEditableField 
                 type="textarea"
                 value={currentItem.description}
                 onSave={(val) => handleFieldChange('description', val)}
                 placeholder="Description..."
-                textClassName="text-slate-400 text-sm mt-1.5 leading-relaxed line-clamp-2"
+                textClassName="text-sm mt-1.5 leading-relaxed line-clamp-2"
+                textStyle={{ color: theme.text.secondary }}
               />
             </>
           )}
@@ -338,7 +352,10 @@ export default function MenuItemCard({
 
           <div className="pt-2">
             {mode === 'customer' ? (
-              <span className="text-amber-400 tracking-wide font-semibold">${currentItem.price.toFixed(2)}</span>
+              <span
+                className="tracking-wide font-semibold"
+                style={{ color: theme.name === 'light' ? '#ea580c' : '#fbbf24' }}
+              >${currentItem.price.toFixed(2)}</span>
             ) : (
               <InlineEditableField 
                 type="number"
@@ -346,7 +363,8 @@ export default function MenuItemCard({
                 onSave={(val) => handleFieldChange('price', parseFloat(val))}
                 placeholder="Price"
                 prefix="$"
-                textClassName="text-amber-400 tracking-wide font-semibold text-base"
+                textClassName="tracking-wide font-semibold text-base"
+                textStyle={{ color: theme.name === 'light' ? '#ea580c' : '#fbbf24' }}
               />
             )}
           </div>
@@ -365,11 +383,13 @@ export default function MenuItemCard({
               <button 
                 onClick={() => onDraftCancel?.()}
                 disabled={draftStatus !== 'idle'}
-                className="flex-1 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300 text-xs font-semibold transition-colors disabled:opacity-50"
+                className="flex-1 py-2 rounded-xl text-xs font-semibold transition-colors disabled:opacity-50"
+                style={{ background: theme.card.bg, border: `1px solid ${theme.card.border}`, color: theme.text.secondary }}
               >
                 Cancel
               </button>
-              <GradientButton 
+              <Button
+                variant="gradient"
                 onClick={handleDraftSaveClick}
                 disabled={draftStatus !== 'idle'}
                 className="flex-[2] py-2 h-auto text-xs font-bold disabled:opacity-80 transition-all"
@@ -377,7 +397,7 @@ export default function MenuItemCard({
                 {draftStatus === 'saving' ? (
                   <span className="flex items-center gap-2"><Loader2 size={14} className="animate-spin" /> Saving...</span>
                 ) : '🚀 Save Dish'}
-              </GradientButton>
+              </Button>
             </div>
           </div>
         )}
@@ -386,7 +406,10 @@ export default function MenuItemCard({
 				{mode === 'customer' && (
 					<div className="mt-1 h-12 flex items-center justify-center w-full relative">
 						{isClosed ? (
-							<div className="w-full h-full flex items-center justify-center rounded-[1.5rem] border border-white/5 bg-white/[0.02] text-slate-500 text-[0.7rem] font-bold uppercase tracking-widest pointer-events-none select-none shadow-inner">
+							<div
+								className="w-full h-full flex items-center justify-center rounded-[1.5rem] text-[0.7rem] font-bold uppercase tracking-widest pointer-events-none select-none shadow-inner"
+								style={{ border: `1px solid ${theme.card.border}`, background: theme.card.bg, color: theme.text.muted }}
+							>
 								Store Closed
 							</div>
 						) : currentItem.isAvailable === false ? (
@@ -402,8 +425,8 @@ export default function MenuItemCard({
 								>
 									<Minus size={18} strokeWidth={2.5} />
 								</button>
-								<span className="font-bold text-xs uppercase tracking-widest text-amber-400 tabular-nums select-none">
-									<span className="text-white text-sm font-black mr-1">{cartQty}</span> Added
+								<span className="font-bold text-xs uppercase tracking-widest tabular-nums select-none" style={{ color: theme.name === 'light' ? '#ea580c' : '#fbbf24' }}>
+									<span className="text-sm font-black mr-1" style={{ color: theme.name === 'light' ? '#ea580c' : 'white' }}>{cartQty}</span> Added
 								</span>
 								<button 
 									onClick={increment}
@@ -416,10 +439,11 @@ export default function MenuItemCard({
 						) : (
 							<button 
 								onClick={handleInitialAdd}
-								className="w-full h-full flex items-center justify-center gap-2.5 rounded-[1.5rem] border border-white/5 bg-white/[0.02] hover:bg-amber-500/20 hover:border-amber-500/40 hover:text-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] text-slate-300 text-sm font-semibold transition-all duration-300 group/btn"
+								className="w-full h-full flex items-center justify-center gap-2.5 rounded-[1.5rem] hover:bg-amber-500/20 hover:border-amber-500/40 hover:text-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] text-sm font-semibold transition-all duration-300 group/btn"
+								style={{ border: `1px solid ${theme.card.border}`, background: theme.card.bg, color: theme.text.secondary }}
 							>
 								<span className="group-hover/btn:text-amber-400 transition-colors">Add to Cart</span>
-								<span className="w-1 h-1 rounded-full bg-slate-600 group-hover/btn:bg-amber-600 transition-colors" aria-hidden="true" />
+								<span className="w-1 h-1 rounded-full group-hover/btn:bg-amber-600 transition-colors" style={{ background: theme.text.muted }} aria-hidden="true" />
 								<span className="text-amber-400 tracking-wide">${currentItem.price.toFixed(2)}</span>
 							</button>
 						)}
@@ -428,8 +452,10 @@ export default function MenuItemCard({
 
 				{/* Builder Mode Persistent Action Toolbar */}
 				{mode === 'builder' && (
-					<div className="mt-2 pt-4 border-t border-white/5 flex items-center justify-between w-full">
-            <div className="flex items-center gap-3 bg-[rgba(0,0,0,0.2)] rounded-full px-1.5 py-1 pr-3 border border-white/5 shadow-inner backdrop-blur-md">
+					<div className="mt-2 pt-4 flex items-center justify-between w-full" style={{ borderTop: `1px solid ${theme.card.border}` }}>
+            <div className="flex items-center gap-3 rounded-full px-1.5 py-1 pr-3 shadow-inner backdrop-blur-md"
+              style={{ background: theme.name === 'light' ? 'rgba(15,23,42,0.05)' : 'rgba(0,0,0,0.20)', border: `1px solid ${theme.card.border}` }}
+            >
                <BrandSwitch 
                  checked={currentItem.isAvailable ?? true}
                  onChange={(val) => handleFieldChange('isAvailable', val)}
@@ -437,8 +463,9 @@ export default function MenuItemCard({
                />
                <span className={cn(
                  "text-[10px] font-black uppercase tracking-widest transition-colors w-12 text-center",
-                 (currentItem.isAvailable ?? true) ? "text-emerald-400" : "text-slate-500"
-               )}>
+               )}
+               style={{ color: (currentItem.isAvailable ?? true) ? '#10b981' : theme.text.muted }}
+               >
                  {(currentItem.isAvailable ?? true) ? "Active" : "Hidden"}
                </span>
             </div>

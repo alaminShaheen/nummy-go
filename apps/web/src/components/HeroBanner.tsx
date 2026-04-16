@@ -1,4 +1,8 @@
+'use client';
+
 import Image from 'next/image';
+import { useTheme } from '@/lib/themes';
+
 
 interface HeroBannerProps {
   promotionalHeading?: string | null;
@@ -9,19 +13,21 @@ export default function HeroBanner({
   promotionalHeading,
   heroImageUrl,
 }: HeroBannerProps) {
+  const { theme } = useTheme();
   return (
     <section
       id="hero"
-      className="relative min-h-[450px] md:min-h-[550px] pb-52 pt-28 md:pt-36 flex items-start overflow-hidden bg-[#0D1117] transition-all duration-300"
+      className="relative min-h-[450px] md:min-h-[550px] pb-52 pt-28 md:pt-36 flex items-start overflow-hidden transition-all duration-300"
       style={{
-				backgroundImage: heroImageUrl ? `url(${heroImageUrl})` : undefined,
-				backgroundSize: 'cover',
-				backgroundPosition: 'center',
-			}}
+        backgroundColor: theme.bg,
+        backgroundImage: heroImageUrl ? `url(${heroImageUrl})` : undefined,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
     >
-      {/* Background layer mesh locking high fidelity overlay */}
+      {/* Dark overlay when hero image is set */}
       {heroImageUrl && (
-         <div className="absolute inset-0 z-0 bg-[#0D1117]/70" />
+         <div className="absolute inset-0 z-0" style={{ background: `${theme.bg}cc` }} />
       )}
       {/* Ambient glow blobs */}
       <div className="glow-amber" style={{ top: '-10%', left: '-5%' }} aria-hidden="true" />
@@ -46,7 +52,7 @@ export default function HeroBanner({
           {/* Left: Headline Only */}
           <div className="flex flex-col gap-4 max-w-2xl">
             {promotionalHeading ? (
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight text-white drop-shadow-lg break-words">
+              <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight drop-shadow-lg break-words transition-colors ${theme.name === 'light' ? 'text-slate-900' : 'text-white'}`}>
                 {promotionalHeading.split(' ').map((word, i, arr) => {
                   const targetIndex = arr.length > 2 ? Math.floor(arr.length / 2) : 1;
                   if (i === targetIndex && arr.length > 1) {
@@ -64,7 +70,7 @@ export default function HeroBanner({
                 })}
               </h1>
             ) : (
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight text-white drop-shadow-lg break-words">
+              <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight drop-shadow-lg break-words transition-colors ${theme.name === 'light' ? 'text-slate-900' : 'text-white'}`}>
                 Your{' '}
                 <span className="gradient-text">Neighbourhood</span>
                 <br />
@@ -115,10 +121,10 @@ export default function HeroBanner({
         </div>
       </div>
 
-      {/* Extreme Bottom fade for perfect blending into the background */}
+      {/* Bottom fade — blends seamlessly into page background */}
       <div
         className="absolute bottom-0 left-0 right-0 h-40"
-        style={{ background: 'linear-gradient(to bottom, transparent, #0D1117)' }}
+        style={{ background: `linear-gradient(to bottom, transparent, ${theme.bg})` }}
         aria-hidden="true"
       />
     </section>

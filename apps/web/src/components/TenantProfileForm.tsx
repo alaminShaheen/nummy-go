@@ -16,7 +16,6 @@ import { clsx } from 'clsx';
 import { TimePicker } from '@/components/TimePicker';
 import { formatPhoneNumber } from '@nummygo/shared/lib/formatters';
 
-// ─── TenantProfileForm Props ──────────────────────────────────────────────────
 type TenantFormValues = RegisterTenantDto | UpdateTenantDto;
 
 type TenantProfileFormProps<T extends TenantFormValues> = {
@@ -29,6 +28,8 @@ type TenantProfileFormProps<T extends TenantFormValues> = {
 	submitButtonText?: string;
 };
 
+import { useTheme } from '@/lib/themes';
+
 // ─── TenantProfileForm Component ──────────────────────────────────────────────
 export default function TenantProfileForm<T extends TenantFormValues>(props: TenantProfileFormProps<T>) {
 	const { mode, form, onSubmit, isPending, isError, error, submitButtonText } = props;
@@ -36,6 +37,8 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 	const [slugManual, setSlugManual] = useState(false);
 	const [slugAvailable, setSlugAvailable] = useState<boolean | null>(mode === 'edit' ? true : null);
 	const utils = trpc.useUtils();
+	const { theme } = useTheme();
+	const isLight = theme.name === 'light';
 
 	const {
 		control,
@@ -525,12 +528,17 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 										// @ts-ignore - The value will map correctly locally
 										value={(field.value as number) || 30}
 										onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
-										className="w-full rounded-lg bg-[#141A23] border border-white/10 text-slate-200 text-sm px-3 py-2.5 focus:outline-none focus:border-amber-400/60 transition-colors appearance-none"
+										className="w-full rounded-lg border text-sm px-3 py-2.5 focus:outline-none transition-colors appearance-none"
+										style={{ 
+											background: isLight ? theme.bg : '#141A23',
+											borderColor: theme.card.border,
+											color: theme.text.primary,
+										}}
 									>
-										<option value={15} className="bg-[#141A23]">15 minutes</option>
-										<option value={30} className="bg-[#141A23]">30 minutes</option>
-										<option value={45} className="bg-[#141A23]">45 minutes</option>
-										<option value={60} className="bg-[#141A23]">60 minutes</option>
+										<option value={15} style={{ background: isLight ? theme.bg : '#141A23', color: theme.text.primary }}>15 minutes</option>
+										<option value={30} style={{ background: isLight ? theme.bg : '#141A23', color: theme.text.primary }}>30 minutes</option>
+										<option value={45} style={{ background: isLight ? theme.bg : '#141A23', color: theme.text.primary }}>45 minutes</option>
+										<option value={60} style={{ background: isLight ? theme.bg : '#141A23', color: theme.text.primary }}>60 minutes</option>
 									</select>
 								</FormField>
 							)}
@@ -550,14 +558,19 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 										// @ts-ignore
 										value={(field.value as number) || 20}
 										onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
-										className="w-full rounded-lg bg-[#141A23] border border-white/10 text-slate-200 text-sm px-3 py-2.5 focus:outline-none focus:border-amber-400/60 transition-colors appearance-none"
+										className="w-full rounded-lg border text-sm px-3 py-2.5 focus:outline-none transition-colors appearance-none"
+										style={{ 
+											background: isLight ? theme.bg : '#141A23',
+											borderColor: theme.card.border,
+											color: theme.text.primary,
+										}}
 									>
-										<option value={10} className="bg-[#141A23]">10 Minutes</option>
-										<option value={15} className="bg-[#141A23]">15 Minutes</option>
-										<option value={20} className="bg-[#141A23]">20 Minutes</option>
-										<option value={30} className="bg-[#141A23]">30 Minutes</option>
-										<option value={45} className="bg-[#141A23]">45 Minutes</option>
-										<option value={60} className="bg-[#141A23]">60 Minutes</option>
+										<option value={10} style={{ background: isLight ? theme.bg : '#141A23', color: theme.text.primary }}>10 Minutes</option>
+										<option value={15} style={{ background: isLight ? theme.bg : '#141A23', color: theme.text.primary }}>15 Minutes</option>
+										<option value={20} style={{ background: isLight ? theme.bg : '#141A23', color: theme.text.primary }}>20 Minutes</option>
+										<option value={30} style={{ background: isLight ? theme.bg : '#141A23', color: theme.text.primary }}>30 Minutes</option>
+										<option value={45} style={{ background: isLight ? theme.bg : '#141A23', color: theme.text.primary }}>45 Minutes</option>
+										<option value={60} style={{ background: isLight ? theme.bg : '#141A23', color: theme.text.primary }}>60 Minutes</option>
 									</select>
 								</FormField>
 							)}
@@ -611,11 +624,12 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 									key={day}
 									className={clsx(
 										'flex items-center gap-3 rounded-xl px-3 py-2.5 border transition-all duration-150',
-										{
-											'border-white/5 opacity-50': dh.closed,
-											'border-white/8 bg-white/[0.02]': !dh.closed,
-										}
+										{ 'opacity-50': dh.closed }
 									)}
+									style={{
+										borderColor: theme.card.border,
+										background: !dh.closed ? (isLight ? theme.bg : 'rgba(255,255,255,0.02)') : 'transparent'
+									}}
 								>
 									{/* Day label */}
 									<span className="text-xs font-medium text-slate-400 w-8 flex-shrink-0">
@@ -688,18 +702,9 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 				{/* Submit */}
 				<Button
 					type="submit"
+					variant="gradient"
 					disabled={isPending}
-					className="
-            w-full flex items-center justify-center gap-2
-            rounded-2xl py-3.5 h-auto
-            bg-gradient-to-r from-amber-500 to-orange-600 border-none
-            text-white font-semibold text-sm
-            shadow-lg shadow-orange-900/40
-            hover:shadow-xl hover:shadow-orange-900/60 hover:scale-[1.01]
-            disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100
-            transition-all duration-200
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60
-          "
+					className="w-full rounded-2xl py-3.5 h-auto"
 				>
 					{isPending ? (
 						<>
@@ -719,7 +724,7 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 			{/* ════ LIVE PREVIEW (tablet + desktop only) ════ */}
 			<div className="hidden md:block self-stretch">
 				<div className="sticky top-8 flex flex-col gap-3">
-					<p className="text-xs text-slate-500 uppercase tracking-widest font-medium text-center">Live Preview</p>
+					<p className="text-xs uppercase tracking-widest font-medium text-center" style={{ color: theme.text.muted }}>Live Preview</p>
 					<StorefrontPreview
 						acceptsOrders={(formValues as UpdateTenantDto).acceptsOrders ?? true}
 						name={formValues.name}
@@ -735,7 +740,7 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 						heroImageUrl={(formValues as UpdateTenantDto).heroImageUrl}
 						socialLinks={(formValues as UpdateTenantDto).socialLinks as SocialLinks | undefined}
 					/>
-					<p className="text-[11px] text-slate-600 text-center leading-relaxed">
+					<p className="text-[11px] text-center leading-relaxed" style={{ color: theme.text.muted }}>
 						Fill in the form to see your storefront update in real-time.
 					</p>
 				</div>

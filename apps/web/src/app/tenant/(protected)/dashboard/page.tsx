@@ -26,6 +26,7 @@ import { Bell, Wifi, WifiOff, Search } from 'lucide-react';
 import type { Order } from '@nummygo/shared/models/types';
 import { cn } from '@/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTheme } from '@/lib/themes';
 
 // ── Page ───────────────────────────────────────────────────────────────────
 
@@ -35,6 +36,8 @@ export default function TenantDashboardPage() {
   const [activeTab, setActiveTab] = useState<OrderTab>('all');
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
 
   // Modification review state
   const [reviewingOrderId, setReviewingOrderId] = useState<string | null>(null);
@@ -162,18 +165,18 @@ export default function TenantDashboardPage() {
       <div className="p-6 space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-24 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }} />
+            <Skeleton key={i} className="h-24 rounded-xl" style={{ background: theme.card.border }} />
           ))}
         </div>
-        <Skeleton className="h-12 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }} />
-        <Skeleton className="h-96 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }} />
+        <Skeleton className="h-12 rounded-xl" style={{ background: theme.card.border }} />
+        <Skeleton className="h-96 rounded-xl" style={{ background: theme.card.border }} />
       </div>
     );
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen pt-8 pb-16 px-4 sm:px-6 lg:px-8 w-full" style={{ background: '#0D1117' }}>
+    <div className="min-h-screen pt-8 pb-16 px-4 sm:px-6 lg:px-8 w-full" style={{ background: theme.bg }}>
       {/* Ambient glows matching Edit Profile */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
         <div
@@ -203,12 +206,12 @@ export default function TenantDashboardPage() {
       </div>
 
       <div className="relative z-10 w-full min-w-0 max-w-[1400px] mx-auto space-y-8 animate-fade-in">      {/* ── Page heading + live status ──────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-8" style={{ borderBottom: `1px solid ${theme.card.border}` }}>
         <div>
           <h1 className="text-3xl font-black gradient-text">
             Live Orders
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-sm mt-1" style={{ color: theme.text.muted }}>
             Manage incoming orders and customer requests in real-time.
           </p>
         </div>
@@ -227,13 +230,17 @@ export default function TenantDashboardPage() {
           <div
             className={cn(
               'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold',
-              isConnected
-                ? 'text-emerald-400'
-                : 'text-rose-400'
             )}
             style={{
-              background: isConnected ? 'rgba(16,185,129,0.08)' : 'rgba(244,63,94,0.08)',
-              border: isConnected ? '1px solid rgba(16,185,129,0.2)' : '1px solid rgba(244,63,94,0.2)',
+              color: isConnected
+                ? isLight ? '#059669' : '#34d399'
+                : isLight ? '#dc2626' : '#fb7185',
+              background: isConnected
+                ? isLight ? 'rgba(5,150,105,0.08)' : 'rgba(16,185,129,0.08)'
+                : isLight ? 'rgba(220,38,38,0.07)' : 'rgba(244,63,94,0.08)',
+              border: isConnected
+                ? isLight ? '1px solid rgba(5,150,105,0.25)' : '1px solid rgba(16,185,129,0.2)'
+                : isLight ? '1px solid rgba(220,38,38,0.20)' : '1px solid rgba(244,63,94,0.2)',
             }}
           >
             {isConnected
@@ -272,7 +279,12 @@ export default function TenantDashboardPage() {
               placeholder="Search Order ID..."
               value={(table.getColumn('id')?.getFilterValue() as string) ?? ''}
               onChange={(e) => table.getColumn('id')?.setFilterValue(e.target.value)}
-              className="pl-9 h-9 border-white/[0.08] bg-black/30 text-sm text-slate-300 placeholder:text-slate-600 focus-visible:ring-1 focus-visible:ring-amber-500/50 w-full rounded-xl"
+              className={cn(
+                "pl-9 h-9 text-sm w-full rounded-xl",
+                isLight
+                  ? "border-slate-200 bg-white/80 text-slate-700 placeholder:text-slate-400 focus-visible:ring-1 focus-visible:ring-amber-500/50"
+                  : "border-white/[0.08] bg-black/30 text-slate-300 placeholder:text-slate-600 focus-visible:ring-1 focus-visible:ring-amber-500/50"
+              )}
             />
           </div>
           <ColumnCustomizer table={table} />

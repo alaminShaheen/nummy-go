@@ -81,11 +81,8 @@ export {
 export type { InputProps, VendorCardProps } from '@nummygo/shared/ui';
 
 // Custom nummyGo components
-export { GradientButton } from './GradientButton';
-export type { GradientButtonProps } from './GradientButton';
-
-export { GlossButton } from './GlossButton';
-export type { GlossButtonProps } from './GlossButton';
+export { GlassButton } from './GlassButton';
+export type { GlassButtonProps } from './GlassButton';
 
 export { GlassCard } from './GlassCard';
 export type { GlassCardProps } from './GlassCard';

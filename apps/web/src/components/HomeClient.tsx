@@ -10,10 +10,11 @@ import Navbar from '@/components/Navbar';
 import VendorSearchBar from '@/components/VendorSearchBar';
 import AnimatedCustomerCard from '@/components/AnimatedCustomerCard';
 import RestaurantBentoFeatures from '@/components/RestaurantBentoFeatures';
-import { GradientButton, GradientDivider, SectionLabel } from '@/components/ui';
+import { Button, GradientDivider, SectionLabel } from '@/components/ui';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { trpc } from '@/trpc/client';
+import { useTheme } from '@/lib/themes';
 
 /* ─── Static data ───────────────────────────────────────────── */
 
@@ -111,6 +112,8 @@ export default function PlatformHome() {
   const emberRef = useRef<HTMLDivElement>(null);
   useEmbers(emberRef);
   useScrollReveal('[data-reveal]');
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
 
   // TODO: This logic will change later. Currently fetching the first 2 tenants by default.
   // We need to implement an algorithm to show pages based on user's shared location.
@@ -169,20 +172,20 @@ export default function PlatformHome() {
 
       <Navbar />
 
-      <main>
+      <main className="overflow-x-hidden">
         {/* ══════════════════════════════════════════════
             HERO — Aurora + Embers + Shimmer search
         ══════════════════════════════════════════════ */}
         <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
-          {/* Aurora orbs */}
+          {/* Aurora orbs — clamped so they never cause horizontal scroll */}
           <div className="nummy-orb-1 absolute rounded-full pointer-events-none"
-            style={{ width: 700, height: 700, top: '-18%', left: '-12%', background: 'radial-gradient(circle, rgba(245,158,11,0.18) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.7 }}
+            style={{ width: 'clamp(300px,60vw,700px)', height: 'clamp(300px,60vw,700px)', top: '-18%', left: '-12%', background: 'radial-gradient(circle, rgba(245,158,11,0.18) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.7 }}
             aria-hidden="true" />
           <div className="nummy-orb-2 absolute rounded-full pointer-events-none"
-            style={{ width: 650, height: 650, bottom: '-20%', right: '-14%', background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.65 }}
+            style={{ width: 'clamp(280px,55vw,650px)', height: 'clamp(280px,55vw,650px)', bottom: '-20%', right: '-14%', background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.65 }}
             aria-hidden="true" />
           <div className="nummy-orb-3 absolute rounded-full pointer-events-none"
-            style={{ width: 400, height: 400, top: '50%', left: '50%', background: 'radial-gradient(circle, rgba(234,88,12,0.12) 0%, transparent 70%)', filter: 'blur(60px)', opacity: 0.5 }}
+            style={{ width: 'clamp(180px,35vw,400px)', height: 'clamp(180px,35vw,400px)', top: '50%', left: '50%', background: 'radial-gradient(circle, rgba(234,88,12,0.12) 0%, transparent 70%)', filter: 'blur(60px)', opacity: 0.5 }}
             aria-hidden="true" />
 
           {/* Grid overlay */}
@@ -199,19 +202,23 @@ export default function PlatformHome() {
               </div>
 
               {/* Headline */}
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] tracking-tight max-w-5xl break-words">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] tracking-tight max-w-5xl w-full break-words">
                 Experience True{' '}
                 <span className="gradient-text">Local Flavour</span>
               </h1>
 
               {/* Subheadline */}
-              <p className="text-slate-400 text-lg sm:text-xl max-w-xl leading-relaxed">
+              <p className="text-slate-400 text-base sm:text-lg md:text-xl max-w-xl leading-relaxed px-2 sm:px-0">
                 Connect directly with authentic neighbourhood kitchens. Skip the hidden fees and third-party markups, and enjoy freshly prepared meals ready for pickup.
               </p>
 
               {/* Search with shimmer */}
               <div className="nummy-search-shimmer w-full max-w-2xl rounded-full">
-                <VendorSearchBar size="large" placeholder="Who's cooking tonight? (Spoiler: Not you)..." />
+                <VendorSearchBar
+                  size="large"
+                  placeholder="Who's cooking tonight?..."
+                  className="[&_input]:placeholder:text-sm sm:[&_input]:placeholder:text-base"
+                />
               </div>
 
               {/* Popular links */}
@@ -234,21 +241,26 @@ export default function PlatformHome() {
             style={{ background: 'linear-gradient(to top, rgba(245,158,11,0.04), transparent)' }}
             aria-hidden="true" />
 
-          {/* Bottom fade */}
+          {/* Bottom fade — matches page bg */}
           <div className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
-            style={{ background: 'linear-gradient(to bottom, transparent, #0D1117)' }}
+            style={{ background: `linear-gradient(to bottom, transparent, ${theme.bg})` }}
             aria-hidden="true" />
         </section>
 
         {/* ══════════════════════════════════════════════
             TICKER STRIP
         ══════════════════════════════════════════════ */}
+        {/* Ticker strip */}
         <div className="relative overflow-hidden border-y"
-          style={{ borderColor: 'rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.015)', padding: '13px 0' }}>
+          style={{
+            borderColor: theme.card.border,
+            background: isLight ? 'rgba(15,23,42,0.03)' : 'rgba(255,255,255,0.015)',
+            padding: '13px 0',
+          }}>
           <div className="absolute top-0 left-0 bottom-0 w-24 z-10 pointer-events-none"
-            style={{ background: 'linear-gradient(to right, #0D1117, transparent)' }} />
+            style={{ background: `linear-gradient(to right, ${theme.bg}, transparent)` }} />
           <div className="absolute top-0 right-0 bottom-0 w-24 z-10 pointer-events-none"
-            style={{ background: 'linear-gradient(to left, #0D1117, transparent)' }} />
+            style={{ background: `linear-gradient(to left, ${theme.bg}, transparent)` }} />
           <div className="nummy-ticker-inner flex w-max" aria-hidden="true">
             {[...TICKER_NAMES, ...TICKER_NAMES].map((name, i) => (
               <div key={i} className="inline-flex items-center gap-2 px-8 text-[13px] font-semibold text-slate-500 whitespace-nowrap">
@@ -264,23 +276,23 @@ export default function PlatformHome() {
         {/* ══════════════════════════════════════════════
             CUSTOMER BENEFITS — Animated icon cards
         ══════════════════════════════════════════════ */}
-        <section id="customer-benefits" className="relative py-28 px-4 sm:px-6 lg:px-8">
-          <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none"
+        <section id="customer-benefits" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8">
+          <div className="absolute top-0 left-1/4 w-48 sm:w-96 h-48 sm:h-96 rounded-full pointer-events-none"
             style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.07) 0%, transparent 70%)', filter: 'blur(40px)' }}
             aria-hidden="true" />
 
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center mb-16" data-reveal>
               <SectionLabel className="mb-3">For Customers</SectionLabel>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-100">
+              <h2 className="text-4xl sm:text-5xl font-black" style={{ color: theme.text.primary }}>
                 Eat Well, <span className="gradient-text">Every Day</span>
               </h2>
-              <p className="text-slate-500 mt-3 text-base max-w-lg mx-auto">
+              <p className="mt-3 text-base max-w-lg mx-auto" style={{ color: theme.text.muted }}>
                 From first craving to last bite — we&apos;ve made the whole experience effortless, delightful, and deeply local.
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
               {CUSTOMER_BENEFITS.map((b) => (
                 <AnimatedCustomerCard key={b.title} {...b} />
               ))}
@@ -293,21 +305,21 @@ export default function PlatformHome() {
         {/* ══════════════════════════════════════════════
             RESTAURANT BENTO FEATURES
         ══════════════════════════════════════════════ */}
-        <section id="vendor-benefits" className="relative py-28 px-4 sm:px-6 lg:px-8">
-          <div className="absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
+        <section id="vendor-benefits" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8">
+          <div className="absolute top-0 right-1/4 w-48 sm:w-[500px] h-48 sm:h-[500px] rounded-full pointer-events-none"
             style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)', filter: 'blur(50px)' }}
             aria-hidden="true" />
 
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center mb-16" data-reveal>
               <SectionLabel className="mb-3">For Restaurants</SectionLabel>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-100">
+              <h2 className="text-4xl sm:text-5xl font-black" style={{ color: theme.text.primary }}>
                 Everything Your Kitchen{' '}
-                <span style={{ background: 'linear-gradient(135deg, #818cf8, #6366f1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                <span className='gradient-text'>
                   Actually Needs
                 </span>
               </h2>
-              <p className="text-slate-500 mt-3 text-base max-w-lg mx-auto">
+              <p className="mt-3 text-base max-w-lg mx-auto" style={{ color: theme.text.muted }}>
                 Take back control of your customer relationships. A comprehensive, beautifully designed platform to run and scale your restaurant — free from predatory commissions.
               </p>
             </div>
@@ -317,10 +329,10 @@ export default function PlatformHome() {
             {/* CTA */}
             <div className="text-center mt-16" data-reveal>
               <Link href="/tenant/login">
-                <GradientButton className="text-base px-10 py-4">
+                <Button variant="gradient" className="text-base px-10 py-4">
                   Open Your Kitchen on nummyGo
                   <ArrowRight size={18} aria-hidden="true" />
-                </GradientButton>
+                </Button>
               </Link>
               <p className="text-slate-600 text-sm mt-4">
                 Free to start · No upfront fees · Your storefront live in minutes
@@ -332,8 +344,9 @@ export default function PlatformHome() {
         {/* ══════════════════════════════════════════════
             FOOTER
         ══════════════════════════════════════════════ */}
-        <footer className="py-10 px-4 text-center border-t border-white/5">
-          <p className="text-slate-600 text-sm">
+        {/* Footer */}
+        <footer className="py-10 px-4 text-center" style={{ borderTop: `1px solid ${theme.card.border}` }}>
+          <p className="text-sm" style={{ color: theme.text.muted }}>
             © {new Date().getFullYear()}&nbsp;
             <span className="gradient-text font-semibold">
               <span className="nummy-flame-logo">🔥</span> nummyGo

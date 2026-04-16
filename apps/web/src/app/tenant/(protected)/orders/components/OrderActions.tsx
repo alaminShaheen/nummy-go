@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { trpc } from '@/trpc/client';
 import type { OrderStatus } from '@nummygo/shared/models/enums';
-import { GlassCard, GradientButton, FormField, BrandInput } from '@/components/ui';
+import { GlassCard, FormField, BrandInput } from '@/components/ui';
 import { Loader2, X, Check, XCircle, ArrowRightCircle, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
