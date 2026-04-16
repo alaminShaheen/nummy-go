@@ -1,5 +1,7 @@
 'use client';
 
+import { useTheme } from '@/lib/themes';
+
 /* ═══════════════════════════════════════════════════
    Animated SVG Icons — Kitchen / restaurant themed
 ═══════════════════════════════════════════════════ */
@@ -262,15 +264,17 @@ interface BentoCardProps {
 function BentoCard({ icon, eyebrow, title, body, size = 'default', accentColor = '#f59e0b', delay = 0, backgroundGraphic }: BentoCardProps) {
   const isWide = size === 'wide';
   const isTall = size === 'tall';
+  const { theme } = useTheme();
 
   return (
     <div
       data-reveal
       style={{
         transitionDelay: `${delay}ms`,
-        background: 'rgba(19,25,31,0.8)',
-        border: '1px solid rgba(255,255,255,0.06)',
-        backdropFilter: 'blur(16px)',
+        background: theme.card.bg,
+        border: `1px solid ${theme.card.border}`,
+        backdropFilter: 'blur(20px)',
+        boxShadow: theme.card.shadow,
         transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
       } as React.CSSProperties}
       className={`group relative rounded-2xl overflow-hidden cursor-default flex flex-col justify-center gap-4 ${isWide ? 'md:col-span-2' : 'md:col-span-1'} ${isTall ? 'md:row-span-2 p-6 md:p-10' : 'md:row-span-1 p-6 md:p-7'}`}
@@ -278,13 +282,13 @@ function BentoCard({ icon, eyebrow, title, body, size = 'default', accentColor =
         const el = e.currentTarget as HTMLElement;
         el.style.borderColor = `${accentColor}40`;
         el.style.transform = 'translateY(-4px)';
-        el.style.boxShadow = `0 20px 50px -10px rgba(0,0,0,0.5), 0 0 0 1px ${accentColor}20`;
+        el.style.boxShadow = theme.card.hoverShadow;
       }}
       onMouseLeave={e => {
         const el = e.currentTarget as HTMLElement;
-        el.style.borderColor = 'rgba(255,255,255,0.06)';
+        el.style.borderColor = theme.card.border;
         el.style.transform = 'translateY(0)';
-        el.style.boxShadow = 'none';
+        el.style.boxShadow = theme.card.shadow;
       }}
     >
       {/* Background Graphic */}
@@ -311,10 +315,10 @@ function BentoCard({ icon, eyebrow, title, body, size = 'default', accentColor =
         <p className="text-[10px] font-bold uppercase tracking-[2.5px]" style={{ color: accentColor }}>
           {eyebrow}
         </p>
-        <h3 className={`font-black text-slate-100 leading-tight ${isTall ? 'text-2xl' : 'text-xl'}`}>
+        <h3 className={`font-black leading-tight ${isTall ? 'text-2xl' : 'text-xl'}`} style={{ color: theme.text.primary }}>
           {title}
         </h3>
-        <div className={`text-slate-400 leading-relaxed ${isTall ? 'text-[15px]' : 'text-sm'}`}>
+        <div className={`leading-relaxed ${isTall ? 'text-[15px]' : 'text-sm'}`} style={{ color: theme.text.secondary }}>
           {body}
         </div>
       </div>

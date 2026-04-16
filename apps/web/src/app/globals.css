@@ -463,3 +463,145 @@ button:hover .auth-avatar-ring {
     @apply font-sans;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT THEME OVERRIDES  [data-theme="light"]
+   Applied by ThemeProvider.tsx when light mode is active.
+   These map every dark-mode CSS utility to the Frosted Glass palette.
+   Tokens sourced from src/lib/themes/tokens.ts → lightTheme.
+═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] {
+
+  /* ── Base ─────────────────────────────────────────── */
+  body {
+    background-color: #F4F6FB;
+    color: #0F172A;
+  }
+
+  /* ── Gradient text — deeper fire + violet on white bg ── */
+  .gradient-text {
+    background: linear-gradient(135deg, #EA580C 0%, #C2410C 30%, #7C3AED 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Gradient border card ─────────────────────────── */
+  .gradient-border-card::before {
+    background: linear-gradient(135deg, #EA580C, #C2410C, #7C3AED);
+  }
+
+  /* ── Glassmorphism ──────────────────────────────────── */
+  .glass {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-color: rgba(15, 23, 42, 0.07);
+  }
+
+  /* ── Ambient glows — softer, adjusted for white bg ─── */
+  .glow-amber {
+    background: radial-gradient(circle, rgba(234,88,12,0.12) 0%, transparent 70%);
+  }
+  .glow-indigo {
+    background: radial-gradient(circle, rgba(109,40,217,0.10) 0%, transparent 70%);
+  }
+
+  /* ── Benefit card ─────────────────────────────────── */
+  .benefit-card {
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(15, 23, 42, 0.07);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .benefit-card:hover {
+    border-color: rgba(234, 88, 12, 0.20);
+    box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.14);
+  }
+  .benefit-card::before {
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, transparent 60%);
+  }
+
+  /* ── Search result / partner card ─────────────────── */
+  .vendor-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 2px 12px -4px rgba(15, 23, 42, 0.08);
+  }
+  .vendor-card:hover {
+    border-color: rgba(234, 88, 12, 0.20);
+    box-shadow: 0 8px 28px -8px rgba(234, 88, 12, 0.12), 0 0 0 1px rgba(234, 88, 12, 0.06);
+  }
+
+  /* ── Auth Navbar pill links ──────────────────────── */
+  .auth-pill-link {
+    color: #475569;
+  }
+  .auth-pill-link:hover,
+  .auth-pill-link:focus-visible {
+    color: #C2410C;
+  }
+  .auth-pill-link__bar {
+    background: linear-gradient(90deg, #EA580C, #C2410C);
+    box-shadow: 0 0 8px 2px rgba(234, 88, 12, 0.5);
+  }
+  .auth-pill-link:hover .auth-pill-link__icon {
+    filter: drop-shadow(0 0 5px rgba(234, 88, 12, 0.7));
+  }
+
+  /* ── Avatar ring ─────────────────────────────────── */
+  .auth-avatar-ring {
+    outline-color: rgba(194, 65, 12, 0.50);
+    filter: drop-shadow(0 0 7px rgba(194, 65, 12, 0.40));
+  }
+  .auth-avatar-ring:hover,
+  button:hover > .auth-avatar-ring,
+  button:hover .auth-avatar-ring {
+    outline-color: rgba(194, 65, 12, 0.80);
+    filter: drop-shadow(0 0 12px rgba(194, 65, 12, 0.65));
+  }
+
+  /* ── Login card shimmer ──────────────────────────── */
+  .shimmer-border {
+    background: linear-gradient(90deg, transparent 0%, rgba(234,88,12,0.25) 50%, transparent 100%);
+    background-size: 200% 100%;
+  }
+
+  /* ── Partner-only badge bar ──────────────────────── */
+  .vendor-actions-bar {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(234, 88, 12, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* ── Search glow ─────────────────────────────────── */
+  .search-glow::after {
+    background: linear-gradient(135deg, rgba(234,88,12,0.35), rgba(194,65,12,0.35), rgba(124,58,237,0.35));
+  }
+
+  /* ── Scrollbar ───────────────────────────────────── */
+  ::-webkit-scrollbar-track { background: #F4F6FB; }
+  ::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+  }
+
+  /* ── CSS variable remaps for var(--color-brand-*) based components ── */
+  --color-brand-bg:      #F4F6FB;
+  --color-brand-surface: #FFFFFF;
+  --color-brand-card:    #FFFFFF;
+  --color-brand-border:  rgba(15,23,42,0.09);
+  --color-text-primary:  #0F172A;
+  --color-text-secondary:#475569;
+  --color-text-muted:    #94A3B8;
+
+  /* ── Login card surface ──────────────────────────── */
+  /* Tailwind utility .bg-brand-card/80 → white frosted */
+  [class*="bg-brand-card"] {
+    background: rgba(255, 255, 255, 0.90) !important;
+    box-shadow: 0 8px 40px -12px rgba(15, 23, 42, 0.14) !important;
+  }
+}
+
+

@@ -8,6 +8,7 @@ import './globals.css';
 import { Geist } from "next/font/google";
 import { cn, Toaster } from '@/components/ui';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
+import { ThemeProvider } from '@/lib/themes';
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -42,7 +43,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={cn("dark font-sans", geist.variable)}>
+    // data-theme is set dynamically by ThemeProvider on mount.
+    // We keep 'dark' as the SSR default to avoid flash-of-wrong-theme.
+    <html lang="en" data-theme="dark" className={cn("font-sans", geist.variable)}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -52,7 +55,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <TRPCProvider>{children}</TRPCProvider>
+        <TRPCProvider>
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
+        </TRPCProvider>
         <ScrollToTop />
         <Toaster position="bottom-right" />
       </body>

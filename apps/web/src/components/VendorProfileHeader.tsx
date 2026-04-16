@@ -1,8 +1,11 @@
+'use client';
+
 import Image from 'next/image';
 import { GradientDivider, Button } from '@/components/ui';
 import { ChevronDown } from 'lucide-react';
 import type { SocialLinks } from '@nummygo/shared/models/types';
 import SocialLinksRow from '@/components/SocialLinksRow';
+import { useTheme } from '@/lib/themes';
 
 interface VendorProfileHeaderProps {
   name: string;
@@ -23,25 +26,32 @@ export default function VendorProfileHeader({
   socialLinks,
   estimatedPrepTime = 20,
 }: VendorProfileHeaderProps) {
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
   return (
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-20">
-      <div 
-        className="relative -mt-24 sm:-mt-32 md:-mt-40 bg-[rgba(19,25,31,0.65)] backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-10 shadow-2xl flex flex-col md:flex-row gap-8 items-start md:items-center justify-between"
+      <div
+        className="relative -mt-24 sm:-mt-32 md:-mt-40 backdrop-blur-xl rounded-3xl p-6 sm:p-10 shadow-2xl flex flex-col md:flex-row gap-8 items-start md:items-center justify-between"
+        style={{
+          background: theme.card.bg,
+          border: `1px solid ${theme.card.border}`,
+        }}
       >
         <div className="flex flex-col sm:flex-row gap-6 md:gap-8 items-start sm:items-center max-w-3xl">
           {/* Logo Identity Block */}
           {logoUrl ? (
-             <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-2 border-slate-700 shadow-[0_0_20px_rgba(0,0,0,0.5)] shrink-0 bg-slate-900">
-               <Image 
-                 src={logoUrl} 
-                 alt={`${name} logo`} 
-                 fill 
-                 className="object-cover" 
-               />
+             <div
+               className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-2xl overflow-hidden shadow-lg shrink-0"
+               style={{ border: `2px solid ${theme.card.border}`, background: theme.surface }}
+             >
+               <Image src={logoUrl} alt={`${name} logo`} fill className="object-cover" />
              </div>
           ) : (
-             <div className="flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 rounded-2xl border-2 border-slate-700 bg-slate-900 shadow-[0_0_20px_rgba(0,0,0,0.5)] shrink-0">
-               <span className="text-3xl sm:text-4xl font-black text-slate-600">
+             <div
+               className="flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 rounded-2xl shadow-lg shrink-0"
+               style={{ border: `2px solid ${theme.card.border}`, background: theme.surface }}
+             >
+               <span className="text-3xl sm:text-4xl font-black" style={{ color: theme.text.muted }}>
                  {name.charAt(0).toUpperCase()}
                </span>
              </div>
@@ -62,24 +72,31 @@ export default function VendorProfileHeader({
                  </div>
                  
                  {acceptsOrders && (
-                   <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/50 text-[10px] sm:text-xs font-semibold text-slate-300">
+                   <div
+                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold"
+                     style={{
+                       background: isLight ? 'rgba(15,23,42,0.06)' : 'rgba(30,41,59,0.80)',
+                       border: `1px solid ${theme.card.border}`,
+                       color: theme.text.secondary,
+                     }}
+                   >
                      <span>🕒</span>
                      {estimatedPrepTime} min prep
                    </div>
                  )}
                </div>
                
-               <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-100 tracking-tight leading-none mt-1">
+               <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-none mt-1" style={{ color: theme.text.primary }}>
                  {name}
                </h2>
              </div>
              
              {description ? (
-               <p className="text-slate-400 text-sm sm:text-base leading-relaxed line-clamp-2 md:line-clamp-none max-w-2xl">
+               <p className="text-sm sm:text-base leading-relaxed line-clamp-2 md:line-clamp-none max-w-2xl" style={{ color: theme.text.secondary }}>
                  {description}
                </p>
              ) : (
-               <p className="text-slate-500 text-sm max-w-2xl">
+               <p className="text-sm max-w-2xl" style={{ color: theme.text.muted }}>
                  Freshly prepared meals crafted with love by local chefs.
                </p>
              )}
@@ -89,7 +106,12 @@ export default function VendorProfileHeader({
                {(tags?.length ? tags : ['🍔 Burgers', '🍝 Pasta', '🍣 Sushi']).map((t) => (
                   <span
                     key={t}
-                    className="px-2.5 py-0.5 rounded-lg text-[11px] font-medium bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 backdrop-blur-sm"
+                    className="px-2.5 py-0.5 rounded-lg text-[11px] font-medium backdrop-blur-sm"
+                    style={{
+                      background: isLight ? 'rgba(109,40,217,0.08)' : 'rgba(99,102,241,0.10)',
+                      border: `1px solid ${isLight ? 'rgba(109,40,217,0.18)' : 'rgba(99,102,241,0.20)'}`,
+                      color: isLight ? '#7C3AED' : '#a5b4fc',
+                    }}
                   >
                      {t}
                   </span>

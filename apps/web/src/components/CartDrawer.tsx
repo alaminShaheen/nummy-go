@@ -9,6 +9,7 @@ import { useModificationMode } from '@/hooks/useModificationMode';
 import { GlassCard, GradientButton, GradientDivider, cn } from '@/components/ui';
 import { trpc } from '@/trpc/client';
 import { toast } from 'sonner';
+import { useTheme } from '@/lib/themes';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -20,6 +21,8 @@ export default function CartDrawer({ isOpen, onClose, anchor = 'top' }: CartDraw
   const router = useRouter();
   const { cart, updateItemQuantity, removeVendorCart, megaTotal, totalItems } = useCart();
   const { mode, isActive, deactivate } = useModificationMode();
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
 
   // Find the vendor cart that corresponds to the order being modified (if any)
   const modVendorCart = isActive && mode
@@ -76,7 +79,12 @@ export default function CartDrawer({ isOpen, onClose, anchor = 'top' }: CartDraw
             ? 'translate-y-0 sm:translate-y-0 sm:scale-100 opacity-100 pointer-events-auto' 
             : 'translate-y-full sm:translate-y-0 sm:scale-95 opacity-0 pointer-events-none'
         )}
-        style={{ background: 'rgba(15,20,30,0.95)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)' }}
+        style={{
+          background: isLight ? 'rgba(255,255,255,0.96)' : 'rgba(15,20,30,0.95)',
+          backdropFilter: 'blur(40px)',
+          WebkitBackdropFilter: 'blur(40px)',
+          border: `1px solid ${theme.card.border}`,
+        }}
       >
         {/* Mobile Pull Indicator */}
         <div className="flex sm:hidden justify-center pt-3 pb-1 shrink-0">
@@ -84,7 +92,7 @@ export default function CartDrawer({ isOpen, onClose, anchor = 'top' }: CartDraw
         </div>
 
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-6 py-4 shrink-0 border-b border-white/[0.04] relative z-10 w-full" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%)' }}>
+        <div className="flex items-center justify-between px-6 py-4 shrink-0 relative z-10 w-full" style={{ borderBottom: `1px solid ${theme.card.border}` }}>
           <div className="flex items-center gap-3">
             {isActive ? (
               <>
@@ -96,7 +104,7 @@ export default function CartDrawer({ isOpen, onClose, anchor = 'top' }: CartDraw
                 <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
                   <ShoppingCart className="w-4 h-4 text-amber-400" />
                 </div>
-                <h2 className="text-sm font-bold text-slate-100 tracking-wide uppercase">My Cart</h2>
+                <h2 className="text-sm font-bold tracking-wide uppercase" style={{ color: theme.text.primary }}>My Cart</h2>
               </>
             )}
             {totalItems > 0 && (
@@ -126,12 +134,12 @@ export default function CartDrawer({ isOpen, onClose, anchor = 'top' }: CartDraw
         {/* ── Scrollable Body ── */}
         {cart.length === 0 ? (
           <div className="flex flex-col items-center justify-center flex-1 min-h-[320px] py-12 gap-5 px-6 text-center">
-            <div className="w-24 h-24 rounded-full flex items-center justify-center border-2 border-dashed border-white/10 bg-white/[0.02] shadow-inner mb-2">
-              <ShoppingCart className="w-8 h-8 text-slate-600" />
+            <div className="w-24 h-24 rounded-full flex items-center justify-center border-2 border-dashed mb-2" style={{ borderColor: theme.card.border, background: theme.card.bg }}>
+              <ShoppingCart className="w-8 h-8" style={{ color: theme.text.muted }} />
             </div>
             <div>
-              <p className="text-slate-200 text-base font-bold mb-1.5">Your cart is empty</p>
-              <p className="text-slate-500 text-sm text-center max-w-[220px] leading-relaxed">Looks like you haven't added any delicious items yet.</p>
+              <p className="text-base font-bold mb-1.5" style={{ color: theme.text.primary }}>Your cart is empty</p>
+              <p className="text-sm text-center max-w-[220px] leading-relaxed" style={{ color: theme.text.muted }}>Looks like you haven't added any delicious items yet.</p>
             </div>
           </div>
         ) : (
@@ -155,7 +163,7 @@ export default function CartDrawer({ isOpen, onClose, anchor = 'top' }: CartDraw
                   {/* Aesthetic List Items */}
                   <div className="space-y-2 mb-2">
                     {vendor.items.map((item) => (
-                      <div key={item.id} className="group flex items-center gap-3 p-2.5 rounded-xl border border-white/[0.03] bg-white/[0.02] hover:bg-white/[0.04] transition-colors relative overflow-hidden">
+                      <div key={item.id} className="group flex items-center gap-3 p-2.5 rounded-xl transition-colors relative overflow-hidden" style={{ background: theme.card.bg, border: `1px solid ${theme.card.border}` }}>
                         
                         {/* Thumbnail */}
                         <div className="w-12 h-12 rounded-lg bg-black/50 overflow-hidden shrink-0 border border-white/5 relative flex items-center justify-center shadow-lg">
@@ -168,8 +176,8 @@ export default function CartDrawer({ isOpen, onClose, anchor = 'top' }: CartDraw
 
                         {/* Title/Price */}
                         <div className="flex-1 min-w-0 pr-1">
-                          <h4 className="text-slate-200 text-sm font-bold truncate leading-tight">{item.name}</h4>
-                          <p className="text-slate-400 text-xs mt-0.5 truncate">${item.price.toFixed(2)}</p>
+                          <h4 className="text-sm font-bold truncate leading-tight" style={{ color: theme.text.primary }}>{item.name}</h4>
+                          <p className="text-xs mt-0.5 truncate" style={{ color: theme.text.secondary }}>${item.price.toFixed(2)}</p>
                         </div>
 
                         {/* Quantity Stepper */}
@@ -204,7 +212,7 @@ export default function CartDrawer({ isOpen, onClose, anchor = 'top' }: CartDraw
 
         {/* ── Footer ── */}
         {cart.length > 0 && (
-          <div className="w-full px-5 py-5 shrink-0 border-t border-white/[0.06] relative z-10" style={{ background: 'rgba(10,13,20,0.8)', backdropFilter: 'blur(20px)' }}>
+          <div className="w-full px-5 py-5 shrink-0 relative z-10" style={{ borderTop: `1px solid ${theme.card.border}`, background: isLight ? 'rgba(255,255,255,0.95)' : 'rgba(10,13,20,0.8)', backdropFilter: 'blur(20px)' }}>
             
             {/* Minimal Summary */}
             <div className="flex items-center justify-between mb-4 px-2">

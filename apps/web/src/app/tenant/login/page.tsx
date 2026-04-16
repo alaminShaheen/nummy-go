@@ -7,12 +7,14 @@ import { authClient } from '@/lib/auth-client';
 import { GlossButton } from '@/components/ui';
 import { ArrowLeft } from 'lucide-react';
 import { UserRole } from '@nummygo/shared/models';
+import { useTheme } from '@/lib/themes';
 
 function VendorLoginContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(false);
     const { data: session, isPending } = authClient.useSession();
+    const { theme } = useTheme();
 
     useEffect(() => {
         if (!isPending && session?.user) {
@@ -75,18 +77,17 @@ function VendorLoginContent() {
 
                     {/* Title */}
                     <div className="text-center mb-8">
-                        <h1 className="text-2xl font-bold text-slate-100 mt-4">Partner Portal</h1>
-                        <p className="text-slate-500 text-sm mt-2 max-w-xs mx-auto">
+                        <h1 className="text-2xl font-bold mt-4" style={{ color: theme.text.primary }}>Partner Portal</h1>
+                        <p className="text-sm mt-2 max-w-xs mx-auto" style={{ color: theme.text.muted }}>
                             Sign in to manage your restaurant, orders, and profile on nummyGo.
                         </p>
                     </div>
 
                     {/* Divider */}
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="flex-1 h-px bg-white/5" />
-                        <span
-                            className="text-xs text-slate-600 uppercase tracking-widest font-medium">Continue with</span>
-                        <div className="flex-1 h-px bg-white/5" />
+                        <div className="flex-1 h-px" style={{ background: theme.card.border }} />
+                        <span className="text-xs uppercase tracking-widest font-medium" style={{ color: theme.text.muted }}>Continue with</span>
+                        <div className="flex-1 h-px" style={{ background: theme.card.border }} />
                     </div>
 
                     {/* Google sign-in button */}
@@ -126,20 +127,21 @@ function VendorLoginContent() {
                     </GlossButton>
 
                     {/* Additional info */}
-                    <p className="text-center text-xs text-slate-600 mt-6 leading-relaxed">
+                    <p className="text-center text-xs mt-6 leading-relaxed" style={{ color: theme.text.muted }}>
                         New vendor? Signing in automatically creates your account.
                         <br />
                         You&apos;ll set up your restaurant profile next.
                     </p>
 
                     {/* Divider */}
-                    <div className="h-px bg-white/5 my-6" />
+                    <div className="h-px my-6" style={{ background: theme.card.border }} />
 
                     {/* Back to platform */}
                     <div className="text-center">
                         <Link
                             href="/"
-                            className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-amber-400 transition-colors duration-200"
+                            className="inline-flex items-center gap-1.5 text-sm hover:text-amber-400 transition-colors duration-200"
+                            style={{ color: theme.text.muted }}
                         >
                             <ArrowLeft size={14} aria-hidden="true" />
                             Back to nummyGo

@@ -6,6 +6,7 @@ import { NummyGoBadge, InlineEditableField, BrandSwitch, GradientButton } from '
 import { getBadgeStyle } from '@/components/ui/NummyGoBadge';
 import { Minus, Plus, Trash2, UploadCloud, Loader2, Check, X } from 'lucide-react';
 import { cn } from '@nummygo/shared/ui';
+import { useTheme } from '@/lib/themes';
 
 export interface MenuItem {
 	id: string;
@@ -50,6 +51,7 @@ export default function MenuItemCard({
 }: MenuItemCardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { theme } = useTheme();
 
   // Local state modeling
   const [draftState, setDraftState] = useState<MenuItem>(item);
@@ -155,10 +157,15 @@ export default function MenuItemCard({
 		<article
 			id={`menu-item-${currentItem.id}`}
 			className={cn(
-        "relative flex flex-col overflow-visible group bg-[rgba(15,20,29,0.4)] backdrop-blur-2xl transition-all duration-500 rounded-[2rem]",
-        mode === 'draft' ? 'border border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/20' : 'border border-white/5 shadow-[0_0_40px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(245,158,11,0.12)] hover:border-white/10',
+        "relative flex flex-col overflow-visible group backdrop-blur-2xl transition-all duration-500 rounded-[2rem]",
+        mode === 'draft' ? 'border border-amber-500/50 shadow-[0_0_40px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/20' : 'hover:-translate-y-1',
         currentItem.isAvailable === false ? 'opacity-70 grayscale-[30%]' : ''
       )}
+      style={{
+        background: mode === 'draft' ? undefined : theme.card.bg,
+        border: mode === 'draft' ? undefined : `1px solid ${theme.card.border}`,
+        boxShadow: mode === 'draft' ? undefined : theme.card.shadow,
+      }}
 		>
       {/* Background layer to trap overflow for image radius without cutting off absolute badges */}
       <div className="absolute inset-0 rounded-[2rem] overflow-hidden pointer-events-none -z-10"></div>
@@ -312,8 +319,8 @@ export default function MenuItemCard({
           
           {mode === 'customer' ? (
             <>
-              <h3 className="font-bold text-slate-100 text-[1.05rem] leading-tight tracking-tight">{currentItem.name}</h3>
-					    <p className="text-slate-400 text-sm mt-1.5 leading-relaxed line-clamp-2">{currentItem.description}</p>
+              <h3 className="font-bold text-[1.05rem] leading-tight tracking-tight" style={{ color: theme.text.primary }}>{currentItem.name}</h3>
+					    <p className="text-sm mt-1.5 leading-relaxed line-clamp-2" style={{ color: theme.text.secondary }}>{currentItem.description}</p>
             </>
           ) : (
             <>
@@ -386,7 +393,10 @@ export default function MenuItemCard({
 				{mode === 'customer' && (
 					<div className="mt-1 h-12 flex items-center justify-center w-full relative">
 						{isClosed ? (
-							<div className="w-full h-full flex items-center justify-center rounded-[1.5rem] border border-white/5 bg-white/[0.02] text-slate-500 text-[0.7rem] font-bold uppercase tracking-widest pointer-events-none select-none shadow-inner">
+							<div
+								className="w-full h-full flex items-center justify-center rounded-[1.5rem] text-[0.7rem] font-bold uppercase tracking-widest pointer-events-none select-none shadow-inner"
+								style={{ border: `1px solid ${theme.card.border}`, background: theme.card.bg, color: theme.text.muted }}
+							>
 								Store Closed
 							</div>
 						) : currentItem.isAvailable === false ? (
@@ -416,10 +426,11 @@ export default function MenuItemCard({
 						) : (
 							<button 
 								onClick={handleInitialAdd}
-								className="w-full h-full flex items-center justify-center gap-2.5 rounded-[1.5rem] border border-white/5 bg-white/[0.02] hover:bg-amber-500/20 hover:border-amber-500/40 hover:text-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] text-slate-300 text-sm font-semibold transition-all duration-300 group/btn"
+								className="w-full h-full flex items-center justify-center gap-2.5 rounded-[1.5rem] hover:bg-amber-500/20 hover:border-amber-500/40 hover:text-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] text-sm font-semibold transition-all duration-300 group/btn"
+								style={{ border: `1px solid ${theme.card.border}`, background: theme.card.bg, color: theme.text.secondary }}
 							>
 								<span className="group-hover/btn:text-amber-400 transition-colors">Add to Cart</span>
-								<span className="w-1 h-1 rounded-full bg-slate-600 group-hover/btn:bg-amber-600 transition-colors" aria-hidden="true" />
+								<span className="w-1 h-1 rounded-full group-hover/btn:bg-amber-600 transition-colors" style={{ background: theme.text.muted }} aria-hidden="true" />
 								<span className="text-amber-400 tracking-wide">${currentItem.price.toFixed(2)}</span>
 							</button>
 						)}

@@ -11,6 +11,8 @@ import { GradientButton } from '@/components/ui';
 import VendorSearchBar from '@/components/VendorSearchBar';
 import { useCart } from '@/hooks/useCart';
 import CartDrawer from '@/components/CartDrawer';
+import ThemeToggle from '@/components/ThemeToggle';
+import { useTheme } from '@/lib/themes';
 
 
 
@@ -27,7 +29,8 @@ function PillLink({ href, icon, label, id }: PillLinkProps) {
 }
 
 function PillDivider() {
-  return <span aria-hidden="true" className="h-4 w-px bg-white/10 flex-shrink-0" />;
+  const { theme } = useTheme();
+  return <span aria-hidden="true" className="h-4 w-px flex-shrink-0" style={{ background: theme.card.border }} />;
 }
 
 // ─── Main unified Navbar ──────────────────────────────────────────────────────
@@ -54,6 +57,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   // Scroll-aware glass
   useEffect(() => {
@@ -100,8 +104,14 @@ export default function Navbar() {
         className={`
         fixed top-0 left-0 right-0 z-40
         transition-all duration-300
-        ${scrolled ? 'glass border-b border-white/5 shadow-lg shadow-black/40' : 'bg-transparent'}
+        ${scrolled ? 'border-b shadow-lg shadow-black/20' : 'bg-transparent'}
       `}
+        style={scrolled ? {
+          background: theme.navbar.bg,
+          borderColor: theme.navbar.border,
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+        } : {}}
         aria-label="Site navigation"
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
@@ -128,20 +138,24 @@ export default function Navbar() {
           {/* ── Right side ── */}
           <div className="flex items-center gap-2 sm:gap-3">
 
+            {/* ── Theme Toggle ── */}
+            <ThemeToggle />
+
             {/* ── Mobile Search Icon (visible on non-search pages) ── */}
             {pathname !== '/' && !isSearchPage && (
-              <Link
-                href="/search"
-                aria-label="Search restaurants"
-                className="
-                  md:hidden relative p-2 rounded-full
-                  border border-white/10 hover:border-amber-400/30
-                  text-slate-400 hover:text-amber-400
-                  transition-all duration-200
-                "
-              >
-                <Search size={17} />
-              </Link>
+            <Link
+              href="/search"
+              aria-label="Search restaurants"
+              className="
+                md:hidden relative p-2 rounded-full
+                hover:border-amber-400/30
+                text-slate-400 hover:text-amber-400
+                transition-all duration-200
+              "
+              style={{ border: `1px solid ${theme.card.border}` }}
+            >
+              <Search size={17} />
+            </Link>
             )}
 
             {/* ── Cart icon (visible on non-slug pages when cart has items) ── */}
@@ -153,10 +167,11 @@ export default function Navbar() {
                 aria-label={`View cart – ${cartItemCount} items`}
                 className="
                 relative p-2 rounded-full
-                border border-white/10 hover:border-amber-400/30
+                hover:border-amber-400/30
                 text-slate-400 hover:text-amber-400
                 transition-all duration-200
               "
+                style={{ border: `1px solid ${theme.card.border}` }}
               >
                 <ShoppingCart size={17} />
                 <span
@@ -194,7 +209,11 @@ export default function Navbar() {
                   >
                     <div
                       className="flex items-center rounded-full"
-                      style={{ background: 'rgba(19,25,31,0.88)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                      style={{
+                        background: theme.navbar.pill,
+                        backdropFilter: 'blur(16px)',
+                        WebkitBackdropFilter: 'blur(16px)',
+                      }}
                     >
                       {!isOnboarding && (
                         <>
@@ -209,7 +228,7 @@ export default function Navbar() {
                       <div className="relative px-2 py-1.5 flex-shrink-0">
                         <Avatar className="auth-avatar-ring h-8 w-8 block">
                           {user!.image ? <AvatarImage src={user!.image} alt={displayName} /> : null}
-                          <AvatarFallback className="text-amber-400 text-xs font-bold" style={{ background: '#1a2130' }}>
+                          <AvatarFallback className="text-amber-400 text-xs font-bold" style={{ background: theme.surface }}>
                             {initials}
                           </AvatarFallback>
                         </Avatar>
@@ -238,12 +257,13 @@ export default function Navbar() {
                     title="Sign out"
                     className="
                     flex items-center gap-1.5 px-3 py-2 rounded-full
-                    text-slate-500 hover:text-rose-400
-                    border border-transparent hover:border-rose-500/25
+                    hover:text-rose-400
+                    hover:border-rose-500/25
                     hover:bg-rose-500/8
                     transition-all duration-200
                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/60
                   "
+                    style={{ color: theme.text.muted, border: `1px solid transparent` }}
                   >
                     <LogOut size={15} aria-hidden="true" />
                     <span className="text-sm font-medium hidden lg:block">Sign out</span>

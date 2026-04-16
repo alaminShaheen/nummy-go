@@ -14,6 +14,7 @@ import {
   PanelLeftOpen,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/lib/themes';
 
 // ── CSS variable: change this one value to resize sidebar everywhere ─────────
 const SIDEBAR_WIDTH = 256; // px  → keep in sync with layout.tsx var(--sidebar-w)
@@ -87,6 +88,9 @@ export function AppSidebar({ isExpanded, onToggle }: AppSidebarProps) {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const { data: tenant } = trpc.tenant.me.useQuery(undefined, { staleTime: Infinity });
+  const { theme } = useTheme();
+
+  const isLight = theme.name === 'light';
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -107,12 +111,12 @@ export function AppSidebar({ isExpanded, onToggle }: AppSidebarProps) {
           isExpanded ? "w-64" : "w-16"
         )}
         style={{
-          background: '#111820',
-          borderRight: '1px solid rgba(255,255,255,0.07)',
+          background: theme.surface,
+          borderRight: `1px solid ${theme.card.border}`,
         }}
       >
         {/* ── Brand header ── */}
-        <div className="flex items-center px-4 py-5 border-b border-white/[0.07] min-h-[81px]">
+        <div className="flex items-center px-4 py-5 min-h-[81px]" style={{ borderBottom: `1px solid ${theme.card.border}` }}>
           {/* Tenant logo */}
           <div className="relative shrink-0">
             {tenant?.logoUrl ? (
@@ -134,7 +138,7 @@ export function AppSidebar({ isExpanded, onToggle }: AppSidebarProps) {
             {/* Live dot */}
             <span
               className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border-2 transition-all"
-              style={{ borderColor: '#111820' }}
+              style={{ borderColor: theme.surface }}
               title="Online"
             />
           </div>
@@ -144,17 +148,17 @@ export function AppSidebar({ isExpanded, onToggle }: AppSidebarProps) {
             "ml-3 flex-1 min-w-0 transition-opacity duration-300",
             isExpanded ? "opacity-100" : "opacity-0 hidden"
           )}>
-            <p className="text-sm font-bold text-slate-100 truncate leading-tight">
-              {tenant?.name ?? <span className="text-slate-500">Loading…</span>}
+            <p className="text-sm font-bold leading-tight truncate" style={{ color: theme.text.primary }}>
+              {tenant?.name ?? <span style={{ color: theme.text.muted }}>Loading…</span>}
             </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Dashboard</p>
+            <p className="text-[11px] mt-0.5" style={{ color: theme.text.muted }}>Dashboard</p>
           </div>
         </div>
 
         {/* ── Nav links ── */}
         <nav className="flex-1 overflow-y-auto px-2 py-4 space-y-2" aria-label="Main navigation">
           {isExpanded && (
-            <p className="px-2 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-600">
+            <p className="px-2 mb-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: theme.text.muted }}>
               Navigation
             </p>
           )}
@@ -168,17 +172,18 @@ export function AppSidebar({ isExpanded, onToggle }: AppSidebarProps) {
                 className={cn(
                   'group flex items-center rounded-lg transition-all duration-200 min-h-[40px]',
                   isExpanded ? 'px-3 py-2 gap-3' : 'justify-center p-2 mx-auto w-10',
-                  isActive
-                    ? 'bg-amber-500/10 text-amber-400'
-                    : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.04]'
+                  isActive ? 'bg-amber-500/10' : ''
                 )}
+                style={{
+                  color: isActive ? theme.accent.amber : theme.text.secondary,
+                }}
               >
                 <item.icon
                   className={cn(
                     'shrink-0',
                     isExpanded ? 'w-4 h-4' : 'w-5 h-5',
-                    isActive ? 'text-amber-400' : 'text-slate-500 group-hover:text-slate-300'
                   )}
+                  style={{ color: isActive ? theme.accent.amber : theme.text.muted }}
                   aria-hidden="true"
                 />
                 {isExpanded && (
@@ -189,9 +194,9 @@ export function AppSidebar({ isExpanded, onToggle }: AppSidebarProps) {
           })}
 
           {/* Storefront — external link */}
-          <div className="pt-2 mt-2 border-t border-white/[0.06]">
+          <div className="pt-2 mt-2" style={{ borderTop: `1px solid ${theme.card.border}` }}>
             {isExpanded && (
-              <p className="px-2 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-600">
+              <p className="px-2 mb-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: theme.text.muted }}>
                 Public
               </p>
             )}
@@ -200,23 +205,28 @@ export function AppSidebar({ isExpanded, onToggle }: AppSidebarProps) {
               title={!isExpanded ? "My Storefront" : undefined}
               target="_blank"
               className={cn(
-                'group flex items-center rounded-lg transition-all duration-200 min-h-[40px] text-slate-400 hover:text-slate-100 hover:bg-white/[0.04]',
+                'group flex items-center rounded-lg transition-all duration-200 min-h-[40px]',
                 isExpanded ? 'px-3 py-2 gap-3' : 'justify-center p-2 mx-auto w-10'
               )}
+              style={{ color: theme.text.secondary }}
             >
-              <ExternalLink className={cn('shrink-0 text-slate-500 group-hover:text-slate-300', isExpanded ? 'w-4 h-4' : 'w-5 h-5')} aria-hidden="true" />
+              <ExternalLink className={cn('shrink-0', isExpanded ? 'w-4 h-4' : 'w-5 h-5')} style={{ color: theme.text.muted }} aria-hidden="true" />
               {isExpanded && <span className="text-sm font-medium truncate">My Shop</span>}
             </Link>
           </div>
         </nav>
 
         {/* ── Footer — user + sign out ── */}
-        <div className="border-t border-white/[0.07] p-2 space-y-2">
+        <div className="p-2 space-y-2" style={{ borderTop: `1px solid ${theme.card.border}` }}>
           <div className={cn("flex items-center", isExpanded ? "gap-2.5 px-2" : "justify-center")}>
             {/* User avatar */}
             <div
               className={cn("rounded-full flex items-center justify-center shrink-0 text-xs font-bold", isExpanded ? "w-8 h-8" : "w-10 h-10")}
-              style={{ background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.25)', color: '#a5b4fc' }}
+              style={{
+                background: isLight ? 'rgba(109,40,217,0.10)' : 'rgba(99,102,241,0.15)',
+                border: `1px solid ${isLight ? 'rgba(109,40,217,0.20)' : 'rgba(99,102,241,0.25)'}`,
+                color: isLight ? '#7C3AED' : '#a5b4fc',
+              }}
               aria-hidden="true"
             >
               {userInitial}
@@ -224,10 +234,10 @@ export function AppSidebar({ isExpanded, onToggle }: AppSidebarProps) {
 
             {isExpanded && (
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-slate-200 truncate">
+                <p className="text-xs font-semibold truncate" style={{ color: theme.text.primary }}>
                   {session?.user?.name ?? 'Partner'}
                 </p>
-                <p className="text-[10px] text-slate-500 truncate">
+                <p className="text-[10px] truncate" style={{ color: theme.text.muted }}>
                   {session?.user?.email ?? ''}
                 </p>
               </div>
@@ -275,8 +285,11 @@ export function AppSidebar({ isExpanded, onToggle }: AppSidebarProps) {
       </aside>
 
       {/* ── Mobile Bottom Navigation Bar (< sm) ── */}
-      <nav className="sm:hidden fixed bottom-0 z-50 w-full h-16 flex items-center justify-around px-2 border-t"
-        style={{ background: '#111820', borderColor: 'rgba(255,255,255,0.07)' }}
+      <nav className="sm:hidden fixed bottom-0 z-50 w-full h-16 flex items-center justify-around px-2"
+        style={{
+          background: theme.surface,
+          borderTop: `1px solid ${theme.card.border}`,
+        }}
         aria-label="Mobile navigation"
       >
         {NAV_ITEMS.map((item) => {
@@ -285,12 +298,10 @@ export function AppSidebar({ isExpanded, onToggle }: AppSidebarProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={cn(
-                "flex flex-col items-center justify-center w-full h-full gap-1 transition-colors",
-                isActive ? "text-amber-400" : "text-slate-500 hover:text-slate-300"
-              )}
+              className="flex flex-col items-center justify-center w-full h-full gap-1 transition-colors"
+              style={{ color: isActive ? theme.accent.amber : theme.text.muted }}
             >
-              <item.icon className={cn("w-5 h-5", isActive && "drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]")} aria-hidden="true" />
+              <item.icon className={cn('w-5 h-5', isActive && 'drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]')} aria-hidden="true" />
               <span className="text-[10px] font-medium leading-none">{item.label}</span>
             </Link>
           );
@@ -300,7 +311,8 @@ export function AppSidebar({ isExpanded, onToggle }: AppSidebarProps) {
         <Link
           href={`/${tenant?.slug ?? '#'}`}
           target="_blank"
-          className="flex flex-col items-center justify-center w-full h-full gap-1 text-slate-500 hover:text-slate-300 transition-colors"
+          className="flex flex-col items-center justify-center w-full h-full gap-1 transition-colors"
+          style={{ color: theme.text.muted }}
         >
           <ExternalLink className="w-5 h-5" aria-hidden="true" />
           <span className="text-[10px] font-medium leading-none">Store</span>

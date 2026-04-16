@@ -14,6 +14,7 @@ import { GradientButton, GradientDivider, SectionLabel } from '@/components/ui';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { trpc } from '@/trpc/client';
+import { useTheme } from '@/lib/themes';
 
 /* ─── Static data ───────────────────────────────────────────── */
 
@@ -111,6 +112,8 @@ export default function PlatformHome() {
   const emberRef = useRef<HTMLDivElement>(null);
   useEmbers(emberRef);
   useScrollReveal('[data-reveal]');
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
 
   // TODO: This logic will change later. Currently fetching the first 2 tenants by default.
   // We need to implement an algorithm to show pages based on user's shared location.
@@ -234,21 +237,26 @@ export default function PlatformHome() {
             style={{ background: 'linear-gradient(to top, rgba(245,158,11,0.04), transparent)' }}
             aria-hidden="true" />
 
-          {/* Bottom fade */}
+          {/* Bottom fade — matches page bg */}
           <div className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
-            style={{ background: 'linear-gradient(to bottom, transparent, #0D1117)' }}
+            style={{ background: `linear-gradient(to bottom, transparent, ${theme.bg})` }}
             aria-hidden="true" />
         </section>
 
         {/* ══════════════════════════════════════════════
             TICKER STRIP
         ══════════════════════════════════════════════ */}
+        {/* Ticker strip */}
         <div className="relative overflow-hidden border-y"
-          style={{ borderColor: 'rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.015)', padding: '13px 0' }}>
+          style={{
+            borderColor: theme.card.border,
+            background: isLight ? 'rgba(15,23,42,0.03)' : 'rgba(255,255,255,0.015)',
+            padding: '13px 0',
+          }}>
           <div className="absolute top-0 left-0 bottom-0 w-24 z-10 pointer-events-none"
-            style={{ background: 'linear-gradient(to right, #0D1117, transparent)' }} />
+            style={{ background: `linear-gradient(to right, ${theme.bg}, transparent)` }} />
           <div className="absolute top-0 right-0 bottom-0 w-24 z-10 pointer-events-none"
-            style={{ background: 'linear-gradient(to left, #0D1117, transparent)' }} />
+            style={{ background: `linear-gradient(to left, ${theme.bg}, transparent)` }} />
           <div className="nummy-ticker-inner flex w-max" aria-hidden="true">
             {[...TICKER_NAMES, ...TICKER_NAMES].map((name, i) => (
               <div key={i} className="inline-flex items-center gap-2 px-8 text-[13px] font-semibold text-slate-500 whitespace-nowrap">
@@ -272,10 +280,10 @@ export default function PlatformHome() {
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center mb-16" data-reveal>
               <SectionLabel className="mb-3">For Customers</SectionLabel>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-100">
+              <h2 className="text-4xl sm:text-5xl font-black" style={{ color: theme.text.primary }}>
                 Eat Well, <span className="gradient-text">Every Day</span>
               </h2>
-              <p className="text-slate-500 mt-3 text-base max-w-lg mx-auto">
+              <p className="mt-3 text-base max-w-lg mx-auto" style={{ color: theme.text.muted }}>
                 From first craving to last bite — we&apos;ve made the whole experience effortless, delightful, and deeply local.
               </p>
             </div>
@@ -301,13 +309,13 @@ export default function PlatformHome() {
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center mb-16" data-reveal>
               <SectionLabel className="mb-3">For Restaurants</SectionLabel>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-100">
+              <h2 className="text-4xl sm:text-5xl font-black" style={{ color: theme.text.primary }}>
                 Everything Your Kitchen{' '}
-                <span style={{ background: 'linear-gradient(135deg, #818cf8, #6366f1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                <span style={{ background: theme.gradient.text, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                   Actually Needs
                 </span>
               </h2>
-              <p className="text-slate-500 mt-3 text-base max-w-lg mx-auto">
+              <p className="mt-3 text-base max-w-lg mx-auto" style={{ color: theme.text.muted }}>
                 Take back control of your customer relationships. A comprehensive, beautifully designed platform to run and scale your restaurant — free from predatory commissions.
               </p>
             </div>
@@ -332,8 +340,9 @@ export default function PlatformHome() {
         {/* ══════════════════════════════════════════════
             FOOTER
         ══════════════════════════════════════════════ */}
-        <footer className="py-10 px-4 text-center border-t border-white/5">
-          <p className="text-slate-600 text-sm">
+        {/* Footer */}
+        <footer className="py-10 px-4 text-center" style={{ borderTop: `1px solid ${theme.card.border}` }}>
+          <p className="text-sm" style={{ color: theme.text.muted }}>
             © {new Date().getFullYear()}&nbsp;
             <span className="gradient-text font-semibold">
               <span className="nummy-flame-logo">🔥</span> nummyGo
