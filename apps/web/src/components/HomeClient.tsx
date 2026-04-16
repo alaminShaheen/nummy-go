@@ -172,20 +172,20 @@ export default function PlatformHome() {
 
       <Navbar />
 
-      <main>
+      <main className="overflow-x-hidden">
         {/* ══════════════════════════════════════════════
             HERO — Aurora + Embers + Shimmer search
         ══════════════════════════════════════════════ */}
         <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
-          {/* Aurora orbs */}
+          {/* Aurora orbs — clamped so they never cause horizontal scroll */}
           <div className="nummy-orb-1 absolute rounded-full pointer-events-none"
-            style={{ width: 700, height: 700, top: '-18%', left: '-12%', background: 'radial-gradient(circle, rgba(245,158,11,0.18) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.7 }}
+            style={{ width: 'clamp(300px,60vw,700px)', height: 'clamp(300px,60vw,700px)', top: '-18%', left: '-12%', background: 'radial-gradient(circle, rgba(245,158,11,0.18) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.7 }}
             aria-hidden="true" />
           <div className="nummy-orb-2 absolute rounded-full pointer-events-none"
-            style={{ width: 650, height: 650, bottom: '-20%', right: '-14%', background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.65 }}
+            style={{ width: 'clamp(280px,55vw,650px)', height: 'clamp(280px,55vw,650px)', bottom: '-20%', right: '-14%', background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)', filter: 'blur(90px)', opacity: 0.65 }}
             aria-hidden="true" />
           <div className="nummy-orb-3 absolute rounded-full pointer-events-none"
-            style={{ width: 400, height: 400, top: '50%', left: '50%', background: 'radial-gradient(circle, rgba(234,88,12,0.12) 0%, transparent 70%)', filter: 'blur(60px)', opacity: 0.5 }}
+            style={{ width: 'clamp(180px,35vw,400px)', height: 'clamp(180px,35vw,400px)', top: '50%', left: '50%', background: 'radial-gradient(circle, rgba(234,88,12,0.12) 0%, transparent 70%)', filter: 'blur(60px)', opacity: 0.5 }}
             aria-hidden="true" />
 
           {/* Grid overlay */}
@@ -202,19 +202,23 @@ export default function PlatformHome() {
               </div>
 
               {/* Headline */}
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] tracking-tight max-w-5xl break-words">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] tracking-tight max-w-5xl w-full break-words">
                 Experience True{' '}
                 <span className="gradient-text">Local Flavour</span>
               </h1>
 
               {/* Subheadline */}
-              <p className="text-slate-400 text-lg sm:text-xl max-w-xl leading-relaxed">
+              <p className="text-slate-400 text-base sm:text-lg md:text-xl max-w-xl leading-relaxed px-2 sm:px-0">
                 Connect directly with authentic neighbourhood kitchens. Skip the hidden fees and third-party markups, and enjoy freshly prepared meals ready for pickup.
               </p>
 
               {/* Search with shimmer */}
               <div className="nummy-search-shimmer w-full max-w-2xl rounded-full">
-                <VendorSearchBar size="large" placeholder="Who's cooking tonight? (Spoiler: Not you)..." />
+                <VendorSearchBar
+                  size="large"
+                  placeholder="Who's cooking tonight?..."
+                  className="[&_input]:placeholder:text-sm sm:[&_input]:placeholder:text-base"
+                />
               </div>
 
               {/* Popular links */}
@@ -272,8 +276,8 @@ export default function PlatformHome() {
         {/* ══════════════════════════════════════════════
             CUSTOMER BENEFITS — Animated icon cards
         ══════════════════════════════════════════════ */}
-        <section id="customer-benefits" className="relative py-28 px-4 sm:px-6 lg:px-8">
-          <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none"
+        <section id="customer-benefits" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8">
+          <div className="absolute top-0 left-1/4 w-48 sm:w-96 h-48 sm:h-96 rounded-full pointer-events-none"
             style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.07) 0%, transparent 70%)', filter: 'blur(40px)' }}
             aria-hidden="true" />
 
@@ -288,7 +292,7 @@ export default function PlatformHome() {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
               {CUSTOMER_BENEFITS.map((b) => (
                 <AnimatedCustomerCard key={b.title} {...b} />
               ))}
@@ -301,8 +305,8 @@ export default function PlatformHome() {
         {/* ══════════════════════════════════════════════
             RESTAURANT BENTO FEATURES
         ══════════════════════════════════════════════ */}
-        <section id="vendor-benefits" className="relative py-28 px-4 sm:px-6 lg:px-8">
-          <div className="absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
+        <section id="vendor-benefits" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8">
+          <div className="absolute top-0 right-1/4 w-48 sm:w-[500px] h-48 sm:h-[500px] rounded-full pointer-events-none"
             style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)', filter: 'blur(50px)' }}
             aria-hidden="true" />
 
@@ -311,7 +315,7 @@ export default function PlatformHome() {
               <SectionLabel className="mb-3">For Restaurants</SectionLabel>
               <h2 className="text-4xl sm:text-5xl font-black" style={{ color: theme.text.primary }}>
                 Everything Your Kitchen{' '}
-                <span style={{ background: theme.gradient.text, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                <span className='gradient-text'>
                   Actually Needs
                 </span>
               </h2>

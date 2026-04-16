@@ -9,9 +9,14 @@
  *   20:00 – 06:00  → dark theme
  *
  * Priority order (highest → lowest):
- *   1. localStorage override  (user explicitly toggled)
- *   2. Time-of-day detection  (automatic)
+ *   1. sessionStorage override  (user explicitly toggled — session-scoped only)
+ *   2. Time-of-day detection    (automatic, wins on every fresh page load)
  *   3. System prefers-color-scheme (fallback)
+ *
+ * Using sessionStorage (not localStorage) ensures a stale manual override
+ * from a previous visit never blocks the time-of-day auto-detection on a
+ * fresh browser session. The override still persists across in-session
+ * navigations (e.g. SPA route changes).
  *
  * Re-evaluates every 60 seconds to catch dusk/dawn transitions.
  */
@@ -28,7 +33,7 @@ import {
 import { themes, darkTheme } from './tokens';
 import type { ThemeName, ThemeTokens } from './types';
 
-const STORAGE_KEY = 'nummygo-theme-override';
+const STORAGE_KEY = 'nummygo-theme-override'; // sessionStorage — session-scoped, cleared on new tab/window
 const LIGHT_START_HOUR = 6;   // 6:00 AM  → switch to light
 const DARK_START_HOUR  = 20;  // 8:00 PM  → switch to dark
 
@@ -96,7 +101,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setTheme = useCallback((name: ThemeName) => {
     setThemeName(name);
     setIsManualOverride(true);
-    localStorage.setItem(STORAGE_KEY, name);
+    sessionStorage.setItem(STORAGE_KEY, name);
     applyToDom(name);
   }, [applyToDom]);
 
@@ -107,7 +112,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   /** Reset to automatic time-of-day detection */
   const resetToAuto = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(STORAGE_KEY);
     setIsManualOverride(false);
     const auto = getAutoTheme();
     setThemeName(auto);
@@ -116,8 +121,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   /** On mount: resolve initial theme and start tick interval */
   useEffect(() => {
-    // 1. Check for explicit user override in localStorage
-    const stored = localStorage.getItem(STORAGE_KEY) as ThemeName | null;
+    // 1. Check for explicit user override in sessionStorage (session-scoped)
+    const stored = sessionStorage.getItem(STORAGE_KEY) as ThemeName | null;
     if (stored && stored in themes) {
       setThemeName(stored);
       setIsManualOverride(true);
@@ -131,8 +136,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     // 3. Re-check every 60 seconds to catch dusk/dawn transitions
     intervalRef.current = setInterval(() => {
-      // Only re-evaluate if the user hasn't manually overridden
-      const currentOverride = localStorage.getItem(STORAGE_KEY);
+      // Only re-evaluate if the user hasn't manually overridden this session
+      const currentOverride = sessionStorage.getItem(STORAGE_KEY);
       if (!currentOverride) {
         const auto = getAutoTheme();
         setThemeName(auto);

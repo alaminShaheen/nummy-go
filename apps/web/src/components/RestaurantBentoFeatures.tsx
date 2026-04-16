@@ -57,6 +57,17 @@ function WokIcon() {
 }
 
 function ChefHatIcon() {
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
+
+  // Dark mode: white hat on dark card (original)
+  // Light mode: light-slate hat with visible strokes on white card
+  const hatFill      = isLight ? '#e2e8f0' : 'white';
+  const hatStroke    = isLight ? '#94a3b8' : '#e2e8f0';
+  const brimFill     = isLight ? '#cbd5e1' : '#f1f5f9';
+  const brimStroke   = isLight ? '#94a3b8' : '#cbd5e1';
+  const pleatStroke  = isLight ? '#94a3b8' : '#e2e8f0';
+
   return (
     <svg width="52" height="52" viewBox="0 0 52 52" fill="none" aria-hidden="true">
       <style>{`
@@ -75,19 +86,19 @@ function ChefHatIcon() {
       `}</style>
       <g className="chef-hat">
         {/* Hat brim */}
-        <rect x="12" y="32" width="28" height="6" rx="2" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="1" />
+        <rect x="12" y="32" width="28" height="6" rx="2" fill={brimFill} stroke={brimStroke} strokeWidth="1" />
         {/* Hat body */}
-        <path d="M16 32 Q14 20 26 16 Q38 20 36 32Z" fill="white" stroke="#e2e8f0" strokeWidth="1" />
+        <path d="M16 32 Q14 20 26 16 Q38 20 36 32Z" fill={hatFill} stroke={hatStroke} strokeWidth="1" />
         {/* Cloud puff shape */}
-        <ellipse cx="26" cy="18" rx="8" ry="7" fill="white" stroke="#e2e8f0" strokeWidth="1" />
-        <ellipse cx="18" cy="22" rx="5" ry="5" fill="white" stroke="#e2e8f0" strokeWidth="1" />
-        <ellipse cx="34" cy="22" rx="5" ry="5" fill="white" stroke="#e2e8f0" strokeWidth="1" />
+        <ellipse cx="26" cy="18" rx="8" ry="7" fill={hatFill} stroke={hatStroke} strokeWidth="1" />
+        <ellipse cx="18" cy="22" rx="5" ry="5" fill={hatFill} stroke={hatStroke} strokeWidth="1" />
+        <ellipse cx="34" cy="22" rx="5" ry="5" fill={hatFill} stroke={hatStroke} strokeWidth="1" />
         {/* Hat stripe */}
         <rect x="12" y="29" width="28" height="3" rx="0" fill="#f59e0b" opacity="0.4" />
         {/* Pleat lines */}
-        <path d="M22 32 V20" stroke="#e2e8f0" strokeWidth="0.75" opacity="0.6" />
-        <path d="M26 32 V16" stroke="#e2e8f0" strokeWidth="0.75" opacity="0.6" />
-        <path d="M30 32 V20" stroke="#e2e8f0" strokeWidth="0.75" opacity="0.6" />
+        <path d="M22 32 V20" stroke={pleatStroke} strokeWidth="0.75" opacity="0.6" />
+        <path d="M26 32 V16" stroke={pleatStroke} strokeWidth="0.75" opacity="0.6" />
+        <path d="M30 32 V20" stroke={pleatStroke} strokeWidth="0.75" opacity="0.6" />
       </g>
       {/* Sparkles */}
       <path className="chef-star-1" d="M8 14 L9 11 L10 14 L13 15 L10 16 L9 19 L8 16 L5 15Z" fill="#fbbf24" />
@@ -208,36 +219,54 @@ function GrowthIcon() {
 }
 
 function GlobeIcon() {
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
+
+  // In dark mode: near-white lines look great on dark card bg.
+  // In light mode: use a visible slate/indigo so lines don't vanish.
+  const outerRingStroke = isLight ? '#94a3b8' : '#475569';
+  const innerRingStroke = isLight ? '#94a3b8' : '#334155';
+  const lineStroke      = isLight ? '#6366f1' : '#f1f5f9';
+
   return (
     <svg width="52" height="52" viewBox="0 0 52 52" fill="none" aria-hidden="true">
       <style>{`
         .globe-spin-y { animation: spinY 8s linear infinite; transform-origin: 26px 26px; }
         @keyframes spinY { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
       `}</style>
-      <circle cx="26" cy="26" r="22" stroke="#475569" strokeWidth="0.5" fill="none" />
-      <circle cx="26" cy="26" r="24" stroke="#334155" strokeWidth="0.5" fill="none" />
+      <circle cx="26" cy="26" r="22" stroke={outerRingStroke} strokeWidth="0.5" fill="none" />
+      <circle cx="26" cy="26" r="24" stroke={innerRingStroke} strokeWidth="0.5" fill="none" />
       <g className="globe-spin-y">
-        <circle cx="26" cy="26" r="16" stroke="#f1f5f9" strokeWidth="1.5" fill="none" />
-        <ellipse cx="26" cy="26" rx="8" ry="16" stroke="#f1f5f9" strokeWidth="1" fill="none" />
-        <ellipse cx="26" cy="26" rx="16" ry="6" stroke="#f1f5f9" strokeWidth="1" fill="none" />
-        <line x1="26" y1="10" x2="26" y2="42" stroke="#f1f5f9" strokeWidth="1" />
+        <circle cx="26" cy="26" r="16" stroke={lineStroke} strokeWidth="1.5" fill="none" />
+        <ellipse cx="26" cy="26" rx="8" ry="16" stroke={lineStroke} strokeWidth="1" fill="none" />
+        <ellipse cx="26" cy="26" rx="16" ry="6" stroke={lineStroke} strokeWidth="1" fill="none" />
+        <line x1="26" y1="10" x2="26" y2="42" stroke={lineStroke} strokeWidth="1" />
       </g>
     </svg>
   );
 }
 
 function GlobeBackground() {
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
+
   return (
-    <div className="absolute -right-12 sm:right-[-10%] top-[-25%] bottom-[-25%] w-[250px] sm:w-[450px] pointer-events-none opacity-[0.35] mix-blend-screen overflow-hidden z-0">
+    <div className={`absolute hidden sm:block -right-12 sm:right-[-10%] top-[-25%] bottom-[-25%] w-[250px] sm:w-[450px] pointer-events-none overflow-hidden z-0 ${
+      isLight ? 'opacity-[0.20] mix-blend-multiply' : 'opacity-[0.35] mix-blend-screen'
+    }`}>
       <div className="absolute inset-0 rounded-full overflow-hidden"
         style={{ maskImage: 'radial-gradient(ellipse at center, white 55%, transparent 72%)', WebkitMaskImage: 'radial-gradient(ellipse at center, white 55%, transparent 72%)' }}>
         <div className="absolute inset-[-100%] globe-spin-bg" style={{
-          backgroundImage: 'radial-gradient(rgba(255,255,255,0.9) 1.5px, transparent 1.5px)',
+          backgroundImage: isLight
+            ? 'radial-gradient(rgba(30,27,75,0.7) 1.5px, transparent 1.5px)'
+            : 'radial-gradient(rgba(255,255,255,0.9) 1.5px, transparent 1.5px)',
           backgroundSize: '20px 20px',
           backgroundPosition: '0 0',
         }}></div>
         <div className="absolute inset-0" style={{
-          background: 'radial-gradient(circle at 35% 35%, transparent 0%, rgba(19,25,31,0.85) 65%, rgba(19,25,31,1) 100%)'
+          background: isLight
+            ? `radial-gradient(circle at 35% 35%, transparent 0%, ${theme.card.bg} 65%, ${theme.card.bg} 100%)`
+            : 'radial-gradient(circle at 35% 35%, transparent 0%, rgba(19,25,31,0.85) 65%, rgba(19,25,31,1) 100%)'
         }}></div>
       </div>
       <style>{`
@@ -277,7 +306,7 @@ function BentoCard({ icon, eyebrow, title, body, size = 'default', accentColor =
         boxShadow: theme.card.shadow,
         transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
       } as React.CSSProperties}
-      className={`group relative rounded-2xl overflow-hidden cursor-default flex flex-col justify-center gap-4 ${isWide ? 'md:col-span-2' : 'md:col-span-1'} ${isTall ? 'md:row-span-2 p-6 md:p-10' : 'md:row-span-1 p-6 md:p-7'}`}
+      className={`group relative rounded-2xl overflow-hidden cursor-default flex flex-col justify-center gap-4 ${isWide ? 'md:col-span-2' : 'md:col-span-1'} ${isTall ? 'md:row-span-2 p-8 md:p-10' : 'md:row-span-1 p-7 md:p-8'}`}
       onMouseEnter={e => {
         const el = e.currentTarget as HTMLElement;
         el.style.borderColor = `${accentColor}40`;
@@ -330,7 +359,7 @@ function BentoCard({ icon, eyebrow, title, body, size = 'default', accentColor =
 
 export default function RestaurantBentoFeatures() {
   return (
-    <div className="grid gap-4 grid-cols-1 md:grid-cols-3 md:auto-rows-[200px]">
+    <div className="grid gap-4 grid-cols-1 md:grid-cols-3 md:auto-rows-[224px]">
       {/* 1 — Wide: Dashboard */}
       <BentoCard
         size="wide"
@@ -391,7 +420,7 @@ export default function RestaurantBentoFeatures() {
         eyebrow="Access Anywhere"
         title="Unrestricted Global Mobility"
         body="Monitor kitchen operations, adapt to sudden inventory changes, and review performance metrics securely from any device, ensuring total operational control from anywhere in the world."
-        accentColor="#f8fafc"
+        accentColor="#818cf8"
         delay={500}
       />
     </div>

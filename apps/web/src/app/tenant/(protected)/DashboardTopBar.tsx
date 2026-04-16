@@ -14,6 +14,7 @@ import {
   Flame,
 } from 'lucide-react';
 import { useTheme } from '@/lib/themes';
+import ThemeToggle from '@/components/ThemeToggle';
 
 // ── Page label map ───────────────────────────────────────────────────────────
 
@@ -88,7 +89,7 @@ export function DashboardTopBar({ pathname }: DashboardTopBarProps) {
             nummyGo
           </span>
         </Link>
-        <div className="h-4 w-px bg-white/10 mx-1 shrink-0" aria-hidden="true" />
+        <div className="h-4 w-px mx-1 shrink-0" style={{ background: theme.card.border }} aria-hidden="true" />
         {page && (
           <div className="flex items-center gap-2">
             {PageIcon && (
@@ -101,8 +102,13 @@ export function DashboardTopBar({ pathname }: DashboardTopBarProps) {
         )}
       </div>
 
-      {/* ── Right: Mobile Profile / Sign Out (Hidden on large screens because Sidebar handles it) ── */}
-      <div ref={mobileMenuRef} className="relative sm:hidden flex items-center">
+      {/* ── Right: Theme toggle + Mobile avatar ── */}
+      <div className="flex items-center gap-2">
+        {/* Theme toggle — always visible */}
+        <ThemeToggle />
+
+        {/* Mobile avatar/menu — hidden on sm+ since Sidebar handles it */}
+        <div ref={mobileMenuRef} className="relative sm:hidden flex items-center">
         <button
           type="button"
           onClick={() => setMobileMenuOpen((o) => !o)}
@@ -165,6 +171,7 @@ export function DashboardTopBar({ pathname }: DashboardTopBarProps) {
             </div>
           </div>
         )}
+      </div>
       </div>
     </header>
   );
