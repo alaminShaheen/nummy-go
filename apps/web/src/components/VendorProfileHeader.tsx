@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { GradientDivider, Button } from '@/components/ui';
+import { GradientDivider, GradientButton } from '@/components/ui';
 import { ChevronDown } from 'lucide-react';
 import type { SocialLinks } from '@nummygo/shared/models/types';
 import SocialLinksRow from '@/components/SocialLinksRow';
@@ -124,13 +124,13 @@ export default function VendorProfileHeader({
         </div>
 
         <div className="flex flex-row justify-center md:justify-end md:flex-col gap-3 w-full md:w-auto mt-6 md:mt-0">
-          <Button 
+          <GradientButton 
             onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })}
-            className="w-full sm:w-auto h-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-black uppercase tracking-widest text-xs transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(245,158,11,0.4)] flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-8 uppercase tracking-widest text-xs"
           >
             Explore Menu
             <ChevronDown size={16} strokeWidth={3} className="animate-bounce" />
-          </Button>
+          </GradientButton>
         </div>
       </div>
       
