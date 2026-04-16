@@ -8,6 +8,7 @@ import { useOnboardingGuard } from '@/hooks/useOnboardingGuard';
 import { AppSidebar } from './AppSidebar';
 import { DashboardTopBar } from './DashboardTopBar';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/lib/themes';
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -34,14 +35,16 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
     }
   }, [session, isPending, router, pathname]);
 
+  const { theme } = useTheme();
+
   // ── Loading skeleton ───────────────────────────────────────────────────────
   if (isPending || (!isOnboardingPage && isOnboardingLoading)) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0D1117' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: theme.bg }}>
         <div className="space-y-4 w-64 text-center">
-          <Skeleton className="h-12 w-12 rounded-full mx-auto bg-white/5" />
-          <Skeleton className="h-4 w-40 mx-auto bg-white/5" />
-          <Skeleton className="h-3 w-32 mx-auto bg-white/5" />
+          <Skeleton className="h-12 w-12 rounded-full mx-auto" style={{ background: theme.card.border }} />
+          <Skeleton className="h-4 w-40 mx-auto" style={{ background: theme.card.border }} />
+          <Skeleton className="h-3 w-32 mx-auto" style={{ background: theme.card.border }} />
         </div>
       </div>
     );
@@ -59,7 +62,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   return (
     <div
       className="flex min-h-screen"
-      style={{ background: '#0D1117', color: '#f1f5f9' }}
+      style={{ background: theme.bg, color: theme.text.primary }}
     >
       {/* Responsive sidebar or bottom nav */}
       <AppSidebar isExpanded={isSidebarOpen} onToggle={() => setIsSidebarOpen(prev => !prev)} />

@@ -1,5 +1,7 @@
 'use client';
 
+import { useTheme } from '@/lib/themes';
+
 /* ─── Steaming pot SVG icon ─────────────────────────────────── */
 function SteamingPotIcon() {
   return (
@@ -130,9 +132,12 @@ const iconMap: Record<CustomerCardProps['icon'], React.ReactNode> = {
 };
 
 export default function AnimatedCustomerCard({ icon, label, title, body, accent, delay = 0 }: CustomerCardProps) {
-  const borderColor = accent === 'amber' ? 'rgba(251,191,36,0.2)' : 'rgba(129,140,248,0.2)';
-  const glowColor   = accent === 'amber' ? 'rgba(251,191,36,0.12)' : 'rgba(129,140,248,0.12)';
-  const labelColor  = accent === 'amber' ? '#f59e0b' : '#818cf8';
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
+
+  const borderColor = accent === 'amber' ? `${theme.accent.amber}40` : `${theme.accent.indigo}40`;
+  const glowColor   = accent === 'amber' ? `${theme.accent.amber}12` : `${theme.accent.indigo}12`;
+  const labelColor  = accent === 'amber' ? theme.accent.amber : theme.accent.indigo;
 
   return (
     <div
@@ -140,20 +145,21 @@ export default function AnimatedCustomerCard({ icon, label, title, body, accent,
       className="group relative rounded-2xl p-7 overflow-hidden cursor-default"
       style={{
         transitionDelay: `${delay}ms`,
-        background: 'rgba(19,25,31,0.7)',
-        border: `1px solid rgba(255,255,255,0.06)`,
-        backdropFilter: 'blur(16px)',
+        background: theme.card.bg,
+        border: `1px solid ${theme.card.border}`,
+        backdropFilter: 'blur(20px)',
+        boxShadow: theme.card.shadow,
         transition: 'border-color 0.4s, transform 0.4s, box-shadow 0.4s',
       } as React.CSSProperties}
       onMouseEnter={e => {
         (e.currentTarget as HTMLElement).style.borderColor = borderColor;
         (e.currentTarget as HTMLElement).style.transform = 'translateY(-5px)';
-        (e.currentTarget as HTMLElement).style.boxShadow = `0 24px 48px -12px rgba(0,0,0,0.5)`;
+        (e.currentTarget as HTMLElement).style.boxShadow = theme.card.hoverShadow;
       }}
       onMouseLeave={e => {
-        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.06)';
+        (e.currentTarget as HTMLElement).style.borderColor = theme.card.border;
         (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-        (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+        (e.currentTarget as HTMLElement).style.boxShadow = theme.card.shadow;
       }}
     >
       {/* Hover glow bg */}
@@ -181,12 +187,12 @@ export default function AnimatedCustomerCard({ icon, label, title, body, accent,
       </p>
 
       {/* Title */}
-      <h3 className="relative z-10 text-xl font-black text-slate-100 mb-3 leading-tight">
+      <h3 className="relative z-10 text-xl font-black mb-3 leading-tight" style={{ color: theme.text.primary }}>
         {title}
       </h3>
 
       {/* Body */}
-      <p className="relative z-10 text-sm text-slate-400 leading-relaxed">
+      <p className="relative z-10 text-sm leading-relaxed" style={{ color: theme.text.secondary }}>
         {body}
       </p>
     </div>

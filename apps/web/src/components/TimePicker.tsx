@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Clock } from 'lucide-react';
 import { Button, cn, Popover, PopoverContent, PopoverTrigger, ScrollArea, ScrollBar } from '@nummygo/shared/ui';
 import { clsx } from 'clsx';
+import { useTheme } from '@/lib/themes';
 
 export type Time = {
 	hour: string;
@@ -19,6 +20,8 @@ type TimePickerProps = {
 export function TimePicker(props: TimePickerProps) {
 	const { value, onChange } = props;
 	const [isOpen, setIsOpen] = React.useState(false);
+	const { theme } = useTheme();
+	const isLight = theme.name === 'light';
 
 	const hours = Array.from({ length: 24 }, (_, i) => i);
 
@@ -43,9 +46,9 @@ export function TimePicker(props: TimePickerProps) {
 					{value ? `${value.hour}:${value.minute}` : <span>hh:mm</span>}
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-auto p-0 bg-black">
+			<PopoverContent className="w-auto p-0 border" style={{ background: theme.bg, borderColor: theme.card.border }}>
 				<div className="flex">
-					<div className="flex h-[300px] divide-x">
+					<div className="flex h-[300px] divide-x" style={{ borderColor: theme.card.border }}>
 						{/* HOURS */}
 						<ScrollArea className="h-full w-20">
 							<div className="flex flex-col p-2 gap-1">
@@ -54,9 +57,11 @@ export function TimePicker(props: TimePickerProps) {
 										key={hour}
 										size="sm"
 										variant={value && value.hour === hour.toString() ? 'default' : 'ghost'}
-										className={clsx('w-full shrink-0 hover:bg-slate-500 cursor-pointer', {
-											'bg-slate-500': value && value.hour === hour.toString(),
+										className={clsx('w-full shrink-0 cursor-pointer', {
+											'bg-amber-500/20 text-[#ea580c] dark:text-amber-400': value && value.hour === hour.toString(),
+											'hover:bg-amber-500/10 hover:text-[#ea580c] dark:hover:text-amber-400': !(value && value.hour === hour.toString()),
 										})}
+										style={value && value.hour === hour.toString() ? {} : { color: theme.text.primary }}
 										onClick={() => handleTimeChange('hour', hour.toString())}
 									>
 										{hour.toString().padStart(2, '0')}
@@ -74,9 +79,11 @@ export function TimePicker(props: TimePickerProps) {
 										key={minute}
 										size="sm"
 										variant={value && value.minute === minute.toString() ? 'default' : 'ghost'}
-										className={clsx('w-full shrink-0 hover:bg-slate-500 cursor-pointer', {
-											'bg-slate-500': value && value.minute === minute.toString(),
+										className={clsx('w-full shrink-0 cursor-pointer', {
+											'bg-amber-500/20 text-[#ea580c] dark:text-amber-400': value && value.minute === minute.toString(),
+											'hover:bg-amber-500/10 hover:text-[#ea580c] dark:hover:text-amber-400': !(value && value.minute === minute.toString()),
 										})}
+										style={value && value.minute === minute.toString() ? {} : { color: theme.text.primary }}
 										onClick={() => handleTimeChange('minute', minute.toString())}
 									>
 										{minute.toString().padStart(2, '0')}

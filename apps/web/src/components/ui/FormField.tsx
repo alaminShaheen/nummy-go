@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * packages/shared/src/ui/FormField.tsx
  *
@@ -12,6 +14,7 @@
 
 import * as React from 'react';
 import { cn } from '@nummygo/shared/ui';
+import { useTheme } from '@/lib/themes';
 
 /** Inline alert circle SVG — avoids adding lucide-react to the shared package */
 function ErrorIcon() {
@@ -60,12 +63,17 @@ export function FormField({
   className,
   children,
 }: FormFieldProps) {
+  const { theme } = useTheme();
+
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       {/* Label */}
       <label
         htmlFor={id}
-        className="text-sm font-medium text-slate-300 cursor-pointer"
+        className={cn(
+          "text-sm font-medium cursor-pointer transition-colors",
+          theme.name === 'light' ? 'text-slate-600' : 'text-slate-400'
+        )}
       >
         {label}
         {required && (
@@ -80,7 +88,10 @@ export function FormField({
 
       {/* Hint — only when no error */}
       {hint && !error && (
-        <p className="text-xs text-slate-500 leading-relaxed">{hint}</p>
+        <p className={cn(
+          "text-xs leading-relaxed transition-colors",
+          theme.name === 'light' ? 'text-slate-400' : 'text-slate-600'
+        )}>{hint}</p>
       )}
 
       {/* Error */}
@@ -88,7 +99,10 @@ export function FormField({
         <p
           role="alert"
           aria-live="polite"
-          className="text-xs text-rose-400 flex items-center gap-1 leading-relaxed"
+          className={cn(
+            "text-xs flex items-center gap-1 leading-relaxed transition-colors",
+            theme.name === 'light' ? 'text-rose-600' : 'text-rose-400'
+          )}
         >
           <ErrorIcon />
           {error}

@@ -10,6 +10,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/lib/themes';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -38,13 +39,9 @@ function useNumberTicker(value: number, duration: number = 1200) {
     const step = (timestamp: number) => {
       if (!startTimestamp) startTimestamp = timestamp;
       const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-
-      // easeOutExpo for rapid slide followed by slow settle
       const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
       const current = initialValue + (value - initialValue) * easeProgress;
-
       setDisplayValue(current);
-
       if (progress < 1) {
         animationFrameId = window.requestAnimationFrame(step);
       } else {
@@ -73,33 +70,42 @@ interface KpiCardProps {
 }
 
 function KpiCard({ label, rawValue, formatValue, sub, icon: Icon, iconClass, pulse }: KpiCardProps) {
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
   const animatedValue = useNumberTicker(rawValue);
   const formattedValue = formatValue ? formatValue(animatedValue) : String(Math.round(animatedValue));
 
-  // WebSocket live Bounce Mechanic
   const [isBouncing, setIsBouncing] = useState(false);
   const [initialMount, setInitialMount] = useState(true);
 
   useEffect(() => {
-    if (initialMount) {
-      setInitialMount(false);
-      return;
-    }
+    if (initialMount) { setInitialMount(false); return; }
     setIsBouncing(true);
     const timer = setTimeout(() => setIsBouncing(false), 800);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rawValue]); // Trigger bounce exactly when the underlying DB value ticks up
+  }, [rawValue]);
 
   return (
-    <Card className={cn(
-      'group relative overflow-hidden bg-[#111820] transition-all duration-500 hover:-translate-y-1',
-      // The subtle glassmorphic ring, heavily amber skewed during pulse
-      pulse ? 'border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] ring-1 ring-amber-500/20' : 'border-white/[0.06] hover:border-amber-500/30 hover:shadow-[0_0_20px_rgba(245,158,11,0.1)]',
-      // WebSocket physical micro-bounce
-      isBouncing && 'scale-[1.02] border-emerald-500/60 shadow-[0_0_20px_rgba(16,185,129,0.3)] ring-1 ring-emerald-500'
-    )}>
-      {/* ── Internal Radial Glow Effect ── */}
+    <Card
+      className={cn(
+        'group relative overflow-hidden transition-all duration-500 hover:-translate-y-1',
+        pulse
+          ? 'border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] ring-1 ring-amber-500/20'
+          : '',
+        isBouncing && 'scale-[1.02] border-emerald-500/60 shadow-[0_0_20px_rgba(16,185,129,0.3)] ring-1 ring-emerald-500'
+      )}
+      style={{
+        background: isLight ? '#ffffff' : '#111820',
+        border: isLight
+          ? '1px solid rgba(15,23,42,0.07)'
+          : `1px solid ${pulse ? 'rgba(245,158,11,0.4)' : 'rgba(255,255,255,0.06)'}`,
+        boxShadow: isLight
+          ? '0 1px 4px rgba(15,23,42,0.06), 0 4px 16px rgba(15,23,42,0.04)'
+          : undefined,
+      }}
+    >
+      {/* Internal radial glow */}
       <div className={cn(
         'absolute inset-0 bg-gradient-to-br from-amber-500/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700',
         pulse && 'from-amber-500/[0.08] opacity-100'
@@ -109,17 +115,19 @@ function KpiCard({ label, rawValue, formatValue, sub, icon: Icon, iconClass, pul
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <p className="text-[11px] font-bold uppercase tracking-widest text-amber-500/70">{label}</p>
-            <p className="gradient-text text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-amber-200 to-orange-500 tabular-nums">
+            <p className="gradient-text text-3xl font-black tracking-tight tabular-nums">
               {formattedValue}
             </p>
-            {sub && <p className="text-[11px] text-slate-500/80 font-medium">{sub}</p>}
+            {sub && <p className="text-[11px] font-medium" style={{ color: theme.text.muted }}>{sub}</p>}
           </div>
 
           <div className={cn(
             'w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-all duration-500',
             pulse
               ? 'bg-gradient-to-br from-amber-500/10 to-orange-600/10 border-amber-500/30 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
-              : 'bg-white/[0.02] border-white/[0.05] text-amber-500/40 group-hover:bg-amber-500/5 group-hover:text-amber-500/80 group-hover:border-amber-500/10',
+              : isLight
+                ? 'bg-amber-50 border-amber-100 text-amber-400/60 group-hover:bg-amber-100 group-hover:text-amber-500 group-hover:border-amber-200'
+                : 'bg-white/[0.02] border-white/[0.05] text-amber-500/40 group-hover:bg-amber-500/5 group-hover:text-amber-500/80 group-hover:border-amber-500/10',
             iconClass
           )}>
             <Icon className="w-5 h-5" aria-hidden="true" />
@@ -137,8 +145,6 @@ interface KpiCardsProps {
 }
 
 export function KpiCards({ orders }: KpiCardsProps) {
-  // Use the most recent order's date as the reference point for "today"
-  // so that legacy test data still populates the dynamic values and triggers animations.
   const mostRecentOrder = [...orders].sort((a, b) => b.createdAt - a.createdAt)[0];
   const todayMillis = mostRecentOrder ? mostRecentOrder.createdAt : Date.now();
 
@@ -152,9 +158,7 @@ export function KpiCards({ orders }: KpiCardsProps) {
   const activeCount = orders.filter(o => o.status === 'accepted' || o.status === 'preparing').length;
 
   const completedOrders = todayOrders.filter(o => o.status !== 'cancelled');
-  const avgOrderValue = completedOrders.length > 0
-    ? revenueToday / completedOrders.length
-    : 0;
+  const avgOrderValue = completedOrders.length > 0 ? revenueToday / completedOrders.length : 0;
 
   const cards: KpiCardProps[] = [
     {
@@ -177,7 +181,7 @@ export function KpiCards({ orders }: KpiCardsProps) {
       rawValue: activeCount,
       sub: activeCount === 0 ? 'all clear' : 'in progress',
       icon: Clock,
-      iconClass: activeCount > 0 ? "animate-[pulse_1.5s_ease-in-out_infinite]" : "",
+      iconClass: activeCount > 0 ? 'animate-[pulse_1.5s_ease-in-out_infinite]' : '',
       pulse: activeCount > 0,
     },
     {

@@ -13,12 +13,12 @@ import {
   Button,
 } from '@/components/ui';
 import { SlidersHorizontal } from 'lucide-react';
+import { useTheme } from '@/lib/themes';
 
 interface ColumnCustomizerProps {
   table: Table<Order>;
 }
 
-// Friendly display names for column IDs
 const COLUMN_LABELS: Record<string, string> = {
   expander:          'Expand',
   createdAt:         'Received',
@@ -32,10 +32,10 @@ const COLUMN_LABELS: Record<string, string> = {
 };
 
 export function ColumnCustomizer({ table }: ColumnCustomizerProps) {
-  const hideable = table.getAllColumns().filter(
-    (col) => col.getCanHide()
-  );
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
 
+  const hideable = table.getAllColumns().filter((col) => col.getCanHide());
   if (hideable.length === 0) return null;
 
   return (
@@ -44,7 +44,12 @@ export function ColumnCustomizer({ table }: ColumnCustomizerProps) {
         <Button
           variant="outline"
           size="sm"
-          className="flex items-center gap-1.5 h-9 rounded-xl border-white/[0.08] bg-black/30 text-slate-400 hover:text-slate-100 hover:bg-white/[0.06] hover:border-white/[0.12] transition-all text-xs font-medium"
+          className="flex items-center gap-1.5 h-9 rounded-xl text-xs font-medium transition-all"
+          style={{
+            background: isLight ? 'rgba(15,23,42,0.04)' : 'rgba(0,0,0,0.30)',
+            border: `1px solid ${theme.card.border}`,
+            color: theme.text.secondary,
+          }}
         >
           <SlidersHorizontal className="w-3.5 h-3.5" />
           Columns
@@ -52,20 +57,35 @@ export function ColumnCustomizer({ table }: ColumnCustomizerProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-44 bg-[#111820] border-white/[0.08] text-slate-300 shadow-xl shadow-black/40"
+        className="w-44 shadow-xl"
+        style={{
+          background: isLight ? 'rgba(255,255,255,0.98)' : '#111820',
+          border: `1px solid ${theme.card.border}`,
+          color: theme.text.primary,
+          backdropFilter: 'blur(16px)',
+          boxShadow: isLight
+            ? '0 8px 32px rgba(15,23,42,0.12)'
+            : '0 8px 32px rgba(0,0,0,0.5)',
+        }}
       >
-        <DropdownMenuLabel className="text-slate-500 text-[10px] uppercase tracking-wider">
+        <DropdownMenuLabel
+          className="text-[10px] uppercase tracking-wider"
+          style={{ color: theme.text.muted }}
+        >
           Show / Hide Columns
         </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-white/[0.06]" />
+        <DropdownMenuSeparator style={{ background: theme.card.border }} />
         {hideable.map((col) => (
           <DropdownMenuCheckboxItem
             key={col.id}
-            className="text-sm text-slate-300 focus:bg-white/[0.05] focus:text-slate-100 cursor-pointer"
+            className="text-sm cursor-pointer"
+            style={{ color: theme.text.secondary }}
             checked={col.getIsVisible()}
             onCheckedChange={(val) => col.toggleVisibility(!!val)}
           >
-            <span className="ml-6 flex-1 truncate whitespace-nowrap">{COLUMN_LABELS[col.id] ?? col.id}</span>
+            <span className="ml-6 flex-1 truncate whitespace-nowrap">
+              {COLUMN_LABELS[col.id] ?? col.id}
+            </span>
           </DropdownMenuCheckboxItem>
         ))}
       </DropdownMenuContent>
