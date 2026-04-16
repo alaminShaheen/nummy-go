@@ -10,7 +10,7 @@ import Navbar from '@/components/Navbar';
 import VendorSearchBar from '@/components/VendorSearchBar';
 import AnimatedCustomerCard from '@/components/AnimatedCustomerCard';
 import RestaurantBentoFeatures from '@/components/RestaurantBentoFeatures';
-import { GradientButton, GradientDivider, SectionLabel } from '@/components/ui';
+import { Button, GradientDivider, SectionLabel } from '@/components/ui';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { trpc } from '@/trpc/client';
@@ -329,10 +329,10 @@ export default function PlatformHome() {
             {/* CTA */}
             <div className="text-center mt-16" data-reveal>
               <Link href="/tenant/login">
-                <GradientButton className="text-base px-10 py-4">
+                <Button variant="gradient" className="text-base px-10 py-4">
                   Open Your Kitchen on nummyGo
                   <ArrowRight size={18} aria-hidden="true" />
-                </GradientButton>
+                </Button>
               </Link>
               <p className="text-slate-600 text-sm mt-4">
                 Free to start · No upfront fees · Your storefront live in minutes

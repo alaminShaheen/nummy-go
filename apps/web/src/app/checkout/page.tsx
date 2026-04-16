@@ -11,7 +11,7 @@ import type { FulfillmentMethod, PaymentMethod } from '@nummygo/shared/models/en
 import { trpc } from '@/trpc/client';
 import { formatPhoneNumber } from '@nummygo/shared/lib/formatters';
 import { useCart } from '@/hooks/useCart';
-import { GlassCard, GradientButton, FormField, BrandInput, DateTimePicker, AddressAutocomplete } from '@/components/ui';
+import { GlassCard, Button, FormField, BrandInput, DateTimePicker, AddressAutocomplete } from '@/components/ui';
 import {
   MapPin, User, CreditCard, Store,
   ShoppingBag, X, Loader2, Clock, ChevronRight, ChevronUp,
@@ -86,7 +86,8 @@ function StripePaymentModal({
               </div>
             </div>
           </FormField>
-          <GradientButton
+          <Button
+            variant="gradient"
             className="w-full py-3.5 mt-2 shadow-lg shadow-indigo-500/20"
             onClick={handlePay}
             disabled={isProcessing}
@@ -96,7 +97,7 @@ function StripePaymentModal({
             ) : (
               `Pay $${amount.toFixed(2)}`
             )}
-          </GradientButton>
+          </Button>
         </div>
       </GlassCard>
     </div>
@@ -383,9 +384,9 @@ export default function CheckoutPage() {
           </div>
           <h2 className="text-xl sm:text-2xl font-black mb-2" style={{ color: theme.text.primary }}>Your cart is empty</h2>
           <p className="text-sm mb-8 text-center max-w-xs" style={{ color: theme.text.muted }}>Looks like you haven&apos;t added any delicious items yet.</p>
-          <GradientButton onClick={() => router.push('/search')} className="px-8 py-3">
+          <Button variant="gradient" onClick={() => router.push('/search')} className="px-8 py-3">
             Browse Restaurants
-          </GradientButton>
+          </Button>
         </div>
       </>
     );
@@ -740,7 +741,8 @@ export default function CheckoutPage() {
                       </span>
                     </div>
 
-                    <GradientButton
+                    <Button
+                      variant="gradient"
                       type="submit"
                       form="checkout-form"
                       disabled={placeOrderMutation.isPending}
@@ -756,7 +758,7 @@ export default function CheckoutPage() {
                           <ChevronRight className="w-4 h-4 opacity-60 group-hover:translate-x-1 transition-transform" />
                         </span>
                       )}
-                    </GradientButton>
+                    </Button>
 
                     {needsStripe && (
                       <p className="text-center text-xs mt-3 flex items-center justify-center gap-1" style={{ color: theme.text.muted }}>
@@ -868,7 +870,8 @@ export default function CheckoutPage() {
               )} />
             </button>
 
-            <GradientButton
+            <Button
+              variant="gradient"
               type="submit"
               form="checkout-form"
               disabled={placeOrderMutation.isPending}
@@ -882,7 +885,7 @@ export default function CheckoutPage() {
                   <ChevronRight className="w-3.5 h-3.5" />
                 </span>
               )}
-            </GradientButton>
+            </Button>
           </div>
         </div>
       </div>

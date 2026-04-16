@@ -702,18 +702,9 @@ export default function TenantProfileForm<T extends TenantFormValues>(props: Ten
 				{/* Submit */}
 				<Button
 					type="submit"
+					variant="gradient"
 					disabled={isPending}
-					className="
-            w-full flex items-center justify-center gap-2
-            rounded-2xl py-3.5 h-auto
-            bg-gradient-to-r from-amber-500 to-orange-600 border-none
-            text-white font-semibold text-sm
-            shadow-lg shadow-orange-900/40
-            hover:shadow-xl hover:shadow-orange-900/60 hover:scale-[1.01]
-            disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100
-            transition-all duration-200
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60
-          "
+					className="w-full rounded-2xl py-3.5 h-auto"
 				>
 					{isPending ? (
 						<>

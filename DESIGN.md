@@ -59,6 +59,50 @@ This pattern avoids using inline styling (avoiding `style={{ color: ... }}`) by 
 
 ---
 
+## 6. Button Component Architecture
+
+The shared `Button` component (`packages/shared/src/ui/button.tsx`) is the **single source of truth** for all button patterns across the platform. It uses `class-variance-authority` (CVA) for type-safe variant management.
+
+### Variants
+
+| Variant | Purpose | Visual |
+|---------|---------|--------|
+| `default` | Standard shadcn primary button | Solid primary fill |
+| `destructive` | Destructive actions | Red fill |
+| `outline` | Secondary with border | Bordered, transparent |
+| `secondary` | Muted secondary | Secondary fill |
+| `ghost` | Minimal, no bg | No background, hover fill |
+| `link` | Text-only link style | Underline on hover |
+| **`gradient`** | **Primary CTA** (amber→orange) | Rounded-full, gradient, scale hover, shadow |
+| **`glass`** | **Frosted secondary** | Rounded-full, border, translucent |
+| **`destructive-outline`** | **Cancel/danger modals** | Rose bg, white text |
+
+### Sizes
+
+| Size | Purpose | Dimensions |
+|------|---------|------------|
+| `default` | Standard | `h-10 px-4 py-2` |
+| `sm` | Compact | `h-9 px-3` |
+| `lg` | Large | `h-11 px-8` |
+| `icon` | Icon-only | `h-10 w-10` |
+| **`pill`** | Navbar pill | `px-5 py-2.5 text-xs` |
+| **`cta`** | Full-width CTA | `h-12 w-full px-7 py-3.5` |
+
+### Theme-Aware Wrapper: `GlassButton`
+
+The `glass` variant base styles live in the shared package, but **theme-aware** styling (light/dark border, background, text color) is handled by a thin wrapper component in `apps/web/src/components/ui/GlassButton.tsx`. This wrapper:
+- Imports `Button` from `@nummygo/shared/ui`
+- Passes `variant="glass"` 
+- Applies dynamic `style` props via `useTheme()` for light/dark differences
+
+### Usage Rules
+1. **Always use `<Button variant="gradient">` for primary CTAs** — never create ad-hoc gradient buttons.
+2. **Use `<GlassButton>` for secondary frosted actions** — it wraps `Button variant="glass"` with theme styles.
+3. **Contextual overrides** (sizing, spacing) go in `className` — never duplicate the core variant styles.
+4. **Functional icon buttons** (qty steppers, close ×, toggles) use raw `<button>` — they are interactive controls, not CTAs.
+
+---
+
 ## 6. Figma-Ready Typography System (Tailwind v4)
 
 To bridge the gap between Figma Design Tokens and our frontend architecture, we leverage **Tailwind CSS v4's `@theme` directive** in `globals.css`. 

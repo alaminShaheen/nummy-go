@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useState, useRef } from 'react';
-import { NummyGoBadge, InlineEditableField, BrandSwitch, GradientButton } from '@/components/ui';
+import { NummyGoBadge, InlineEditableField, BrandSwitch, Button } from '@/components/ui';
 import { getBadgeStyle } from '@/components/ui/NummyGoBadge';
 import { Minus, Plus, Trash2, UploadCloud, Loader2, Check, X } from 'lucide-react';
 import { cn } from '@nummygo/shared/ui';
@@ -388,7 +388,8 @@ export default function MenuItemCard({
               >
                 Cancel
               </button>
-              <GradientButton 
+              <Button
+                variant="gradient"
                 onClick={handleDraftSaveClick}
                 disabled={draftStatus !== 'idle'}
                 className="flex-[2] py-2 h-auto text-xs font-bold disabled:opacity-80 transition-all"
@@ -396,7 +397,7 @@ export default function MenuItemCard({
                 {draftStatus === 'saving' ? (
                   <span className="flex items-center gap-2"><Loader2 size={14} className="animate-spin" /> Saving...</span>
                 ) : '🚀 Save Dish'}
-              </GradientButton>
+              </Button>
             </div>
           </div>
         )}

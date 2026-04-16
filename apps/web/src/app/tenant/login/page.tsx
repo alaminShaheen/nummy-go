@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
-import { GlossButton } from '@/components/ui';
+import { GlassButton } from '@/components/ui';
 import { ArrowLeft } from 'lucide-react';
 import { UserRole } from '@nummygo/shared/models';
 import { useTheme } from '@/lib/themes';
@@ -91,7 +91,7 @@ function VendorLoginContent() {
                     </div>
 
                     {/* Google sign-in button */}
-                    <GlossButton
+                    <GlassButton
                         id="google-signin-btn"
                         onClick={handleGoogleLogin}
                         disabled={loading}
@@ -124,7 +124,7 @@ function VendorLoginContent() {
                             )}
                         </svg>
                         {loading ? 'Redirecting to Google…' : 'Continue with Google'}
-                    </GlossButton>
+                    </GlassButton>
 
                     {/* Additional info */}
                     <p className="text-center text-xs mt-6 leading-relaxed" style={{ color: theme.text.muted }}>

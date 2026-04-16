@@ -7,7 +7,7 @@ import { ClipboardList, Power, LogIn, CookingPot, Search, ShoppingCart } from 'l
 import { authClient } from '@/lib/auth-client';
 import { trpc } from '@/trpc/client';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
-import { GradientButton } from '@/components/ui';
+import { Button } from '@/components/ui';
 import VendorSearchBar from '@/components/VendorSearchBar';
 import { useCart } from '@/hooks/useCart';
 import CartDrawer from '@/components/CartDrawer';
@@ -333,11 +333,11 @@ export default function Navbar() {
             {!isPending && !user && (
               <div className="flex items-center gap-2 sm:gap-3">
                 <Link href="/tenant/login" id="nav-vendor-login">
-                  <GradientButton className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm shadow-orange-900/30 font-medium">
+                  <Button variant="gradient" className="px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm shadow-orange-900/30 font-medium">
                     <LogIn size={15} aria-hidden="true" className="sm:w-4 sm:h-4 w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Partner Login</span>
                     <span className="sm:hidden">Login</span>
-                  </GradientButton>
+                  </Button>
                 </Link>
               </div>
             )}

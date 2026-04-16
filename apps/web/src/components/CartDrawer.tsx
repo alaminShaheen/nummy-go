@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ShoppingCart, Trash2, Minus, Plus, X, Pencil, Loader2 } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useModificationMode } from '@/hooks/useModificationMode';
-import { GlassCard, GradientButton, GradientDivider, cn } from '@/components/ui';
+import { GlassCard, Button, GradientDivider, cn } from '@/components/ui';
 import { trpc } from '@/trpc/client';
 import { toast } from 'sonner';
 import { useTheme } from '@/lib/themes';
@@ -221,23 +221,25 @@ export default function CartDrawer({ isOpen, onClose, anchor = 'top' }: CartDraw
             </div>
 
             {isActive ? (
-              <button
+              <Button
+                variant="gradient"
                 onClick={handleSubmitModification}
                 disabled={requestModification.isPending}
-                className="w-full h-12 rounded-full text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black shadow-[0_0_30px_rgba(245,158,11,0.25)] focus:scale-95 transition-all disabled:opacity-50"
+                className="w-full h-12 rounded-full text-sm font-black uppercase tracking-widest text-black"
               >
                 {requestModification.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Request Update'}
-              </button>
+              </Button>
             ) : (
-              <button
-                className="w-full h-12 rounded-full text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-black shadow-[0_0_30px_rgba(245,158,11,0.25)] hover:shadow-[0_0_40px_rgba(245,158,11,0.4)] focus:scale-95 transition-all outline-none"
+              <Button
+                variant="gradient"
+                className="w-full h-12 rounded-full text-sm font-black uppercase tracking-widest text-black"
                 onClick={() => {
                   onClose();
                   window.location.href = '/checkout';
                 }}
               >
                 Go to Checkout <span className="opacity-70 ml-1">→</span>
-              </button>
+              </Button>
             )}
           </div>
         )}
