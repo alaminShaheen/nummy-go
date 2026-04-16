@@ -44,7 +44,45 @@ The platform must deviate from standard, flat SAAS designs and embrace a highly 
 
 ---
 
-## 5. AI Prompt for UX/UI Generation
+## 5. Adaptive Hero Banner Typography
+
+### Context
+The Hero Banner overlay dynamically inherits the theme's background color (`theme.bg`). Previously, the headline text was hardcoded to `text-white`. In Light Theme, `theme.bg` creates a light frosted overlay, washing out white text entirely. 
+
+### Decision
+We use dynamic typography color classes based on the theme context rather than forcing heavy contrast overlays. 
+
+- **Light Mode:** The hero text uses `text-slate-900` to sharply pop over the light frosted overlay.
+- **Dark Mode:** The hero text uses `text-white` to pop against the deep navy overlay.
+
+This pattern avoids using inline styling (avoiding `style={{ color: ... }}`) by leveraging Tailwind utility classes and our Next.js Theme system state (`theme.name === 'light'`).
+
+---
+
+## 6. Figma-Ready Typography System (Tailwind v4)
+
+To bridge the gap between Figma Design Tokens and our frontend architecture, we leverage **Tailwind CSS v4's `@theme` directive** in `globals.css`. 
+
+### How it works
+In our global CSS, we expose semantic font families, sizing, and line heights. When Figma Tokens (via Tokens Studio or similar plugins) output standard W3C JSON tokens, they can be directly compiled into these CSS variables, and Tailwind automatically generates the corresponding utility classes.
+
+### The Tokens
+
+**Font Families**
+- `--font-display`: Used for massive hero titles (`font-display`)
+- `--font-body`: Used for generic interfaces (`font-body`)
+- `--font-mono`: Used for technical data (`font-mono`)
+
+**Semantic Scales**
+- `--text-display-*`: Over-sized marketing typography
+- `--text-h1` through `--text-h3`: Standard application headers
+- `--text-body-*`: Interface text
+
+*Any changes in Figma can be mapped directly to update the `--text-*` variables in `globals.css`.*
+
+---
+
+## 7. AI Prompt for UX/UI Generation
 
 **Copy and paste the prompt below into your preferred AI UI/UX generator or pass it to a designer.**
 

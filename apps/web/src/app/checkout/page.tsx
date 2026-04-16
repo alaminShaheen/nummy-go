@@ -11,14 +11,15 @@ import type { FulfillmentMethod, PaymentMethod } from '@nummygo/shared/models/en
 import { trpc } from '@/trpc/client';
 import { formatPhoneNumber } from '@nummygo/shared/lib/formatters';
 import { useCart } from '@/hooks/useCart';
-import { GlassCard, GradientButton, FormField, BrandInput, Button, DateTimePicker, AddressAutocomplete } from '@/components/ui';
+import { GlassCard, GradientButton, FormField, BrandInput, DateTimePicker, AddressAutocomplete } from '@/components/ui';
 import {
   MapPin, User, CreditCard, Store,
   ShoppingBag, X, Loader2, Clock, ChevronRight, ChevronUp,
-  Utensils, FileText, ArrowLeft, Plus, Minus, Trash2, ExternalLink,
+  Utensils, FileText, Plus, Minus, Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Navbar from '@/components/Navbar';
+import { useTheme } from '@/lib/themes';
 
 /** Strip non-digit characters for form value storage */
 function stripPhone(formatted: string): string {
@@ -39,6 +40,8 @@ function StripePaymentModal({
   onSuccess: () => void;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
 
   if (!isOpen) return null;
 
@@ -53,13 +56,13 @@ function StripePaymentModal({
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <GlassCard className="relative w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
-        <button onClick={onClose} className="absolute right-4 top-4 text-slate-400 hover:text-white">
+      <GlassCard className="relative w-full max-w-md p-6 animate-in zoom-in-95 duration-200" style={{ background: theme.bg, borderColor: theme.card.border }}>
+        <button onClick={onClose} className="absolute right-4 top-4 hover:opacity-100 opacity-70 transition-opacity" style={{ color: theme.text.primary }}>
           <X className="w-5 h-5" />
         </button>
         <div className="mb-6">
-          <h3 className="text-xl font-bold text-white mb-1">Payment Details</h3>
-          <p className="text-sm text-slate-400">Complete your online payment securely.</p>
+          <h3 className="text-xl font-bold mb-1" style={{ color: theme.text.primary }}>Payment Details</h3>
+          <p className="text-sm" style={{ color: theme.text.muted }}>Complete your online payment securely.</p>
         </div>
         <div className="space-y-4">
           <FormField id="card-info" label="Card Information">
@@ -111,8 +114,11 @@ function SegmentedControl<T extends string>({
   value: T;
   onChange: (val: T) => void;
 }) {
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
+
   return (
-    <div className="flex rounded-xl p-1 border border-white/10 bg-black/30">
+    <div className="flex rounded-xl p-1 border" style={{ borderColor: theme.card.border, background: isLight ? theme.bg : 'rgba(0,0,0,0.3)' }}>
       {options.map((opt) => {
         const active = value === opt.value;
         return (
@@ -121,11 +127,13 @@ function SegmentedControl<T extends string>({
             type="button"
             onClick={() => onChange(opt.value)}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg transition-all duration-200",
-              active
-                ? "bg-slate-800 text-amber-400 shadow-sm border border-white/5"
-                : "text-slate-400 hover:text-slate-200"
+              "flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg transition-all duration-200"
             )}
+            style={{
+              background: active ? (isLight ? theme.surface : 'rgba(30,41,59,0.8)') : 'transparent',
+              color: active ? theme.accent.amberHover : theme.text.muted,
+              boxShadow: active && isLight ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+            }}
           >
             {opt.icon}
             {opt.label}
@@ -188,6 +196,8 @@ function ScheduleTimePicker({
 // ── Step Indicator ──────────────────────────────────────────────────────────
 
 function StepIndicator({ step, label, icon }: { step: number; label: string; icon: React.ReactNode }) {
+  const { theme } = useTheme();
+
   return (
     <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-6">
       <div className="relative">
@@ -196,7 +206,7 @@ function StepIndicator({ step, label, icon }: { step: number; label: string; ico
           {step}
         </div>
       </div>
-      <h2 className="text-base sm:text-xl font-black text-white tracking-tight flex items-center gap-2">
+      <h2 className="text-base sm:text-xl font-black tracking-tight flex items-center gap-2" style={{ color: theme.text.primary }}>
         {icon}
         {label}
       </h2>
@@ -254,6 +264,8 @@ function QtyStepper({
 export default function CheckoutPage() {
   const router = useRouter();
   const { cart, megaTotal, clearAll, updateItemQuantity, isLoaded } = useCart();
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
 
   const [vendorSettings, setVendorSettings] = useState<
     Record<string, {
@@ -351,7 +363,7 @@ export default function CheckoutPage() {
   // ── Loading state ──
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col pt-20 items-center justify-center text-white">
+      <div className="min-h-screen flex flex-col pt-20 items-center justify-center" style={{ background: theme.bg, color: theme.text.primary }}>
         <Loader2 className="w-8 h-8 animate-spin text-amber-500/50" />
       </div>
     );
@@ -362,15 +374,15 @@ export default function CheckoutPage() {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen flex flex-col items-center justify-center text-white px-4">
+        <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: theme.bg, color: theme.text.primary }}>
           <div className="relative mb-8">
             <div className="absolute -inset-6 rounded-full bg-amber-500/10 blur-2xl" />
-            <div className="relative flex items-center justify-center w-24 h-24 rounded-full border-2 border-amber-500/20 bg-amber-500/5">
+            <div className="relative flex items-center justify-center w-24 h-24 rounded-full border border-amber-500/20" style={{ background: isLight ? 'rgba(245,158,11,0.05)' : 'rgba(245,158,11,0.05)' }}>
               <ShoppingBag className="w-10 h-10 text-amber-500/40" />
             </div>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white mb-2">Your cart is empty</h2>
-          <p className="text-slate-500 text-sm mb-8 text-center max-w-xs">Looks like you haven&apos;t added any delicious items yet.</p>
+          <h2 className="text-xl sm:text-2xl font-black mb-2" style={{ color: theme.text.primary }}>Your cart is empty</h2>
+          <p className="text-sm mb-8 text-center max-w-xs" style={{ color: theme.text.muted }}>Looks like you haven&apos;t added any delicious items yet.</p>
           <GradientButton onClick={() => router.push('/search')} className="px-8 py-3">
             Browse Restaurants
           </GradientButton>
@@ -382,7 +394,7 @@ export default function CheckoutPage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen pt-20 sm:pt-24 pb-32 lg:pb-12">
+      <div className="min-h-screen pt-20 sm:pt-24 pb-32 lg:pb-12" style={{ background: theme.bg }}>
         <div className="max-w-[1200px] w-full mx-auto px-3 sm:px-6">
 
           {/* ── Page Header ── */}
@@ -404,7 +416,10 @@ export default function CheckoutPage() {
                 <section>
                   <StepIndicator step={1} label="YOUR DETAILS" icon={<User className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />} />
 
-                  <div className="rounded-2xl border border-white/[0.06] bg-[rgba(19,25,31,0.5)] backdrop-blur-md p-4 sm:p-6 space-y-4">
+                  <div
+                    className="rounded-2xl border backdrop-blur-md p-4 sm:p-6 space-y-4 shadow-sm"
+                    style={{ background: isLight ? theme.bg : 'rgba(19,25,31,0.5)', borderColor: theme.card.border }}
+                  >
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField id="checkout-name" label="Full Name" error={errors.customerName?.message}>
                         <BrandInput
@@ -453,12 +468,16 @@ export default function CheckoutPage() {
                       const vendorSubtotal = vendor.items.reduce((s, i) => s + i.price * i.quantity, 0);
 
                       return (
-                        <div key={vendor.tenantId} className="rounded-2xl border border-white/[0.06] bg-[rgba(19,25,31,0.5)] backdrop-blur-md overflow-hidden">
+                        <div
+                          key={vendor.tenantId}
+                          className="rounded-2xl border backdrop-blur-md overflow-hidden shadow-sm"
+                          style={{ background: isLight ? theme.bg : 'rgba(19,25,31,0.5)', borderColor: theme.card.border }}
+                        >
                           {/* Vendor Header */}
-                          <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-white/5 flex items-center justify-between">
+                          <div className="px-4 sm:px-5 py-3 sm:py-4 border-b flex items-center justify-between" style={{ borderColor: theme.card.border }}>
                             <div className="flex items-center gap-2 sm:gap-3">
                               <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" />
-                              <h3 className="font-bold text-white text-sm sm:text-base">{vendor.tenantName}</h3>
+                              <h3 className="font-bold text-sm sm:text-base" style={{ color: theme.text.primary }}>{vendor.tenantName}</h3>
                             </div>
                             <button
                               type="button"
@@ -494,8 +513,8 @@ export default function CheckoutPage() {
 
                                 {/* Name + unit price */}
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-xs sm:text-sm font-semibold text-slate-200 truncate">{item.name}</p>
-                                  <p className="text-[10px] sm:text-xs text-slate-500 tabular-nums">${item.price.toFixed(2)} each</p>
+                                  <p className="text-xs sm:text-sm font-semibold truncate" style={{ color: theme.text.primary }}>{item.name}</p>
+                                  <p className="text-[10px] sm:text-xs tabular-nums" style={{ color: theme.text.muted }}>${item.price.toFixed(2)} each</p>
                                 </div>
 
                                 {/* Qty Stepper */}
@@ -507,7 +526,7 @@ export default function CheckoutPage() {
                                 />
 
                                 {/* Line total */}
-                                <span className="text-xs sm:text-sm text-slate-300 font-semibold tabular-nums w-14 sm:w-16 text-right">
+                                <span className="text-xs sm:text-sm font-semibold tabular-nums w-14 sm:w-16 text-right" style={{ color: theme.text.secondary }}>
                                   ${(item.price * item.quantity).toFixed(2)}
                                 </span>
                               </div>
@@ -548,10 +567,14 @@ export default function CheckoutPage() {
                       };
 
                       return (
-                        <div key={vendor.tenantId} className="rounded-2xl border border-white/[0.06] bg-[rgba(19,25,31,0.5)] backdrop-blur-md p-4 sm:p-6 space-y-4 sm:space-y-5">
-                          <div className="flex items-center gap-2 sm:gap-3 pb-3 sm:pb-4 border-b border-white/5">
+                        <div
+                          key={vendor.tenantId}
+                          className="rounded-2xl border backdrop-blur-md p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-sm"
+                          style={{ background: isLight ? theme.bg : 'rgba(19,25,31,0.5)', borderColor: theme.card.border }}
+                        >
+                          <div className="flex items-center gap-2 sm:gap-3 pb-3 sm:pb-4 border-b" style={{ borderColor: theme.card.border }}>
                             <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" />
-                            <h3 className="font-bold text-white text-sm sm:text-base">{vendor.tenantName}</h3>
+                            <h3 className="font-bold text-sm sm:text-base" style={{ color: theme.text.primary }}>{vendor.tenantName}</h3>
                           </div>
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
@@ -603,9 +626,8 @@ export default function CheckoutPage() {
                             </div>
                           </div>
 
-                          {/* Scheduling */}
-                          <div className="pt-3 border-t border-white/5">
-                            <label className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-3">
+                          <div className="pt-3 border-t" style={{ borderColor: theme.card.border }}>
+                            <label className="text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 mb-3" style={{ color: theme.text.muted }}>
                               <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Ready Time
                             </label>
                             <ScheduleTimePicker
@@ -615,8 +637,8 @@ export default function CheckoutPage() {
                           </div>
 
                           {/* Special instructions */}
-                          <div className="pt-3 border-t border-white/5">
-                            <label className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-3">
+                          <div className="pt-3 border-t" style={{ borderColor: theme.card.border }}>
+                            <label className="text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 mb-3" style={{ color: theme.text.muted }}>
                               <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Special Instructions
                             </label>
                             <textarea
@@ -624,7 +646,12 @@ export default function CheckoutPage() {
                               value={settings.specialInstruction}
                               onChange={(e) => updateSetting({ specialInstruction: e.target.value })}
                               rows={2}
-                              className="w-full bg-black/40 border border-white/5 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/30 transition-colors resize-none"
+                              className="w-full border rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:outline-none focus:border-indigo-500/30 transition-colors resize-none"
+                              style={{
+                                background: isLight ? theme.bg : 'rgba(0,0,0,0.4)',
+                                borderColor: theme.card.border,
+                                color: theme.text.primary,
+                              }}
                             />
                           </div>
                         </div>
@@ -643,7 +670,14 @@ export default function CheckoutPage() {
                 {/* Ambient glow */}
                 <div className="absolute -inset-4 rounded-3xl bg-gradient-to-b from-indigo-500/[0.06] to-amber-500/[0.04] blur-xl pointer-events-none" />
 
-                <div className="relative rounded-2xl border border-white/[0.08] bg-[rgba(19,25,31,0.7)] backdrop-blur-xl p-6 shadow-2xl shadow-black/30 flex flex-col" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
+                <div
+                  className="relative rounded-2xl border backdrop-blur-xl p-6 shadow-2xl flex flex-col"
+                  style={{
+                    maxHeight: 'calc(100vh - 8rem)',
+                    background: isLight ? theme.surface : 'rgba(19,25,31,0.7)',
+                    borderColor: theme.card.border
+                  }}
+                >
                   {/* Header */}
                   <div className="pb-4 border-b border-white/5 shrink-0">
                     <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Order Summary</h3>
@@ -668,12 +702,12 @@ export default function CheckoutPage() {
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs text-slate-300 truncate">{item.name}</p>
+                              <p className="text-xs truncate" style={{ color: theme.text.secondary }}>{item.name}</p>
                             </div>
-                            <span className="text-[10px] font-black text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-md border border-amber-500/20">
+                            <span className="text-[10px] font-black bg-amber-500/10 px-1.5 py-0.5 rounded-md border border-amber-500/20" style={{ color: isLight ? '#ea580c' : '#fbbf24' }}>
                               {item.quantity}
                             </span>
-                            <span className="text-xs text-slate-400 font-semibold tabular-nums">
+                            <span className="text-xs font-semibold tabular-nums" style={{ color: theme.text.muted }}>
                               ${(item.price * item.quantity).toFixed(2)}
                             </span>
                           </div>
@@ -683,24 +717,24 @@ export default function CheckoutPage() {
                   </div>
 
                   {/* Totals breakdown */}
-                  <div className="pt-4 border-t border-white/5 space-y-2 shrink-0">
+                  <div className="pt-4 border-t space-y-2 shrink-0" style={{ borderColor: theme.card.border }}>
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-500">Subtotal</span>
-                      <span className="text-slate-300 tabular-nums">${megaTotal.toFixed(2)}</span>
+                      <span style={{ color: theme.text.muted }}>Subtotal</span>
+                      <span className="tabular-nums" style={{ color: theme.text.secondary }}>${megaTotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-500 flex items-center gap-1">
+                      <span className="flex items-center gap-1" style={{ color: theme.text.muted }}>
                         Taxes & fees
-                        <span className="text-[10px] text-slate-600 border border-white/5 rounded px-1">by vendor</span>
+                        <span className="text-[10px] border rounded px-1" style={{ borderColor: theme.card.border, color: theme.text.muted }}>by vendor</span>
                       </span>
-                      <span className="text-slate-500 text-xs">at vendor</span>
+                      <span className="text-xs" style={{ color: theme.text.muted }}>at vendor</span>
                     </div>
                   </div>
 
                   {/* Grand Total + CTA */}
-                  <div className="pt-5 mt-3 border-t border-white/[0.08] shrink-0">
+                  <div className="pt-5 mt-3 border-t shrink-0" style={{ borderColor: theme.card.border }}>
                     <div className="flex items-end justify-between mb-5">
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Grand Total</span>
+                      <span className="text-xs font-bold uppercase tracking-wider" style={{ color: theme.text.muted }}>Grand Total</span>
                       <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-orange-400 tabular-nums">
                         ${megaTotal.toFixed(2)}
                       </span>
@@ -725,15 +759,15 @@ export default function CheckoutPage() {
                     </GradientButton>
 
                     {needsStripe && (
-                      <p className="text-center text-xs text-slate-500 mt-3 flex items-center justify-center gap-1">
+                      <p className="text-center text-xs mt-3 flex items-center justify-center gap-1" style={{ color: theme.text.muted }}>
                         <CreditCard className="w-3.5 h-3.5 opacity-60" /> Secure online payment required
                       </p>
                     )}
 
-                    <div className="flex items-center justify-center gap-4 mt-4 pt-3 border-t border-white/5">
-                      <span className="text-[10px] text-slate-600 uppercase tracking-wider">{totalItems} items</span>
-                      <span className="w-1 h-1 rounded-full bg-slate-700" />
-                      <span className="text-[10px] text-slate-600 uppercase tracking-wider">{cart.length} vendor{cart.length !== 1 ? 's' : ''}</span>
+                    <div className="flex items-center justify-center gap-4 mt-4 pt-3 border-t" style={{ borderColor: theme.card.border }}>
+                      <span className="text-[10px] uppercase tracking-wider" style={{ color: theme.text.muted }}>{totalItems} items</span>
+                      <span className="w-1 h-1 rounded-full bg-amber-500/50" />
+                      <span className="text-[10px] uppercase tracking-wider" style={{ color: theme.text.muted }}>{cart.length} vendor{cart.length !== 1 ? 's' : ''}</span>
                     </div>
                   </div>
                 </div>
@@ -755,16 +789,19 @@ export default function CheckoutPage() {
           />
         )}
 
-        <div className={cn(
-          "relative z-50 border-t border-white/10 bg-[rgba(10,13,20,0.95)] backdrop-blur-xl transition-all duration-300",
-          mobileExpanded ? "rounded-t-2xl" : ""
-        )}>
+        <div
+          className={cn(
+            "relative z-50 border-t backdrop-blur-xl transition-all duration-300",
+            mobileExpanded ? "rounded-t-2xl" : ""
+          )}
+          style={{ background: isLight ? theme.surface : 'rgba(10,13,20,0.95)', borderColor: theme.card.border }}
+        >
           {/* Expanded content */}
           {mobileExpanded && (
             <div className="px-4 pt-4 pb-2 max-h-[50vh] overflow-y-auto animate-in fade-in slide-in-from-bottom-4 duration-200">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Order Summary</h3>
-                <button onClick={() => setMobileExpanded(false)} className="text-slate-500 hover:text-white p-1">
+                <h3 className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: theme.text.muted }}>Order Summary</h3>
+                <button onClick={() => setMobileExpanded(false)} className="hover:opacity-100 opacity-60" style={{ color: theme.text.primary }}>
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -786,12 +823,12 @@ export default function CheckoutPage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-slate-300 truncate">{item.name}</p>
+                        <p className="text-xs truncate" style={{ color: theme.text.secondary }}>{item.name}</p>
                       </div>
-                      <span className="text-[10px] font-black text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                      <span className="text-[10px] font-black bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20" style={{ color: isLight ? '#ea580c' : '#fbbf24' }}>
                         {item.quantity}
                       </span>
-                      <span className="text-xs text-slate-400 font-semibold tabular-nums">
+                      <span className="text-xs font-semibold tabular-nums" style={{ color: theme.text.muted }}>
                         ${(item.price * item.quantity).toFixed(2)}
                       </span>
                     </div>
@@ -799,14 +836,14 @@ export default function CheckoutPage() {
                 </div>
               ))}
 
-              <div className="pt-3 border-t border-white/5 space-y-1">
+              <div className="pt-3 border-t space-y-1" style={{ borderColor: theme.card.border }}>
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-500">Subtotal</span>
-                  <span className="text-slate-300 tabular-nums">${megaTotal.toFixed(2)}</span>
+                  <span style={{ color: theme.text.muted }}>Subtotal</span>
+                  <span className="tabular-nums" style={{ color: theme.text.secondary }}>${megaTotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-500">Taxes & fees</span>
-                  <span className="text-slate-500">at vendor</span>
+                  <span style={{ color: theme.text.muted }}>Taxes & fees</span>
+                  <span style={{ color: theme.text.muted }}>at vendor</span>
                 </div>
               </div>
             </div>

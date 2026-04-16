@@ -52,7 +52,7 @@ export default function HeroBanner({
           {/* Left: Headline Only */}
           <div className="flex flex-col gap-4 max-w-2xl">
             {promotionalHeading ? (
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight text-white drop-shadow-lg break-words">
+              <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight drop-shadow-lg break-words transition-colors ${theme.name === 'light' ? 'text-slate-900' : 'text-white'}`}>
                 {promotionalHeading.split(' ').map((word, i, arr) => {
                   const targetIndex = arr.length > 2 ? Math.floor(arr.length / 2) : 1;
                   if (i === targetIndex && arr.length > 1) {
@@ -70,7 +70,7 @@ export default function HeroBanner({
                 })}
               </h1>
             ) : (
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight text-white drop-shadow-lg break-words">
+              <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight drop-shadow-lg break-words transition-colors ${theme.name === 'light' ? 'text-slate-900' : 'text-white'}`}>
                 Your{' '}
                 <span className="gradient-text">Neighbourhood</span>
                 <br />

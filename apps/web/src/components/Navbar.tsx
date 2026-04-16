@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import { ClipboardList, Power, LogIn, CookingPot, Search } from 'lucide-react';
+import { ClipboardList, Power, LogIn, CookingPot, Search, ShoppingCart } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { trpc } from '@/trpc/client';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
