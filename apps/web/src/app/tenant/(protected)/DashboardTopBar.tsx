@@ -13,6 +13,8 @@ import {
   LogOut,
   Flame,
 } from 'lucide-react';
+import { useTheme } from '@/lib/themes';
+import ThemeToggle from '@/components/ThemeToggle';
 
 // ── Page label map ───────────────────────────────────────────────────────────
 
@@ -33,6 +35,7 @@ export function DashboardTopBar({ pathname }: DashboardTopBarProps) {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const { data: tenant } = trpc.tenant.me.useQuery(undefined, { staleTime: Infinity });
+  const { theme } = useTheme();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -67,10 +70,10 @@ export function DashboardTopBar({ pathname }: DashboardTopBarProps) {
     <header
       className="sticky top-0 z-20 flex items-center justify-between gap-4 px-6 h-14 shrink-0"
       style={{
-        background: 'rgba(13,17,23,0.85)',
+        background: theme.navbar.bg,
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        borderBottom: `1px solid ${theme.navbar.border}`,
       }}
       aria-label="Dashboard top bar"
     >
@@ -86,21 +89,26 @@ export function DashboardTopBar({ pathname }: DashboardTopBarProps) {
             nummyGo
           </span>
         </Link>
-        <div className="h-4 w-px bg-white/10 mx-1 shrink-0" aria-hidden="true" />
+        <div className="h-4 w-px mx-1 shrink-0" style={{ background: theme.card.border }} aria-hidden="true" />
         {page && (
           <div className="flex items-center gap-2">
             {PageIcon && (
-              <PageIcon className="h-4 w-4 text-slate-400 shrink-0" aria-hidden="true" />
+              <PageIcon className="h-4 w-4 shrink-0" style={{ color: theme.text.secondary }} aria-hidden="true" />
             )}
-            <span className="text-sm font-semibold text-slate-200 truncate hidden sm:block">
+            <span className="text-sm font-semibold truncate hidden sm:block" style={{ color: theme.text.primary }}>
               {page.label}
             </span>
           </div>
         )}
       </div>
 
-      {/* ── Right: Mobile Profile / Sign Out (Hidden on large screens because Sidebar handles it) ── */}
-      <div ref={mobileMenuRef} className="relative sm:hidden flex items-center">
+      {/* ── Right: Theme toggle + Mobile avatar ── */}
+      <div className="flex items-center gap-2">
+        {/* Theme toggle — always visible */}
+        <ThemeToggle />
+
+        {/* Mobile avatar/menu — hidden on sm+ since Sidebar handles it */}
+        <div ref={mobileMenuRef} className="relative sm:hidden flex items-center">
         <button
           type="button"
           onClick={() => setMobileMenuOpen((o) => !o)}
@@ -125,18 +133,23 @@ export function DashboardTopBar({ pathname }: DashboardTopBarProps) {
           <div
             role="menu"
             aria-label="Account options"
-            className="absolute right-0 top-full mt-2 z-50 w-56 rounded-2xl overflow-hidden border border-white/8 shadow-xl shadow-black/40 animate-slide-up py-2"
-            style={{ background: 'rgba(19,25,31,0.95)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+            className="absolute right-0 top-full mt-2 z-50 w-56 rounded-2xl overflow-hidden shadow-xl shadow-black/20 animate-slide-up py-2"
+            style={{
+              background: theme.surface,
+              border: `1px solid ${theme.card.border}`,
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+            }}
           >
-            <div className="px-4 py-3 border-b border-white/8">
+            <div className="px-4 py-3" style={{ borderBottom: `1px solid ${theme.card.border}` }}>
               <div className="flex items-center gap-3">
                 <Avatar className="auth-avatar-ring h-9 w-9 flex-shrink-0 block">
                   {avatarImage ? <AvatarImage src={avatarImage} alt={displayName} /> : null}
-                  <AvatarFallback className="text-amber-400 text-xs font-bold" style={{ background: '#1a2130' }}>{initials}</AvatarFallback>
+                  <AvatarFallback className="text-amber-400 text-xs font-bold" style={{ background: theme.surface }}>{initials}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col overflow-hidden">
-                  <span className="text-sm font-semibold text-slate-200 truncate">{displayName}</span>
-                  <span className="text-[10px] text-slate-500 truncate">{user?.email}</span>
+                  <span className="text-sm font-semibold truncate" style={{ color: theme.text.primary }}>{displayName}</span>
+                  <span className="text-[10px] truncate" style={{ color: theme.text.muted }}>{user?.email}</span>
                 </div>
               </div>
             </div>
@@ -158,6 +171,7 @@ export function DashboardTopBar({ pathname }: DashboardTopBarProps) {
             </div>
           </div>
         )}
+      </div>
       </div>
     </header>
   );

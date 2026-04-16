@@ -5,7 +5,7 @@ import { Suspense, useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { SearchX, ChevronLeft, LayoutGrid, Map as MapIcon, Search, Loader2 } from 'lucide-react';
 import { useVendorSearch } from '@/hooks/useVendorSearch';
-import { GradientButton } from '@/components/ui';
+import { Button } from '@/components/ui';
 import Navbar from '@/components/Navbar';
 import dynamic from 'next/dynamic';
 
@@ -112,9 +112,9 @@ function SearchNodeCard({ result, index }: { result: SearchResult; index: number
             : 'Taking orders now'}
         </p>
         {!isClosed && (
-          <GradientButton className="h-7 px-4 text-xs py-0 rounded-full">
+          <Button variant="gradient" className="h-7 px-4 text-xs py-0 rounded-full">
             Explore
-          </GradientButton>
+          </Button>
         )}
       </div>
     </div>
@@ -290,13 +290,14 @@ function SearchResults() {
               />
 
               {/* Search button — visible on sm+ */}
-              <GradientButton
+              <Button
+                variant="gradient"
                 type="button"
                 onClick={triggerSearch}
                 className="hidden sm:flex h-9 sm:h-11 px-5 sm:px-6 rounded-full ml-3 text-sm py-0 flex-shrink-0"
               >
                 Search
-              </GradientButton>
+              </Button>
 
               {/* Grid/Map toggle */}
               <div className="hidden sm:flex bg-brand-card rounded-full p-1 ml-3 border border-brand-border flex-shrink-0">
@@ -323,13 +324,14 @@ function SearchResults() {
 
             {/* Mobile: Search button + view toggle row */}
             <div className="flex sm:hidden items-center justify-between mt-3 gap-3">
-              <GradientButton
+              <Button
+                variant="gradient"
                 type="button"
                 onClick={triggerSearch}
                 className="flex-1 h-11 rounded-full text-sm py-0"
               >
                 Search
-              </GradientButton>
+              </Button>
               <div className="flex bg-brand-card rounded-full p-1 border border-brand-border">
                 <button
                   onClick={() => setViewMode('grid')}
@@ -539,9 +541,9 @@ function SearchResults() {
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-brand-bg/90 z-[400] gap-4">
                   <MapIcon size={40} className="text-amber-400/50" />
                   <p className="text-text-secondary text-sm font-medium">Search to populate the map</p>
-                  <GradientButton onClick={triggerSearch} className="h-10 px-6 rounded-full text-sm py-0">
+                  <Button variant="gradient" onClick={triggerSearch} className="h-10 px-6 rounded-full text-sm py-0">
                     Show all kitchens
-                  </GradientButton>
+                  </Button>
                 </div>
               )}
 

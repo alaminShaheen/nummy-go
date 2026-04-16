@@ -8,7 +8,7 @@ export { cn } from './utils';
 
 export { Avatar, AvatarImage, AvatarFallback } from './Avatar';
 export { Badge, badgeVariants } from './Badge';
-export { Button, buttonVariants } from './button';
+export { Button, buttonVariants, type ButtonProps } from './button';
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
 export { Input } from './Input';
 export * from './select';

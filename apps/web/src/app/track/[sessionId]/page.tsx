@@ -16,7 +16,7 @@ import { differenceInSeconds, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { getGoogleMapsUrl } from '@/utils/tenant';
 import Link from 'next/link';
-import { GradientButton, GlossButton } from '@/components/ui';
+import { Button, GlassButton } from '@/components/ui';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -355,14 +355,14 @@ function OrderActionBar({
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end mt-2 sm:mt-0">
           {/* Cancel */}
           {canModify && (
-            <GlossButton
+            <GlassButton
               onClick={() => setShowCancelModal(true)}
               disabled={cancelOrder.isPending}
               className="px-5 py-2 hover:border-rose-500/30 hover:text-rose-400 hover:bg-rose-500/10 text-slate-300"
             >
               <X className="w-4 h-4" />
               Cancel
-            </GlossButton>
+            </GlassButton>
           )}
 
           {/* Modify */}
@@ -371,14 +371,15 @@ function OrderActionBar({
             {canModify && (
               <div className="absolute -inset-1 rounded-full bg-indigo-500/20 blur opacity-40 group-hover:opacity-75 transition-opacity duration-300 pointer-events-none" />
             )}
-            <GradientButton
+            <Button
+              variant="gradient"
               onClick={handleModify}
               disabled={!canModify}
               className="relative px-6 py-2 shadow-lg shadow-indigo-900/20"
             >
               <Pencil className="w-4 h-4" />
               {canModify ? 'Modify Order' : 'Pending'}
-            </GradientButton>
+            </Button>
           </div>
         </div>
       </div>

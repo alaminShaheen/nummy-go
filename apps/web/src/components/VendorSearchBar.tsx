@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui';
-import { GradientButton } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { Search, ArrowRight, Loader2 } from 'lucide-react';
 import { useVendorSearch } from '@/hooks/useVendorSearch';
 
@@ -124,7 +124,8 @@ export default function VendorSearchBar({
           />
 
           {/* Submit button */}
-          <GradientButton
+          <Button
+            variant="gradient"
             type="submit"
             id="vendor-search-submit"
             className={`
@@ -136,7 +137,7 @@ export default function VendorSearchBar({
             `}
           >
             Let's Eat
-          </GradientButton>
+          </Button>
         </div>
       </form>
 
