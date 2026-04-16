@@ -343,7 +343,7 @@ export default function TenantMenuDashboard() {
               style={{
                 background: isLight ? 'rgba(245,158,11,0.08)' : 'rgba(245,158,11,0.10)',
                 border: `1px solid rgba(245,158,11,${isLight ? '0.3' : '0.2'})`,
-                color: isLight ? '#b45309' : '#f59e0b',
+                color: isLight ? '#ea580c' : '#f59e0b',
               }}
             >
               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
@@ -468,7 +468,7 @@ export default function TenantMenuDashboard() {
                         "w-full min-h-[380px] rounded-[2rem]",
                         "transition-all duration-300 font-semibold uppercase tracking-widest text-sm",
                         isLight
-                          ? "text-amber-600/80 hover:text-amber-600 hover:bg-amber-500/5"
+                          ? "text-[#ea580c] hover:bg-[#ea580c]/5"
                           : "border-2 border-dashed border-amber-500/30 text-amber-500/70 hover:border-amber-400 hover:text-amber-400 hover:bg-amber-400/5 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)]"
                       )}
                     >
@@ -498,7 +498,7 @@ export default function TenantMenuDashboard() {
                   "absolute inset-0 flex items-center justify-center gap-4 group",
                   "transition-all duration-300 font-semibold uppercase tracking-widest text-sm lg:text-base rounded-[2rem]",
                   isLight
-                    ? "text-amber-600/80 hover:text-amber-600 hover:bg-amber-500/5"
+                    ? "text-[#ea580c] hover:bg-[#ea580c]/5"
                     : "border-2 border-dashed border-amber-500/30 text-amber-500/70 hover:border-amber-400 hover:text-amber-400 hover:bg-amber-400/5 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)]",
                   isCreatingCategory ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'
                 )}

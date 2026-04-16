@@ -16,6 +16,7 @@
 import * as React from 'react';
 import { Input } from '@nummygo/shared/ui';
 import { cn } from '@nummygo/shared/ui';
+import { useTheme } from '@/lib/themes';
 
 export interface BrandInputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'prefix'> {
@@ -35,6 +36,9 @@ export interface BrandInputProps
  */
 export const BrandInput = React.forwardRef<HTMLInputElement, BrandInputProps>(
   ({ className, prefix, suffix, onValueChange, onChange, ...props }, ref) => {
+    const { theme } = useTheme();
+    const isLight = theme.name === 'light';
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       // Dynamic access avoids @cloudflare/workers-types DOM type pollution
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,11 +50,14 @@ export const BrandInput = React.forwardRef<HTMLInputElement, BrandInputProps>(
     return (
       <div
         className={cn(
-          "relative flex items-center w-full",
-          "rounded-xl bg-white/[0.04] border border-white/10 transition-colors duration-200",
-          "focus-within:border-amber-400/60 focus-within:bg-white/[0.06] focus-within:ring-0",
+          "relative flex items-center w-full group",
+          "rounded-xl transition-colors duration-200",
           className
         )}
+        style={{
+          background: isLight ? theme.surface : 'rgba(255,255,255,0.04)',
+          border: `1px solid ${theme.card.border}`
+        }}
       >
         {/* Prefix text */}
         {prefix && (
@@ -67,13 +74,13 @@ export const BrandInput = React.forwardRef<HTMLInputElement, BrandInputProps>(
           onChange={handleChange}
           className={cn(
             // Apply text and reset base input styles to blend into the wrapper
-            'border-0 bg-transparent text-slate-100 shadow-none min-w-0 w-full',
-            'placeholder:text-slate-600',
+            'border-0 bg-transparent shadow-none min-w-0 w-full',
             'focus-visible:ring-0 focus-visible:border-transparent focus-visible:outline-none',
             'h-auto py-2.5',
             prefix ? 'pl-1' : 'pl-4',
             suffix ? 'pr-8' : 'pr-3',
           )}
+          style={{ color: theme.text.primary }}
           {...props}
         />
 

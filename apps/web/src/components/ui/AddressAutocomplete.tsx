@@ -5,6 +5,7 @@ import { MapPin, Loader2, Search } from 'lucide-react';
 import { useDebounceCallback } from 'usehooks-ts';
 import { clsx } from 'clsx';
 import { BrandInput } from './BrandInput';
+import { useTheme } from '@/lib/themes';
 
 interface NominatimResult {
 	place_id: number;
@@ -27,6 +28,8 @@ export function AddressAutocomplete({ id, value, onChange, placeholder, error }:
 	const [loading, setLoading] = useState(false);
 	const [searchText, setSearchText] = useState(value || '');
 	const wrapperRef = useRef<HTMLDivElement>(null);
+	const { theme } = useTheme();
+	const isLight = theme.name === 'light';
 
 	// Sync external value changes into local state if needed
 	useEffect(() => {
@@ -111,25 +114,32 @@ export function AddressAutocomplete({ id, value, onChange, placeholder, error }:
 					placeholder={placeholder}
 					className={error ? 'border-rose-500' : ''}
 				/>
-				<div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+				<div 
+					className="absolute right-3 top-1/2 -translate-y-1/2"
+					style={{ color: theme.text.muted }}
+				>
 					{loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
 				</div>
 			</div>
 
 			{isOpen && (searchText.trim().length >= 3) && (
 				<div
-					className="absolute z-50 w-full mt-2 rounded-xl border border-white/10 shadow-2xl overflow-hidden backdrop-blur-xl"
-					style={{ background: 'rgba(19,25,31,0.95)' }}
+					className="absolute z-50 w-full mt-2 rounded-xl backdrop-blur-xl shadow-2xl overflow-hidden"
+					style={{ 
+						background: isLight ? 'rgba(255,255,255,0.95)' : 'rgba(19,25,31,0.95)',
+						border: `1px solid ${theme.card.border}`
+					}}
 				>
 					{loading && results.length === 0 ? (
-						<div className="p-4 text-center text-sm text-slate-400">Searching global maps...</div>
+						<div className="p-4 text-center text-sm" style={{ color: theme.text.muted }}>Searching global maps...</div>
 					) : results.length > 0 ? (
 						<ul className="max-h-64 overflow-y-auto w-full flex flex-col py-2 custom-scrollbar">
 							{results.map((r) => (
 								<li key={r.place_id}>
 									<button
 										type="button"
-										className="w-full text-left px-4 py-2.5 text-sm text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 transition-colors flex items-start gap-3"
+										className="w-full text-left px-4 py-2.5 text-sm hover:bg-amber-500/10 hover:text-[#ea580c] transition-colors flex items-start gap-3"
+										style={{ color: theme.text.primary }}
 										onClick={() => handleSelect(r)}
 									>
 										<MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 opacity-70" />
@@ -139,7 +149,7 @@ export function AddressAutocomplete({ id, value, onChange, placeholder, error }:
 							))}
 						</ul>
 					) : (
-						<div className="p-4 text-center text-sm text-slate-400">No matching address found...</div>
+						<div className="p-4 text-center text-sm" style={{ color: theme.text.muted }}>No matching address found...</div>
 					)}
 				</div>
 			)}

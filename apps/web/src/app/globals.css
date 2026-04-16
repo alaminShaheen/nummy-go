@@ -479,6 +479,14 @@ button:hover .auth-avatar-ring {
     color: #0F172A;
   }
 
+  /* ── Universal Amber Text Override ──────────────────── */
+  .text-amber-300,
+  .text-amber-400,
+  .text-amber-500,
+  .text-amber-600 {
+    color: #EA580C !important;
+  }
+
   /* ── Gradient text — deeper fire + violet on white bg ── */
   .gradient-text {
     background: linear-gradient(135deg, #EA580C 0%, #C2410C 30%, #7C3AED 100%);

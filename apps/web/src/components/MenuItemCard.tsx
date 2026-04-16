@@ -278,7 +278,7 @@ export default function MenuItemCard({
                 categoryName && (
                   <p
                     className="text-[0.65rem] uppercase tracking-widest font-semibold"
-                    style={{ color: theme.name === 'light' ? '#b45309' : 'rgba(245,158,11,0.8)' }}
+                    style={{ color: theme.name === 'light' ? '#ea580c' : 'rgba(245,158,11,0.8)' }}
                   >{categoryName}</p>
                 )
               ) : (
@@ -287,7 +287,7 @@ export default function MenuItemCard({
                     value={currentItem.categoryId || 'uncategorized'}
                     onChange={(e) => handleFieldChange('categoryId', e.target.value === 'uncategorized' ? null : e.target.value)}
                     className="text-[0.65rem] uppercase tracking-[0.1em] font-semibold bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 px-2 py-1 outline-none cursor-pointer rounded-full transition-colors appearance-none"
-                    style={{ color: theme.name === 'light' ? '#b45309' : 'rgba(245,158,11,0.9)' }}
+                    style={{ color: theme.name === 'light' ? '#ea580c' : 'rgba(245,158,11,0.9)' }}
                   >
                     <option value="uncategorized" className="bg-slate-900 text-slate-400">❖ UNCATEGORIZED</option>
                     {categories?.map(c => (
@@ -354,7 +354,7 @@ export default function MenuItemCard({
             {mode === 'customer' ? (
               <span
                 className="tracking-wide font-semibold"
-                style={{ color: theme.name === 'light' ? '#d97706' : '#fbbf24' }}
+                style={{ color: theme.name === 'light' ? '#ea580c' : '#fbbf24' }}
               >${currentItem.price.toFixed(2)}</span>
             ) : (
               <InlineEditableField 
@@ -364,7 +364,7 @@ export default function MenuItemCard({
                 placeholder="Price"
                 prefix="$"
                 textClassName="tracking-wide font-semibold text-base"
-                textStyle={{ color: theme.name === 'light' ? '#d97706' : '#fbbf24' }}
+                textStyle={{ color: theme.name === 'light' ? '#ea580c' : '#fbbf24' }}
               />
             )}
           </div>
@@ -424,8 +424,8 @@ export default function MenuItemCard({
 								>
 									<Minus size={18} strokeWidth={2.5} />
 								</button>
-								<span className="font-bold text-xs uppercase tracking-widest text-amber-400 tabular-nums select-none">
-									<span className="text-white text-sm font-black mr-1">{cartQty}</span> Added
+								<span className="font-bold text-xs uppercase tracking-widest tabular-nums select-none" style={{ color: theme.name === 'light' ? '#ea580c' : '#fbbf24' }}>
+									<span className="text-sm font-black mr-1" style={{ color: theme.name === 'light' ? '#ea580c' : 'white' }}>{cartQty}</span> Added
 								</span>
 								<button 
 									onClick={increment}

@@ -10,6 +10,7 @@ import TenantProfileForm from '@/components/TenantProfileForm';
 import type { UpdateTenantDto } from '@nummygo/shared/models/dtos';
 import { updateTenantSchema } from '@nummygo/shared/models/dtos';
 import { authClient } from '@/lib/auth-client';
+import { useTheme } from '@/lib/themes';
 
 // ─── Edit Profile Page ────────────────────────────────────────────────────────
 export default function EditProfilePage() {
@@ -18,6 +19,7 @@ export default function EditProfilePage() {
 	const { data: session, isPending } = authClient.useSession();
 	const { data: tenant, isLoading } = trpc.tenant.me.useQuery(undefined, { staleTime: Infinity });
 	const hasPopulatedForm = useRef(false);
+	const { theme } = useTheme();
 
 	const updateProfile = trpc.tenant.updateTenant.useMutation({
 		onSuccess: () => {
@@ -68,10 +70,10 @@ export default function EditProfilePage() {
 	// ── Loading state ──────────────────────────────────────────────────────────
 	if (isLoading || isPending) {
 		return (
-			<div className="min-h-screen flex items-center justify-center" style={{ background: '#0D1117' }}>
+			<div className="min-h-screen flex items-center justify-center" style={{ background: theme.bg }}>
 				<div className="flex flex-col items-center gap-4">
 					<div className="w-10 h-10 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin" />
-					<p className="text-slate-500 text-sm">Loading your profile…</p>
+					<p className="text-sm" style={{ color: theme.text.muted }}>Loading your profile…</p>
 				</div>
 			</div>
 		);
@@ -79,7 +81,7 @@ export default function EditProfilePage() {
 
 	return (
 		<>
-			<div className="min-h-screen pt-8 pb-16 px-4 sm:px-6 lg:px-8 w-full" style={{ background: '#0D1117' }}>
+			<div className="min-h-screen pt-8 pb-16 px-4 sm:px-6 lg:px-8 w-full" style={{ background: theme.bg }}>
 				{/* Ambient glows */}
 				<div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
 					<div
@@ -110,10 +112,10 @@ export default function EditProfilePage() {
 
 				<div className="relative z-10 max-w-[1400px] mx-auto space-y-8 animate-fade-in">
 					{/* Page header (Standardized) */}
-					<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-8">
+					<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-8" style={{ borderBottom: `1px solid ${theme.card.border}` }}>
 						<div>
 							<h1 className="text-3xl font-black gradient-text">Store Settings</h1>
-							<p className="text-slate-400 text-sm mt-1">
+							<p className="text-sm mt-1" style={{ color: theme.text.muted }}>
 								Update your restaurant details, location, and business hours. Changes sync to your public storefront.
 							</p>
 						</div>
