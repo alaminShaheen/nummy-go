@@ -1,17 +1,41 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Trash2, X, Check, Utensils, Lightbulb, Sparkles, AlertCircle, Eye, ArrowUp } from 'lucide-react';
+import { Plus, Trash2, X, Check, Utensils, Lightbulb, Sparkles, AlertCircle, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { trpc } from '@/trpc/client';
 import MenuItemCard from '@/components/MenuItemCard';
 import MenuSection from '@/components/MenuSection';
 import { cn, NummyGoBadge } from '@/components/ui';
+import { useTheme } from '@/lib/themes';
 
 export default function TenantMenuDashboard() {
   const [draftForms, setDraftForms] = useState<Record<string, boolean>>({});
   const [showGuide, setShowGuide] = useState(false);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const { theme } = useTheme();
+  const isLight = theme.name === 'light';
+
+  // Gradient dotted SVG border — used on ghost-card and category buttons in light mode
+  const GradientDottedSVG = ({ rx = 32 }: { rx?: number }) => isLight ? (
+    <svg aria-hidden="true" className="absolute inset-0 pointer-events-none overflow-visible" style={{ width: '100%', height: '100%' }}>
+      <defs>
+        <linearGradient id="ng-page-border-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.7" />
+          <stop offset="100%" stopColor="#ea580c" stopOpacity="0.7" />
+        </linearGradient>
+      </defs>
+      <rect
+        x="1.5" y="1.5"
+        style={{ width: 'calc(100% - 3px)', height: 'calc(100% - 3px)' }}
+        rx={rx} ry={rx}
+        fill="none"
+        stroke="url(#ng-page-border-grad)"
+        strokeWidth="1.5"
+        strokeDasharray="5 4"
+      />
+    </svg>
+  ) : null;
 
   const utils = trpc.useUtils();
   const { data: menuItems, isLoading } = trpc.menu.getMenuItems.useQuery();
@@ -145,7 +169,7 @@ export default function TenantMenuDashboard() {
   };
 
   return (
-    <div className="min-h-screen pt-8 pb-16 px-4 sm:px-6 lg:px-8 w-full" style={{ background: '#0D1117' }}>
+    <div className="min-h-screen pt-8 pb-16 px-4 sm:px-6 lg:px-8 w-full" style={{ background: theme.bg }}>
       {/* Ambient glows matching Edit Profile */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
         <div
@@ -175,10 +199,10 @@ export default function TenantMenuDashboard() {
       </div>
 
       <div className="relative z-10 max-w-[1400px] mx-auto space-y-8 animate-fade-in">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-white/5 pb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8" style={{ borderBottom: `1px solid ${theme.card.border}` }}>
           <div className="max-w-2xl">
             <h1 className="text-4xl font-black gradient-text tracking-tight mb-2">Menu Builder</h1>
-            <p className="text-slate-400 text-sm leading-relaxed">
+            <p className="text-sm leading-relaxed" style={{ color: theme.text.muted }}>
               Design your storefront directly. Everything is live-editable. Changes are saved instantly and pushed to your customers in real-time.
             </p>
           </div>
@@ -188,12 +212,18 @@ export default function TenantMenuDashboard() {
                 setShowGuide(!showGuide);
                 if (isPreviewMode) setIsPreviewMode(false);
               }}
-              className={cn(
-                "flex items-center justify-center gap-2 px-5 py-2.5 rounded-full transition-all text-xs font-black uppercase tracking-widest shrink-0 border",
-                showGuide
-                  ? "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
-                  : "bg-indigo-500/10 text-indigo-400 border-indigo-500/20 hover:bg-indigo-500/20 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)]"
-              )}
+              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full transition-all text-xs font-black uppercase tracking-widest shrink-0"
+              style={{
+                background: showGuide
+                  ? isLight ? 'rgba(15,23,42,0.06)' : 'rgba(255,255,255,0.05)'
+                  : isLight ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.10)',
+                color: showGuide
+                  ? theme.text.secondary
+                  : isLight ? '#4f46e5' : '#818cf8',
+                border: showGuide
+                  ? `1px solid ${theme.card.border}`
+                  : isLight ? '1px solid rgba(99,102,241,0.25)' : '1px solid rgba(99,102,241,0.20)',
+              }}
             >
               <Lightbulb size={16} strokeWidth={2.5} />
               {showGuide ? 'Hide Guide' : 'Builder Guide'}
@@ -205,11 +235,16 @@ export default function TenantMenuDashboard() {
                 if (showGuide) setShowGuide(false);
               }}
               className={cn(
-                "flex items-center justify-center gap-2 px-5 py-2.5 rounded-full transition-all text-xs font-black uppercase tracking-widest shrink-0 border",
+                "flex items-center justify-center gap-2 px-5 py-2.5 rounded-full transition-all text-xs font-black uppercase tracking-widest shrink-0",
                 isPreviewMode
                   ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white border-transparent shadow-[0_0_20px_rgba(245,158,11,0.4)] scale-105"
-                  : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10 hover:text-white"
+                  : ""
               )}
+              style={!isPreviewMode ? {
+                background: isLight ? 'rgba(15,23,42,0.05)' : 'rgba(255,255,255,0.05)',
+                color: theme.text.secondary,
+                border: `1px solid ${theme.card.border}`,
+              } : undefined}
             >
               <Eye size={16} strokeWidth={2.5} />
               {isPreviewMode ? 'Exit Preview' : 'Customer Preview'}
@@ -226,45 +261,54 @@ export default function TenantMenuDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
 
               {/* Pillar 1: Categories */}
-              <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 md:p-8 flex flex-col items-start gap-4 hover:bg-white/[0.04] transition-colors relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity scale-150 -translate-y-10 translate-x-10 pointer-events-none">
+              <div
+                className="rounded-3xl p-6 md:p-8 flex flex-col items-start gap-4 transition-colors relative overflow-hidden group"
+                style={{ background: theme.card.bg, border: `1px solid ${theme.card.border}` }}
+              >
+                <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity scale-150 -translate-y-10 translate-x-10 pointer-events-none" style={{ color: theme.text.primary }}>
                   <Utensils size={200} />
                 </div>
-                <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400 shadow-[inset_0_0_10px_rgba(245,158,11,0.1)] border border-amber-500/20">
+                <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
                   <Plus strokeWidth={2.5} size={24} />
                 </div>
                 <div className="relative z-10 mt-2">
-                  <h3 className="text-white font-bold text-lg mb-2">1. Organization</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">
+                  <h3 className="font-bold text-lg mb-2" style={{ color: theme.text.primary }}>1. Organization</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: theme.text.muted }}>
                     Build your menu structure using Categories (e.g., "Starters", "Mains"). Scroll to the bottom of the page to create a new category swimlane.
                   </p>
                 </div>
               </div>
 
               {/* Pillar 2: Live Editing */}
-              <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 md:p-8 flex flex-col items-start gap-4 hover:bg-white/[0.04] transition-colors relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity scale-150 -translate-y-10 translate-x-10 pointer-events-none">
+              <div
+                className="rounded-3xl p-6 md:p-8 flex flex-col items-start gap-4 transition-colors relative overflow-hidden group"
+                style={{ background: theme.card.bg, border: `1px solid ${theme.card.border}` }}
+              >
+                <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity scale-150 -translate-y-10 translate-x-10 pointer-events-none" style={{ color: theme.text.primary }}>
                   <Sparkles size={200} />
                 </div>
-                <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400 shadow-[inset_0_0_10px_rgba(99,102,241,0.1)] border border-indigo-500/20">
+                <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20" style={{ color: isLight ? '#4f46e5' : '#818cf8' }}>
                   <Check strokeWidth={2.5} size={24} />
                 </div>
                 <div className="relative z-10 mt-2">
-                  <h3 className="text-white font-bold text-lg mb-2">2. Inline Editing</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">
+                  <h3 className="font-bold text-lg mb-2" style={{ color: theme.text.primary }}>2. Inline Editing</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: theme.text.muted }}>
                     No clunky forms. Click directly on any dish name, description, or price to instantly edit it. Drag and drop a photo straight onto the empty plate to upload.
                   </p>
                 </div>
               </div>
 
               {/* Pillar 3: Smart Badges */}
-              <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 md:p-8 flex flex-col items-start gap-4 hover:bg-white/[0.04] transition-colors relative overflow-hidden group md:col-span-2 lg:col-span-1">
-                <div className="p-3 rounded-xl bg-rose-500/10 text-rose-400 shadow-[inset_0_0_10px_rgba(244,63,94,0.1)] border border-rose-500/20">
+              <div
+                className="rounded-3xl p-6 md:p-8 flex flex-col items-start gap-4 transition-colors relative overflow-hidden group md:col-span-2 lg:col-span-1"
+                style={{ background: theme.card.bg, border: `1px solid ${theme.card.border}` }}
+              >
+                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20" style={{ color: isLight ? '#e11d48' : '#fb7185' }}>
                   <AlertCircle strokeWidth={2.5} size={24} />
                 </div>
                 <div className="w-full relative z-10 mt-2">
-                  <h3 className="text-white font-bold text-lg mb-2">3. Smart Badging</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed mb-5">
+                  <h3 className="font-bold text-lg mb-2" style={{ color: theme.text.primary }}>3. Smart Badging</h3>
+                  <p className="text-sm leading-relaxed mb-5" style={{ color: theme.text.muted }}>
                     Grab attention by adding a badge. Type specific keywords to unlock premium color themes instantly:
                   </p>
                   <div className="flex flex-wrap gap-2.5">
@@ -283,10 +327,26 @@ export default function TenantMenuDashboard() {
 
         {/* ── Main Dynamic View Toggle (Builder vs Preview) ── */}
         {isPreviewMode ? (
-          <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-both mt-10 bg-[#0f141d]/50 border border-white/5 rounded-[3rem] pb-10 overflow-hidden relative shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 to-orange-600 shadow-[0_0_30px_rgba(245,158,11,0.6)]"></div>
-            <div className="absolute top-6 left-6 flex items-center gap-2 bg-amber-500/10 text-amber-500 px-3 py-1.5 rounded-full border border-amber-500/20 z-50 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <div
+            className="animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-both mt-10 rounded-[3rem] pb-10 overflow-hidden relative"
+            style={{
+              background: isLight ? theme.bg : 'rgba(15,20,29,0.5)',
+              border: `1px solid ${theme.card.border}`,
+              boxShadow: isLight
+                ? '0 4px 32px rgba(15,23,42,0.07)'
+                : '0 0 50px rgba(0,0,0,0.5)',
+            }}
+          >
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 to-orange-600" />
+            <div
+              className="absolute top-6 left-6 flex items-center gap-2 px-3 py-1.5 rounded-full z-50"
+              style={{
+                background: isLight ? 'rgba(245,158,11,0.08)' : 'rgba(245,158,11,0.10)',
+                border: `1px solid rgba(245,158,11,${isLight ? '0.3' : '0.2'})`,
+                color: isLight ? '#b45309' : '#f59e0b',
+              }}
+            >
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
               <span className="text-[10px] font-black uppercase tracking-widest">Storefront Live Preview</span>
             </div>
 
@@ -297,7 +357,14 @@ export default function TenantMenuDashboard() {
               />
             </div>
             <div className="absolute bottom-6 inset-x-0 flex justify-center pointer-events-none">
-              <p className="text-slate-500 text-xs uppercase tracking-widest font-black bg-black/50 px-4 py-2 rounded-full backdrop-blur-md border border-white/5">
+              <p
+                className="text-xs uppercase tracking-widest font-black px-4 py-2 rounded-full backdrop-blur-md"
+                style={{
+                  background: isLight ? 'rgba(15,23,42,0.06)' : 'rgba(0,0,0,0.50)',
+                  border: `1px solid ${theme.card.border}`,
+                  color: theme.text.muted,
+                }}
+              >
                 Ordering is disabled in preview mode
               </p>
             </div>
@@ -326,7 +393,8 @@ export default function TenantMenuDashboard() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setDeleteConfirmId(null)}
-                        className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold transition-all"
+                        className="px-4 py-2 rounded-xl text-xs font-bold transition-all"
+                        style={{ background: isLight ? 'rgba(15,23,42,0.06)' : 'rgba(255,255,255,0.06)', color: theme.text.secondary, border: `1px solid ${theme.card.border}` }}
                       >
                         Cancel
                       </button>
@@ -395,18 +463,20 @@ export default function TenantMenuDashboard() {
                   ) : (
                     <button
                       onClick={() => setDraftForms(prev => ({ ...prev, [lane.categoryId]: true }))}
-                      className="
-                    flex flex-col items-center justify-center gap-3
-                    w-full min-h-[380px] rounded-[2rem]
-                    border-2 border-dashed border-amber-500/30 text-amber-500/70
-                    hover:border-amber-400 hover:text-amber-400 hover:bg-amber-400/5 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)]
-                    transition-all duration-300 font-semibold uppercase tracking-widest text-sm
-                  "
+                      className={cn(
+                        "relative flex flex-col items-center justify-center gap-3",
+                        "w-full min-h-[380px] rounded-[2rem]",
+                        "transition-all duration-300 font-semibold uppercase tracking-widest text-sm",
+                        isLight
+                          ? "text-amber-600/80 hover:text-amber-600 hover:bg-amber-500/5"
+                          : "border-2 border-dashed border-amber-500/30 text-amber-500/70 hover:border-amber-400 hover:text-amber-400 hover:bg-amber-400/5 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)]"
+                      )}
                     >
-                      <div className="p-4 rounded-full bg-amber-500/10 transition-transform scale-100 group-hover:scale-110">
+                      <GradientDottedSVG rx={32} />
+                      <div className="relative z-10 p-4 rounded-full bg-amber-500/10 transition-transform scale-100 group-hover:scale-110">
                         <Plus className="size-8" />
                       </div>
-                      Add to {lane.categoryName}
+                      <span className="relative z-10">Add to {lane.categoryName}</span>
                     </button>
                   )}
                 </div>
@@ -424,32 +494,35 @@ export default function TenantMenuDashboard() {
 
               {/* Idle State */}
               <button
-                className={`
-              absolute inset-0 flex items-center justify-center gap-4 group
-              border-2 border-dashed border-amber-500/30 text-amber-500/70
-              hover:border-amber-400 hover:text-amber-400 hover:bg-amber-400/5 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)]
-              transition-all duration-300 font-semibold uppercase tracking-widest text-sm lg:text-base rounded-[2rem]
-              ${isCreatingCategory ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'}
-            `}
+                className={cn(
+                  "absolute inset-0 flex items-center justify-center gap-4 group",
+                  "transition-all duration-300 font-semibold uppercase tracking-widest text-sm lg:text-base rounded-[2rem]",
+                  isLight
+                    ? "text-amber-600/80 hover:text-amber-600 hover:bg-amber-500/5"
+                    : "border-2 border-dashed border-amber-500/30 text-amber-500/70 hover:border-amber-400 hover:text-amber-400 hover:bg-amber-400/5 hover:shadow-[0_0_30px_rgba(245,158,11,0.1)]",
+                  isCreatingCategory ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'
+                )}
                 onClick={() => setIsCreatingCategory(true)}
               >
-                <div className="p-3 sm:p-4 rounded-full bg-amber-500/10 transition-transform scale-100 group-hover:scale-110">
+                <GradientDottedSVG rx={32} />
+                <div className="relative z-10 p-3 sm:p-4 rounded-full bg-amber-500/10 transition-transform scale-100 group-hover:scale-110">
                   <Utensils className="chef-icon size-6 sm:size-7" />
                 </div>
-                Add New Menu Category
+                <span className="relative z-10">Add New Menu Category</span>
               </button>
 
               {/* Active State */}
               <div
                 className={`
               absolute inset-0 flex flex-col sm:flex-row gap-6 px-6 sm:px-10 items-center justify-between
-              border border-amber-500/60 bg-[rgba(19,25,31,0.95)] backdrop-blur-xl
+              border border-amber-500/60 backdrop-blur-xl
               shadow-[0_0_30px_rgba(245,158,11,0.15),inset_0_0_20px_rgba(245,158,11,0.05)]
               rounded-[2rem] transition-all duration-300
               ${isCreatingCategory ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-105 pointer-events-none'}
             `}
+                style={{ background: isLight ? 'rgba(255,255,255,0.97)' : 'rgba(19,25,31,0.95)' }}
               >
-                <div className="flex-1 flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-white/10 pb-4 sm:pb-0 sm:pr-8 w-full sm:w-auto">
+                <div className="flex-1 flex flex-col justify-center pb-4 sm:pb-0 sm:pr-8 w-full sm:w-auto" style={{ borderBottom: `1px solid ${theme.card.border}`, borderRight: undefined }}>
                   <label className="text-[10px] font-black text-amber-500 uppercase tracking-[0.2em] mb-1.5 opacity-80 flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
                     Naming New Category...
@@ -463,14 +536,16 @@ export default function TenantMenuDashboard() {
                       if (e.key === 'Escape') cancelCategoryCreation();
                     }}
                     autoFocus={isCreatingCategory}
-                    className="bg-transparent border-none outline-none text-2xl sm:text-4xl font-black tracking-tight text-white placeholder-slate-600 w-full"
+                    className="bg-transparent border-none outline-none text-2xl sm:text-4xl font-black tracking-tight w-full"
+                    style={{ color: theme.text.primary }}
                     placeholder="e.g. Desserts"
                   />
                 </div>
                 <div className="flex w-full sm:w-auto items-center justify-center gap-2">
                   <button
                     onClick={cancelCategoryCreation}
-                    className="p-3 sm:p-4 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                    className="p-3 sm:p-4 rounded-full transition-colors"
+                    style={{ background: isLight ? 'rgba(15,23,42,0.06)' : 'rgba(255,255,255,0.06)', color: theme.text.muted, border: `1px solid ${theme.card.border}` }}
                     title="Cancel"
                   >
                     <X size={20} className="stroke-[3]" />

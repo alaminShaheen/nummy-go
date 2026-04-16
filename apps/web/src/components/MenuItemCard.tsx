@@ -196,7 +196,7 @@ export default function MenuItemCard({
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 bg-white/[0.02]">
+            <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ color: theme.text.muted }}>
               <UploadCloud size={32} className="mb-2 opacity-50" />
               <p className="text-xs font-semibold uppercase tracking-widest">No Image</p>
             </div>
@@ -276,14 +276,18 @@ export default function MenuItemCard({
             <div>
               {mode === 'customer' ? (
                 categoryName && (
-                  <p className="text-[0.65rem] uppercase tracking-widest text-amber-500/80 font-semibold">{categoryName}</p>
+                  <p
+                    className="text-[0.65rem] uppercase tracking-widest font-semibold"
+                    style={{ color: theme.name === 'light' ? '#b45309' : 'rgba(245,158,11,0.8)' }}
+                  >{categoryName}</p>
                 )
               ) : (
                 <div className="-ml-1">
                   <select 
                     value={currentItem.categoryId || 'uncategorized'}
                     onChange={(e) => handleFieldChange('categoryId', e.target.value === 'uncategorized' ? null : e.target.value)}
-                    className="text-[0.65rem] uppercase tracking-[0.1em] text-amber-500/80 font-semibold bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 px-2 py-1 outline-none cursor-pointer rounded-full transition-colors appearance-none"
+                    className="text-[0.65rem] uppercase tracking-[0.1em] font-semibold bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 px-2 py-1 outline-none cursor-pointer rounded-full transition-colors appearance-none"
+                    style={{ color: theme.name === 'light' ? '#b45309' : 'rgba(245,158,11,0.9)' }}
                   >
                     <option value="uncategorized" className="bg-slate-900 text-slate-400">❖ UNCATEGORIZED</option>
                     {categories?.map(c => (
@@ -299,7 +303,7 @@ export default function MenuItemCard({
             <div className="shrink-0 flex items-center justify-end">
               {mode === 'customer' ? (
                 currentItem.calories && (
-                  <p className="text-slate-500/70 text-[0.65rem] font-black uppercase tracking-widest">
+                  <p style={{ color: theme.text.muted }} className="text-[0.65rem] font-black uppercase tracking-widest">
                     {currentItem.calories} cal
                   </p>
                 )
@@ -310,7 +314,8 @@ export default function MenuItemCard({
                   onSave={(val) => handleFieldChange('calories', val ? parseInt(val, 10) : null)}
                   placeholder="0"
                   suffix="cal"
-                  textClassName="text-slate-500/70 text-[0.65rem] font-black uppercase tracking-widest text-right"
+                  textClassName="text-[0.65rem] font-black uppercase tracking-widest text-right"
+                  textStyle={{ color: theme.text.muted }}
                   inputClassName="text-right w-16 !text-[0.65rem]"
                 />
               )}
@@ -329,14 +334,16 @@ export default function MenuItemCard({
                 value={currentItem.name}
                 onSave={(val) => handleFieldChange('name', val)}
                 placeholder="Dish Name..."
-                textClassName="font-bold text-slate-100 text-[1.05rem] leading-tight tracking-tight"
+                textClassName="font-bold text-[1.05rem] leading-tight tracking-tight"
+                textStyle={{ color: theme.text.primary }}
               />
               <InlineEditableField 
                 type="textarea"
                 value={currentItem.description}
                 onSave={(val) => handleFieldChange('description', val)}
                 placeholder="Description..."
-                textClassName="text-slate-400 text-sm mt-1.5 leading-relaxed line-clamp-2"
+                textClassName="text-sm mt-1.5 leading-relaxed line-clamp-2"
+                textStyle={{ color: theme.text.secondary }}
               />
             </>
           )}
@@ -345,7 +352,10 @@ export default function MenuItemCard({
 
           <div className="pt-2">
             {mode === 'customer' ? (
-              <span className="text-amber-400 tracking-wide font-semibold">${currentItem.price.toFixed(2)}</span>
+              <span
+                className="tracking-wide font-semibold"
+                style={{ color: theme.name === 'light' ? '#d97706' : '#fbbf24' }}
+              >${currentItem.price.toFixed(2)}</span>
             ) : (
               <InlineEditableField 
                 type="number"
@@ -353,7 +363,8 @@ export default function MenuItemCard({
                 onSave={(val) => handleFieldChange('price', parseFloat(val))}
                 placeholder="Price"
                 prefix="$"
-                textClassName="text-amber-400 tracking-wide font-semibold text-base"
+                textClassName="tracking-wide font-semibold text-base"
+                textStyle={{ color: theme.name === 'light' ? '#d97706' : '#fbbf24' }}
               />
             )}
           </div>
@@ -372,7 +383,8 @@ export default function MenuItemCard({
               <button 
                 onClick={() => onDraftCancel?.()}
                 disabled={draftStatus !== 'idle'}
-                className="flex-1 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300 text-xs font-semibold transition-colors disabled:opacity-50"
+                className="flex-1 py-2 rounded-xl text-xs font-semibold transition-colors disabled:opacity-50"
+                style={{ background: theme.card.bg, border: `1px solid ${theme.card.border}`, color: theme.text.secondary }}
               >
                 Cancel
               </button>
@@ -439,8 +451,10 @@ export default function MenuItemCard({
 
 				{/* Builder Mode Persistent Action Toolbar */}
 				{mode === 'builder' && (
-					<div className="mt-2 pt-4 border-t border-white/5 flex items-center justify-between w-full">
-            <div className="flex items-center gap-3 bg-[rgba(0,0,0,0.2)] rounded-full px-1.5 py-1 pr-3 border border-white/5 shadow-inner backdrop-blur-md">
+					<div className="mt-2 pt-4 flex items-center justify-between w-full" style={{ borderTop: `1px solid ${theme.card.border}` }}>
+            <div className="flex items-center gap-3 rounded-full px-1.5 py-1 pr-3 shadow-inner backdrop-blur-md"
+              style={{ background: theme.name === 'light' ? 'rgba(15,23,42,0.05)' : 'rgba(0,0,0,0.20)', border: `1px solid ${theme.card.border}` }}
+            >
                <BrandSwitch 
                  checked={currentItem.isAvailable ?? true}
                  onChange={(val) => handleFieldChange('isAvailable', val)}
@@ -448,8 +462,9 @@ export default function MenuItemCard({
                />
                <span className={cn(
                  "text-[10px] font-black uppercase tracking-widest transition-colors w-12 text-center",
-                 (currentItem.isAvailable ?? true) ? "text-emerald-400" : "text-slate-500"
-               )}>
+               )}
+               style={{ color: (currentItem.isAvailable ?? true) ? '#10b981' : theme.text.muted }}
+               >
                  {(currentItem.isAvailable ?? true) ? "Active" : "Hidden"}
                </span>
             </div>

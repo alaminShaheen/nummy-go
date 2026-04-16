@@ -10,6 +10,7 @@ interface InlineEditableFieldProps {
   placeholder?: string;
   className?: string;
   textClassName?: string;
+  textStyle?: React.CSSProperties;
   inputClassName?: string;
   prefix?: string;
   suffix?: string;
@@ -22,6 +23,7 @@ export function InlineEditableField({
   placeholder,
   className,
   textClassName,
+  textStyle,
   inputClassName,
   prefix,
   suffix,
@@ -66,7 +68,8 @@ export function InlineEditableField({
 
   if (isEditing) {
     const commonClasses = cn(
-      "w-full bg-[#0a0d14] border border-amber-500/60 rounded-md text-slate-100 px-2 py-1 outline-none shadow-[0_0_15px_rgba(245,158,11,0.2)] focus:border-amber-400 focus:bg-white/[0.04] transition-all",
+      "w-full border border-amber-500/60 rounded-md px-2 py-1 outline-none shadow-[0_0_15px_rgba(245,158,11,0.2)] focus:border-amber-400 transition-all",
+      "bg-white dark:bg-[#0a0d14] text-slate-900 dark:text-slate-100",
       className,
       inputClassName
     );
@@ -117,7 +120,7 @@ export function InlineEditableField({
         className
       )}
     >
-      <div className={cn("pointer-events-none break-words", textClassName, isEmpty && "text-slate-500 italic")}>
+      <div className={cn("pointer-events-none break-words", textClassName, isEmpty && "opacity-50 italic")} style={textStyle}>
         {prefix && <span className="opacity-70 mr-0.5">{prefix}</span>}
         {isEmpty ? placeholder || 'Empty...' : currentValue}
         {suffix && !isEmpty && <span className="opacity-70 ml-0.5">{suffix}</span>}

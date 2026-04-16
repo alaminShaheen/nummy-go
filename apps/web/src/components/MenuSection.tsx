@@ -42,7 +42,7 @@ export default function MenuSection({ items, categories = [], onAddToCart, onUpd
           <div>
             <SectionLabel className="mb-2">Fresh Today</SectionLabel>
             <div className="flex items-center gap-4">
-              <h2 className="text-4xl font-black" style={{ color: theme.text.primary }}>Our Menu</h2>
+              <h2 className="text-4xl font-black gradient-text" style={{ color: theme.text.primary }}>Our Menu</h2>
             </div>
           </div>
         </div>
@@ -50,10 +50,9 @@ export default function MenuSection({ items, categories = [], onAddToCart, onUpd
         {/* Category Sticky Navigation Rail */}
         {categories.length > 0 && (
           <div
-            className="sticky top-[64px] z-[40] -mx-4 px-4 sm:mx-0 sm:px-0 py-4 mb-6 backdrop-blur-md border-b shadow-lg"
+            className="sticky top-[64px] z-[40] -mx-4 px-4 sm:mx-0 sm:px-0 py-4 mb-6 backdrop-blur-md"
             style={{
               background: `${theme.bg}cc`,
-              borderColor: theme.card.border,
             }}
           >
             <div className="flex gap-2 overflow-x-auto no-scrollbar whitespace-nowrap" role="tablist" aria-label="Menu categories">
@@ -98,13 +97,13 @@ export default function MenuSection({ items, categories = [], onAddToCart, onUpd
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {filteredItems.map((item) => {
             const categoryName = categories.find((c) => c.id === item.categoryId)?.name;
-            return <MenuItemCard 
-              key={item.id} 
-              item={item} 
-              onAddToCart={onAddToCart} 
+            return <MenuItemCard
+              key={item.id}
+              item={item}
+              onAddToCart={onAddToCart}
               onUpdateQuantity={onUpdateQuantity}
               cartQty={cartQuantities[item.id] || 0}
-              categoryName={categoryName} 
+              categoryName={categoryName}
               isClosed={isClosed}
             />;
           })}
@@ -122,17 +121,17 @@ export default function MenuSection({ items, categories = [], onAddToCart, onUpd
                 <div className="absolute -top-4 left-1/2 translate-x-2 w-1.5 h-1.5 rounded-full animate-ping" style={{ background: theme.text.muted, animationDuration: '2.5s', animationDelay: '0.5s' }} />
               </div>
             </div>
-            
-            <h3 className="text-2xl font-black mb-3 tracking-tight" style={{ color: theme.text.primary }}>
+
+            <h3 className="text-2xl font-black mb-3 tracking-tight gradient-text" style={{ color: theme.text.primary }}>
               {activeCategory === 'ALL' ? "The ovens are warming up!" : "Fresh out of these right now!"}
             </h3>
-            
+
             <p className="text-base max-w-sm mx-auto leading-relaxed" style={{ color: theme.text.secondary }}>
               {activeCategory === 'ALL'
                 ? "Our kitchen is still putting the final touches on our online menu. We'll be serving up something delicious here very soon."
                 : "Looks like we don't have any items in this specific category today. Why not take a peek at what else is cooking?"}
             </p>
-            
+
             {activeCategory !== 'ALL' && (
               <Button
                 variant="outline"
