@@ -4,7 +4,6 @@ export default function Preview() {
   return EmailTemplates.TenantNewOrderEmail(PreviewProps);
 }
 
-
 export const PreviewProps = {
   tenantName: "Burger Palace",
   orderId: "01HWXZQPF9K3Y7M2N8VT6SCBE4",
@@ -13,6 +12,7 @@ export const PreviewProps = {
   customerName: "Alex Johnson",
   customerEmail: "alex@example.com",
   customerPhone: "+1 (555) 234-5678",
+  dashboardUrl: "https://nummygo.ca/tenant/orders",
   items: [
     { name: "Smash Burger Deluxe", quantity: 2, priceCents: 1200 },
     { name: "Sweet Potato Fries", quantity: 1, priceCents: 500 },
